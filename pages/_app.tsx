@@ -1,9 +1,20 @@
-import { ChakraProvider, } from '@chakra-ui/react';
+import './global.scss';
+import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
 import { RecoilRoot, } from 'recoil';
+
+const theme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        bg: 'gray.50',
+      },
+    },
+  },
+});
 
 const App = ({ Component, pageProps, }) => {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <RecoilRoot>
         <Component {...pageProps}/>
       </RecoilRoot>
