@@ -5,7 +5,7 @@ const App = ({ Component, pageProps, }) => {
   return (
     <ChakraProvider>
       <RecoilRoot>
-        <Component {...pageProps} />
+        <Component {...pageProps}/>
       </RecoilRoot>
     </ChakraProvider>
   );
