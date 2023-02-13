@@ -3,3 +3,8 @@ export type FirebaseProperties = {
   apiKey: string,
   authDomain: string,
 }
+
+export type Account = {
+  token: string,
+  refreshToken: string,
+}
