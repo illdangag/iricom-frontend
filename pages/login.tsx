@@ -1,7 +1,10 @@
 import { Flex, Spacer, Container, Card, CardHeader, CardBody, Image, Center, Heading, VStack, Button, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
+import { FirebaseProperties, } from '../interfaces';
 
 const LoginPage = () => {
+  const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
+  console.log(firebaseProperties);
   return (
     <Flex flexDirection='column' height='100%'>
       <Spacer/>
