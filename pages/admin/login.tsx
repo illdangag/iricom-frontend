@@ -11,7 +11,7 @@ const LoginPage = () => {
             <Flex alignItems='flex-end'>
               <Image src='/static/images/login_logo.png' width='4rem' alt='login logo'/>
               <Spacer/>
-              <Heading size='md' color='gray.500'>관리자 로그인</Heading>
+              <Heading size='md' color='gray.600'>관리자 로그인</Heading>
             </Flex>
           </CardHeader>
           <CardBody>
