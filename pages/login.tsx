@@ -16,7 +16,6 @@ const LoginPage = () => {
 
   const onClickSignInGoogle = async () => {
     setLogin(true);
-    let account: Account;
     const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
     const firebaseOptions: FirebaseOptions = {
       projectId: firebaseProperties.projectId,
@@ -34,17 +33,14 @@ const LoginPage = () => {
       const userCredential: UserCredential = await signInWithPopup(auth, googleAuthProvider);
       const token: string = await userCredential.user.getIdToken();
       const refreshToken: string = userCredential.user.refreshToken;
-      account = {
+      const account: Account = {
         token,
         refreshToken,
-      };
-    } catch (error) {
-      setLogin(false);
-    }
-
-    if (account) {
+      } as Account;
       BrowserStorage.setAccount(account);
       void router.push('/');
+    } catch (error) {
+      setLogin(false);
     }
   };
 
@@ -62,7 +58,13 @@ const LoginPage = () => {
             </CardHeader>
             <CardBody>
               <Center>
-                <Button leftIcon={<FcGoogle/>} onClick={onClickSignInGoogle} isDisabled={isLogin}>Google 계정으로 계속하기</Button>
+                <Button
+                  leftIcon={<FcGoogle/>}
+                  onClick={onClickSignInGoogle}
+                  isDisabled={isLogin}
+                >
+                  Google 계정으로 계속하기
+                </Button>
               </Center>
             </CardBody>
           </Card>
