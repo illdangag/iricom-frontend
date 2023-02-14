@@ -10,7 +10,6 @@ export class BrowserStorage {
     if (accountValue === null) {
       return null;
     } else {
-      debugger;
       const account: Account = JSON.parse(accountValue) as Account;
 
       const now: Date = new Date();

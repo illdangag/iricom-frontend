@@ -1,13 +1,17 @@
 import { useState, } from 'react';
-import { Flex, Spacer, Container, Card, CardHeader, CardBody, Image, Center, Heading, Button, } from '@chakra-ui/react';
+import { useRouter, } from 'next/router';
+import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
+import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
 
-import { initializeApp, FirebaseOptions, FirebaseApp, } from 'firebase/app';
-import { getAuth, signInWithPopup, GoogleAuthProvider, Auth, UserCredential, } from 'firebase/auth';
+import { FirebaseApp, FirebaseOptions, initializeApp, } from 'firebase/app';
+import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, } from 'firebase/auth';
 import { Account, FirebaseProperties, } from '../interfaces';
 import { BrowserStorage, } from '../utils';
 
 const LoginPage = () => {
+  const router = useRouter();
+
   const [isLogin, setLogin,] = useState<boolean>(false);
 
   const onClickSignInGoogle = async () => {
@@ -40,29 +44,32 @@ const LoginPage = () => {
 
     if (account) {
       BrowserStorage.setAccount(account);
+      void router.push('/');
     }
   };
 
   return (
-    <Flex flexDirection='column' height='100%'>
-      <Spacer/>
-      <Container>
-        <Card maxWidth='32rem'>
-          <CardHeader>
-            <Flex flexDirection='column' align='center'>
-              <Image src='/static/images/login_logo.png' width='8rem' alt='login logo'/>
-              <Heading size='xl' color='gray.600'>이리콤</Heading>
-            </Flex>
-          </CardHeader>
-          <CardBody>
-            <Center>
-              <Button leftIcon={<FcGoogle/>} onClick={onClickSignInGoogle} isDisabled={isLogin}>Google 계정으로 계속하기</Button>
-            </Center>
-          </CardBody>
-        </Card>
-      </Container>
-      <Spacer/>
-    </Flex>
+    <EmptyLayout loginState={LoginState.LOGOUT}>
+      <Flex flexDirection='column' height='100%'>
+        <Spacer/>
+        <Container>
+          <Card maxWidth='32rem'>
+            <CardHeader>
+              <Flex flexDirection='column' align='center'>
+                <Image src='/static/images/login_logo.png' width='8rem' alt='login logo'/>
+                <Heading size='xl' color='gray.600'>이리콤</Heading>
+              </Flex>
+            </CardHeader>
+            <CardBody>
+              <Center>
+                <Button leftIcon={<FcGoogle/>} onClick={onClickSignInGoogle} isDisabled={isLogin}>Google 계정으로 계속하기</Button>
+              </Center>
+            </CardBody>
+          </Card>
+        </Container>
+        <Spacer/>
+      </Flex>
+    </EmptyLayout>
   );
 };
 

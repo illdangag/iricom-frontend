@@ -1,4 +1,8 @@
-import { ReactNode, } from 'react';
+import { ReactNode, useEffect, useState, } from 'react';
+import Head from 'next/head';
+import { useRouter, } from 'next/router';
+import { Account, } from '../interfaces';
+import { BrowserStorage, } from '../utils';
 
 enum LoginState {
   LOGIN,
@@ -8,15 +12,39 @@ enum LoginState {
 
 type Props = {
   children?: ReactNode,
+  title?: string,
   loginState?: LoginState,
 };
 
 const EmptyLayout = ({
   children,
+  title = 'Welcome | iricom',
   loginState = LoginState.ANY,
 }: Props) => {
+  const router = useRouter();
+
+  const [isValid, setValid,] = useState<boolean>(false);
+
+  useEffect(() => {
+    const account: Account | null = BrowserStorage.getAccount();
+    if (loginState === LoginState.ANY
+      || loginState === LoginState.LOGIN && account !== null
+      || loginState === LoginState.LOGOUT && account === null) {
+      setValid(true);
+    } else if (loginState === LoginState.LOGIN) {
+      void router.push('/login');
+    } else {
+      void router.push('/');
+    }
+  }, [loginState,]);
+
   return (
-    <div>{children}</div>
+    <>
+      <Head>
+        <title>{title}</title>
+      </Head>
+      {isValid && children}
+    </>
   );
 };
 
