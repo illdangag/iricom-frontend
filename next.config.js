@@ -1,12 +1,14 @@
+const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
+const localConfig = require('./config/local.next.config');
+
 module.exports = (phase) => {
+  let env;
+  if (phase === PHASE_DEVELOPMENT_SERVER) {
+    env = localConfig.env;
+  }
+
   return {
-    env: {
-      firebase: {
-        projectId: 'iricom-test',
-        apiKey: 'AIzaSyBYmjY8_YWrwttvBrtwSSKYiqvTLKdF7I0',
-        authDomain: 'iricom-test.firebaseapp.com',
-      },
-    },
+    env: env,
     eslint: {
       ignoreDuringBuilds: true,
     },

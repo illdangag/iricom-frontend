@@ -1,5 +1,5 @@
 module.exports = {
-  'ignorePatterns': ['node_modules/*', '**/.eslintrc.js', '**/next.config.js'],
+  'ignorePatterns': ['node_modules/*', '**/.eslintrc.js', '**/next.config.js', 'config/*'],
   'env': {
     'browser': true,
     'node': true,
