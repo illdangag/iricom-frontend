@@ -1,4 +1,6 @@
-import { Button, ButtonGroup, } from '@chakra-ui/react';
+import { Button, ButtonGroup, Box, } from '@chakra-ui/react';
+import { EmptyLayout, Header, } from '../layouts';
+
 import { useRecoilValue, useSetRecoilState, } from 'recoil';
 import testCountAtom, { increaseTestCount, } from '../recoil/testCount';
 
@@ -11,12 +13,15 @@ const IndexPage = () => {
   };
 
   return (
-    <div>
-      <div>{testCount?.count}</div>
-      <ButtonGroup variant='outline' spacing={6}>
-        <Button colorScheme='blue' onClick={onClickIncreaseButton}>increase</Button>
-      </ButtonGroup>
-    </div>
+    <EmptyLayout>
+      <Header/>
+      <Box>
+        <div>{testCount?.count}</div>
+        <ButtonGroup variant='outline' spacing={6}>
+          <Button colorScheme='blue' onClick={onClickIncreaseButton}>increase</Button>
+        </ButtonGroup>
+      </Box>
+    </EmptyLayout>
   );
 };
 
