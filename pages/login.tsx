@@ -3,10 +3,11 @@ import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
-
 import { useGoogleAuth, } from '../hooks';
 import { Account, } from '../interfaces';
 import { BrowserStorage, } from '../utils';
+import { useSetRecoilState, } from 'recoil';
+import accountAtom from '../recoil/account';
 
 enum PageState {
   READY,
@@ -19,6 +20,7 @@ const LoginPage = () => {
   const router = useRouter();
   const [authState, token, refreshToken, requestGoogleAuth,] = useGoogleAuth();
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
+  const setAccount = useSetRecoilState(accountAtom);
 
   useEffect(() => {
     if (authState === 'success') {
@@ -28,6 +30,7 @@ const LoginPage = () => {
         refreshToken,
       };
       BrowserStorage.setAccount(account);
+      setAccount(account);
       void router.push('/');
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);

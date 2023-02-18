@@ -3,9 +3,12 @@ import { useRouter, } from 'next/router';
 import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input, Button, Container, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
+
 import { useEmailAuth, } from '../../hooks';
 import { Account, } from '../../interfaces';
 import { BrowserStorage, } from '../../utils';
+import { useSetRecoilState, } from 'recoil';
+import accountAtom from '../../recoil/account';
 
 enum PageState {
   READY,
@@ -18,10 +21,10 @@ enum PageState {
 const LoginPage = () => {
   const router = useRouter();
   const [authState, token, refreshToken, requestEmailAuth,] = useEmailAuth();
-
   const [email, setEmail,] = useState<string>('');
   const [password, setPassword,] = useState<string>('');
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
+  const setAccount = useSetRecoilState(accountAtom);
 
   useEffect(() => {
     if (email !== '' && password !== '') {
@@ -39,6 +42,7 @@ const LoginPage = () => {
         refreshToken,
       };
       BrowserStorage.setAccount(account);
+      setAccount(account);
       void router.push('/');
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);

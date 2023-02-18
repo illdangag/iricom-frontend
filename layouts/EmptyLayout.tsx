@@ -4,6 +4,9 @@ import { useRouter, } from 'next/router';
 import { Account, } from '../interfaces';
 import { BrowserStorage, } from '../utils';
 
+import { useSetRecoilState, } from 'recoil';
+import accountAtom from '../recoil/account';
+
 enum LoginState {
   LOGIN,
   LOGOUT,
@@ -22,8 +25,16 @@ const EmptyLayout = ({
   loginState = LoginState.ANY,
 }: Props) => {
   const router = useRouter();
+  const setAccount = useSetRecoilState(accountAtom);
 
   const [isValid, setValid,] = useState<boolean>(false);
+
+  useEffect(() => {
+    const account: Account | null = BrowserStorage.getAccount();
+    if (account !== null) {
+      setAccount(account);
+    }
+  }, []);
 
   useEffect(() => {
     const account: Account | null = BrowserStorage.getAccount();

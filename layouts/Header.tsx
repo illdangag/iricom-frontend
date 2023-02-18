@@ -2,14 +2,23 @@ import { useRouter, } from 'next/router';
 import { Flex, Heading, Spacer, IconButton, Card, Box, Menu, MenuButton, MenuList, MenuItem, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 import { BrowserStorage, } from '../utils';
+import { Account, } from '../interfaces';
+import { useRecoilState, } from 'recoil';
+import accountAtom, {} from '../recoil/account';
 
 type Props = {};
 
 const Header = ({}: Props) => {
   const router = useRouter();
+  const [account, setAccount,] = useRecoilState<Account | null>(accountAtom);
+
+  const onClickSignIn = () => {
+    void router.push('/login');
+  };
 
   const onClickSignOut = () => {
     BrowserStorage.clear();
+    setAccount(null);
     void router.push('/');
   };
 
@@ -27,18 +36,17 @@ const Header = ({}: Props) => {
             >
             </MenuButton>
             <MenuList>
-              <MenuItem fontSize='1rem'>
+              {account === null && <MenuItem fontSize='1rem' onClick={onClickSignIn}>
                 sign in
-              </MenuItem>
-              <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+              </MenuItem>}
+              {account !== null && <MenuItem fontSize='1rem' onClick={onClickSignOut}>
                 sign out
-              </MenuItem>
+              </MenuItem>}
             </MenuList>
           </Menu>
         </Flex>
       </Card>
     </Box>
-
   );
 };
 
