@@ -1,45 +1,52 @@
-import { ChangeEvent, useState, useEffect, useRef, KeyboardEvent, } from 'react';
+import { ChangeEvent, useState, useEffect, KeyboardEvent, } from 'react';
 import { useRouter, } from 'next/router';
 import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input, Button, Container, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
-
-import { initializeApp, FirebaseOptions, FirebaseApp, } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, Auth, UserCredential, signInWithEmailAndPassword, } from 'firebase/auth';
-import { FirebaseProperties, Account, } from '../../interfaces';
+import { useEmailAuth, } from '../../hooks';
+import { Account, } from '../../interfaces';
 import { BrowserStorage, } from '../../utils';
 
 enum PageState {
-  NONE,
   READY,
+  PRE_REQUEST,
   REQUEST,
+  SUCCESS,
   FAIL,
 }
 
 const LoginPage = () => {
   const router = useRouter();
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const [authState, token, refreshToken, requestEmailAuth,] = useEmailAuth();
 
-  const [id, setId,] = useState<string>('');
+  const [email, setEmail,] = useState<string>('');
   const [password, setPassword,] = useState<string>('');
-  const [state, setState,] = useState<PageState>(PageState.NONE);
+  const [pageState, setPageState,] = useState<PageState>(PageState.READY);
 
   useEffect(() => {
-    if (id !== '' && password !== '') {
-      setState(PageState.READY);
+    if (email !== '' && password !== '') {
+      setPageState(PageState.PRE_REQUEST);
     } else {
-      setState(PageState.NONE);
+      setPageState(PageState.READY);
     }
-  }, [id, password,]);
+  }, [email, password,]);
 
   useEffect(() => {
-    if (state === PageState.FAIL) {
-      passwordRef.current?.focus();
+    if (authState === 'success') {
+      setPageState(PageState.SUCCESS);
+      const account: Account = {
+        token,
+        refreshToken,
+      };
+      BrowserStorage.setAccount(account);
+      void router.push('/');
+    } else if (authState === 'fail') {
+      setPageState(PageState.FAIL);
     }
-  }, [state,]);
+  }, [authState,]);
 
-  const onChangeIdInput = (event: ChangeEvent<HTMLInputElement>) => {
-    setId(event.target.value);
+  const onChangeEmailInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
   };
 
   const onChangePasswordInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -57,34 +64,8 @@ const LoginPage = () => {
   };
 
   const login = async () => {
-    setState(PageState.REQUEST);
-    const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
-    const firebaseOptions: FirebaseOptions = {
-      projectId: firebaseProperties.projectId,
-      apiKey: firebaseProperties.apiKey,
-      authDomain: firebaseProperties.authDomain,
-    };
-    const firebaseApp: FirebaseApp = initializeApp(firebaseOptions);
-    const auth: Auth = getAuth(firebaseApp);
-    const googleAuthProvider = new GoogleAuthProvider();
-    googleAuthProvider.setDefaultLanguage('ko');
-    googleAuthProvider.setCustomParameters({
-      login_hint: 'user@example.com',
-    });
-
-    try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, id, password);
-      const token: string = await userCredential.user.getIdToken();
-      const refreshToken: string = userCredential.user.refreshToken;
-      const account: Account = {
-        token,
-        refreshToken,
-      } as Account;
-      BrowserStorage.setAccount(account);
-      void router.push('/');
-    } catch (error) {
-      setState(PageState.FAIL);
-    }
+    setPageState(PageState.REQUEST);
+    void requestEmailAuth(email, password);
   };
 
   return (
@@ -106,22 +87,22 @@ const LoginPage = () => {
                   <Input
                     placeholder='아이디'
                     size='md'
-                    isDisabled={state === PageState.REQUEST}
-                    onChange={onChangeIdInput}
+                    isDisabled={pageState === PageState.REQUEST}
+                    onChange={onChangeEmailInput}
                   />
                   <Input
-                    ref={passwordRef}
                     type='password'
                     placeholder='비밀번호'
                     size='md'
-                    isDisabled={state === PageState.REQUEST}
-                    isInvalid={state === PageState.FAIL}
+                    isDisabled={pageState === PageState.REQUEST}
+                    isInvalid={pageState === PageState.FAIL}
                     onChange={onChangePasswordInput}
                     onKeyUp={onKeyUpPasswordInput}
                   />
                 </Stack>
                 <Button
-                  isDisabled={state === PageState.NONE || state === PageState.REQUEST}
+                  isLoading={pageState === PageState.REQUEST}
+                  isDisabled={pageState !== PageState.PRE_REQUEST}
                   leftIcon={<MdLogin/>}
                   onClick={onClickLogin}
                 >
