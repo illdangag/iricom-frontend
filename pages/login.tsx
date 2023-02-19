@@ -3,11 +3,14 @@ import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
+
 import { useGoogleAuth, } from '../hooks';
-import { Account, } from '../interfaces';
+import { SessionInfo, } from '../interfaces';
+import { getMyAccountInfo, } from '../utils/IricomAPI';
+
 import { BrowserStorage, } from '../utils';
 import { useSetRecoilState, } from 'recoil';
-import accountAtom from '../recoil/account';
+import sessionInfoAtom from '../recoil/sessionInfo';
 
 enum PageState {
   READY,
@@ -18,20 +21,24 @@ enum PageState {
 
 const LoginPage = () => {
   const router = useRouter();
-  const [authState, token, refreshToken, requestGoogleAuth,] = useGoogleAuth();
+  const [authState, tokenInfo, requestGoogleAuth,] = useGoogleAuth();
+
+  const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
-  const setAccount = useSetRecoilState(accountAtom);
 
   useEffect(() => {
     if (authState === 'success') {
       setPageState(PageState.SUCCESS);
-      const account: Account = {
-        token,
-        refreshToken,
-      };
-      BrowserStorage.setAccount(account);
-      setAccount(account);
-      void router.push('/');
+      void getMyAccountInfo(tokenInfo)
+        .then(myInformation => {
+          const sessionInfo: SessionInfo = {
+            tokenInfo,
+            myInformation,
+          };
+          setSessionInfo(sessionInfo);
+          BrowserStorage.setSessionInfo(sessionInfo);
+          void router.push('/');
+        });
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
     }

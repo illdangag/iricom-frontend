@@ -5,10 +5,12 @@ import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
 
 import { useEmailAuth, } from '../../hooks';
-import { Account, } from '../../interfaces';
+import { SessionInfo, } from '../../interfaces';
+import { getMyAccountInfo, } from '../../utils/IricomAPI';
+
 import { BrowserStorage, } from '../../utils';
 import { useSetRecoilState, } from 'recoil';
-import accountAtom from '../../recoil/account';
+import sessionInfoAtom from '../../recoil/sessionInfo';
 
 enum PageState {
   READY,
@@ -20,11 +22,12 @@ enum PageState {
 
 const LoginPage = () => {
   const router = useRouter();
-  const [authState, token, refreshToken, requestEmailAuth,] = useEmailAuth();
+  const [authState, tokenInfo, requestEmailAuth,] = useEmailAuth();
+
+  const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
   const [email, setEmail,] = useState<string>('');
   const [password, setPassword,] = useState<string>('');
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
-  const setAccount = useSetRecoilState(accountAtom);
 
   useEffect(() => {
     if (email !== '' && password !== '') {
@@ -37,13 +40,16 @@ const LoginPage = () => {
   useEffect(() => {
     if (authState === 'success') {
       setPageState(PageState.SUCCESS);
-      const account: Account = {
-        token,
-        refreshToken,
-      };
-      BrowserStorage.setAccount(account);
-      setAccount(account);
-      void router.push('/');
+      void getMyAccountInfo(tokenInfo)
+        .then(myInformation => {
+          const sessionInfo: SessionInfo = {
+            tokenInfo,
+            myInformation,
+          };
+          setSessionInfo(sessionInfo);
+          BrowserStorage.setSessionInfo(sessionInfo);
+          void router.push('/');
+        });
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
     }

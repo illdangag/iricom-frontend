@@ -5,6 +5,8 @@ module.exports = (phase) => {
   let env;
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     env = localConfig.env;
+  } else {
+    env = localConfig.env;
   }
 
   return {

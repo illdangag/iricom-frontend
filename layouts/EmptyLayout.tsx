@@ -1,11 +1,10 @@
-import { ReactNode, useEffect, useState, } from 'react';
+import { ReactNode, useState, useEffect, } from 'react';
 import Head from 'next/head';
 import { useRouter, } from 'next/router';
-import { Account, } from '../interfaces';
+import { SessionInfo, } from '../interfaces';
 import { BrowserStorage, } from '../utils';
-
 import { useSetRecoilState, } from 'recoil';
-import accountAtom from '../recoil/account';
+import sessionInfoAtom from '../recoil/sessionInfo';
 
 enum LoginState {
   LOGIN,
@@ -25,22 +24,20 @@ const EmptyLayout = ({
   loginState = LoginState.ANY,
 }: Props) => {
   const router = useRouter();
-  const setAccount = useSetRecoilState(accountAtom);
 
+  const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
   const [isValid, setValid,] = useState<boolean>(false);
 
   useEffect(() => {
-    const account: Account | null = BrowserStorage.getAccount();
-    if (account !== null) {
-      setAccount(account);
-    }
+    const sessionInfo: SessionInfo = BrowserStorage.getSessionInfo();
+    setSessionInfo(sessionInfo);
   }, []);
 
   useEffect(() => {
-    const account: Account | null = BrowserStorage.getAccount();
+    const sessionInfo: SessionInfo | null = BrowserStorage.getSessionInfo();
     if (loginState === LoginState.ANY
-      || loginState === LoginState.LOGIN && account !== null
-      || loginState === LoginState.LOGOUT && account === null) {
+      || loginState === LoginState.LOGIN && sessionInfo !== null
+      || loginState === LoginState.LOGOUT && sessionInfo === null) {
       setValid(true);
     } else if (loginState === LoginState.LOGIN) {
       void router.push('/login');

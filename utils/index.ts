@@ -1,35 +1,28 @@
-import { Account, } from '../interfaces';
+import { SessionInfo, } from '../interfaces';
 
 export class BrowserStorage {
+  static SESSION_KEY: string = 'session';
+
   static clear (): void {
     localStorage.clear();
   }
 
-  static getAccount (): Account | null {
-    const accountValue = localStorage.getItem('account');
-    if (accountValue === null) {
+  static getSessionInfo (): SessionInfo | null {
+    const sessionInfoValue: string = localStorage.getItem(BrowserStorage.SESSION_KEY);
+    if (sessionInfoValue === null) {
       return null;
     } else {
-      const account: Account = JSON.parse(accountValue) as Account;
-
-      const now: Date = new Date();
-      const expiredDate: Date = getTokenExpiredDate(account.token);
-
-      if (now.getTime() > expiredDate.getTime()) {
-        localStorage.removeItem('account');
-        return null;
-      } else {
-        return account;
-      }
+      const sessionInfo: SessionInfo = JSON.parse(sessionInfoValue) as SessionInfo;
+      return sessionInfo;
     }
   }
 
-  static setAccount (account: Account): void {
-    localStorage.setItem('account', JSON.stringify(account));
+  static setSessionInfo (sessionInfo: SessionInfo): void {
+    localStorage.setItem(BrowserStorage.SESSION_KEY, JSON.stringify(sessionInfo));
   }
 }
 
-function getTokenExpiredDate (token: string): Date {
+export function getTokenExpiredDate (token: string): Date {
   const encodedPayload: string = token.split('.')[1];
   const decodedPayload: string = Buffer.from(encodedPayload, 'base64').toString('utf8');
   const payload: any = JSON.parse(decodedPayload);
