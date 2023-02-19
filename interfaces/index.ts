@@ -22,7 +22,11 @@ export type SessionInfo = {
 }
 
 // backend
-export type AccountType = 'systemAdmin' | 'boardAdmin' | 'account';
+export enum AccountAuth {
+  SYSTEM_ADMIN = 'systemAdmin',
+  BOARD_ADMIN = 'boardAdmin',
+  ACCOUNT = 'account',
+}
 
 export type Account = {
   id: string,
@@ -31,9 +35,23 @@ export type Account = {
   lastActivityDate: number,
   nickname: string,
   description: string,
-  type: AccountType,
+  auth: AccountAuth,
 }
 
 export type MyInformation = {
   account: Account,
+}
+
+export type Board = {
+  id: string,
+  title: string,
+  description: string,
+  enabled: boolean,
+}
+
+export type BoardList = {
+  total: number,
+  skip: number,
+  limit: number,
+  boards: Board[],
 }

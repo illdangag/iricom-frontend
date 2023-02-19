@@ -1,6 +1,6 @@
 import { ChangeEvent, useState, useEffect, KeyboardEvent, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input, Button, Container, } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input, Button, Container, useToast, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
 
@@ -22,6 +22,7 @@ enum PageState {
 
 const LoginPage = () => {
   const router = useRouter();
+  const toast = useToast();
   const [authState, tokenInfo, requestEmailAuth,] = useEmailAuth();
 
   const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
@@ -48,6 +49,11 @@ const LoginPage = () => {
           };
           setSessionInfo(sessionInfo);
           BrowserStorage.setSessionInfo(sessionInfo);
+          toast({
+            title: '로그인 되었습니다.',
+            status: 'success',
+            duration: 3000,
+          });
           void router.push('/');
         });
     } else if (authState === 'fail') {
@@ -95,6 +101,7 @@ const LoginPage = () => {
               <Stack spacing={6}>
                 <Stack spacing={2}>
                   <Input
+                    autoFocus
                     placeholder='아이디'
                     size='md'
                     isDisabled={pageState === PageState.REQUEST}

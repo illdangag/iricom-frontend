@@ -1,6 +1,6 @@
 import { useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, useToast, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
 
@@ -21,6 +21,7 @@ enum PageState {
 
 const LoginPage = () => {
   const router = useRouter();
+  const toast = useToast();
   const [authState, tokenInfo, requestGoogleAuth,] = useGoogleAuth();
 
   const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
@@ -37,6 +38,11 @@ const LoginPage = () => {
           };
           setSessionInfo(sessionInfo);
           BrowserStorage.setSessionInfo(sessionInfo);
+          toast({
+            title: '로그인 되었습니다.',
+            status: 'success',
+            duration: 3000,
+          });
           void router.push('/');
         });
     } else if (authState === 'fail') {
