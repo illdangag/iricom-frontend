@@ -18,7 +18,7 @@ const LinkCard = ({
         <LinkOverlay as={NextLink} href={href}>
           {title}
         </LinkOverlay>
-        {description.map(item => <Text fontSize='sm' fontWeight='normal' marginTop='0.4rem'>{item}</Text>)}
+        {description.map((item, index) => <Text fontSize='sm' fontWeight='normal' marginTop='0.4rem' key={index}>{item}</Text>)}
       </Heading>
     </LinkBox>
   );
