@@ -35,7 +35,26 @@ export const getBoardList = async (tokenInfo: TokenInfo, skip: number = 0, limit
     const response: AxiosResponse<BoardList> = await axios.request(config);
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    throw error;
+  }
+};
+
+export const createBoard = async (tokenInfo: TokenInfo, title: string, description: string, enabled: boolean): Promise<Board> => {
+  const config: AxiosRequestConfig = getRequestConfig(tokenInfo);
+  config.url = backendProperties.host + '/v1/boards';
+  config.method = 'POST';
+  config.data = {
+    title,
+    description,
+    enabled,
+  };
+
+  try {
+    const response: AxiosResponse<Board> = await axios.request(config);
+    return response.data;
+  } catch (error) {
+    console.error(error);
     throw error;
   }
 };
