@@ -2,15 +2,17 @@ import { useState, } from 'react';
 import { FirebaseProperties, TokenInfo, } from '../interfaces';
 import { FirebaseApp, FirebaseOptions, initializeApp, } from 'firebase/app';
 import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, } from 'firebase/auth';
-import { getTokenExpiredDate, } from '../utils';
+import { BrowserStorage, getTokenExpiredDate, } from '../utils';
+import tokenInfoAtom from '../recoil/tokenInfo';
+import { useSetRecoilState, } from 'recoil';
 
 type State = 'ready' | 'request' | 'success' | 'fail';
 
-function useGoogleAuth (): [State, TokenInfo, () => Promise<void>] {
-  const [state, setState,] = useState<State>('ready');
-  const [tokenInfo, setTokenInfo,] = useState<TokenInfo | null>(null);
-
+function useGoogleAuth (): [State, () => Promise<void>] {
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
+  const setTokenInfo = useSetRecoilState<TokenInfo | null>(tokenInfoAtom);
+  const [state, setState,] = useState<State>('ready');
+
   const firebaseOptions: FirebaseOptions = {
     projectId: firebaseProperties.projectId,
     apiKey: firebaseProperties.apiKey,
@@ -32,19 +34,22 @@ function useGoogleAuth (): [State, TokenInfo, () => Promise<void>] {
       const refreshToken: string = userCredential.user.refreshToken;
       const expiredDate: Date = getTokenExpiredDate(token);
 
-      setState('success');
-      setTokenInfo({
+      const tokenInfo: TokenInfo = {
         token,
         refreshToken,
         expiredDate,
-      });
+      };
+
+      setState('success');
+      setTokenInfo(tokenInfo);
+      BrowserStorage.setTokenInfo(tokenInfo);
     } catch {
       setState('fail');
       setTokenInfo(null);
     }
   };
 
-  return [state, tokenInfo, requestGoogleAuth,];
+  return [state, requestGoogleAuth,];
 }
 
 export default useGoogleAuth;

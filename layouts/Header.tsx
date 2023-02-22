@@ -4,8 +4,10 @@ import { Box, Card, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuL
 import { MdMenu, } from 'react-icons/md';
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import sessionInfoAtom from '../recoil/sessionInfo';
-import { AccountAuth, SessionInfo, } from '../interfaces';
+import tokenInfoAtom from '../recoil/tokenInfo';
+import { TokenInfo, } from '../interfaces';
+import { useEffect, } from 'react';
+import { useIricomAPI, } from '../hooks';
 
 type Props = {
   title?: string,
@@ -15,18 +17,16 @@ const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
-  const [sessionInfo, setSessionInfo,] = useRecoilState<SessionInfo | null>(sessionInfoAtom);
-
-  const onClickSignIn = () => {
-    void router.push('/login');
-  };
+  const iricomAPI = useIricomAPI();
+  const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
 
   const onClickSignOut = () => {
     BrowserStorage.clear();
-    setSessionInfo(null);
+    setTokenInfo(null);
     void router.push('/');
   };
 
+  // TODO TokenInfo와 계정의 권한에 따라 메뉴 처리
   return (
     <Box padding='0.8rem'>
       <Card shadow='none'>
@@ -41,18 +41,20 @@ const Header = ({
             >
             </MenuButton>
             <MenuList>
-              {sessionInfo && sessionInfo.myInformation.account.auth === AccountAuth.SYSTEM_ADMIN && <NextLink href='/admin/board'>
+              {tokenInfo && <NextLink href='/admin/board'>
                 <MenuItem fontSize='1rem'>
                   관리자 페이지
                 </MenuItem>
               </NextLink>}
-              {sessionInfo && <MenuItem>
+              {tokenInfo && <MenuItem>
                 내 정보
               </MenuItem>}
-              {!sessionInfo && <MenuItem fontSize='1rem' onClick={onClickSignIn}>
-                로그인
-              </MenuItem>}
-              {sessionInfo && <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+              {!tokenInfo && <NextLink href='/login'>
+                <MenuItem fontSize='1rem'>
+                  로그인
+                </MenuItem>
+              </NextLink>}
+              {tokenInfo && <MenuItem fontSize='1rem' onClick={onClickSignOut}>
                 로그아웃
               </MenuItem>}
             </MenuList>

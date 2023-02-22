@@ -4,13 +4,11 @@ import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input,
 import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
 
-import { useEmailAuth, } from '../../hooks';
-import { SessionInfo, } from '../../interfaces';
-import { getMyAccountInfo, } from '../../utils/IricomAPI';
+import { useEmailAuth, useIricomAPI, } from '../../hooks';
 
 import { BrowserStorage, } from '../../utils';
 import { useSetRecoilState, } from 'recoil';
-import sessionInfoAtom from '../../recoil/sessionInfo';
+import tokenInfoAtom from '../../recoil/tokenInfo';
 
 enum PageState {
   READY,
@@ -23,9 +21,9 @@ enum PageState {
 const LoginPage = () => {
   const router = useRouter();
   const toast = useToast();
-  const [authState, tokenInfo, requestEmailAuth,] = useEmailAuth();
+  const iricomAPI = useIricomAPI();
+  const [authState, requestEmailAuth,] = useEmailAuth();
 
-  const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
   const [email, setEmail,] = useState<string>('');
   const [password, setPassword,] = useState<string>('');
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
@@ -41,21 +39,12 @@ const LoginPage = () => {
   useEffect(() => {
     if (authState === 'success') {
       setPageState(PageState.SUCCESS);
-      void getMyAccountInfo(tokenInfo)
-        .then(myInformation => {
-          const sessionInfo: SessionInfo = {
-            tokenInfo,
-            myInformation,
-          };
-          setSessionInfo(sessionInfo);
-          BrowserStorage.setSessionInfo(sessionInfo);
-          toast({
-            title: '로그인 되었습니다.',
-            status: 'success',
-            duration: 3000,
-          });
-          void router.push('/');
-        });
+      toast({
+        title: '로그인 되었습니다.',
+        status: 'success',
+        duration: 3000,
+      });
+      void router.push('/');
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
     }

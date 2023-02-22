@@ -1,24 +1,25 @@
-import { SessionInfo, } from '../interfaces';
+import { TokenInfo, } from '../interfaces';
 
 export class BrowserStorage {
-  static SESSION_KEY: string = 'session';
+  static TOKEN_INFO_KEY: string = 'tokenInfo';
 
   static clear (): void {
     localStorage.clear();
   }
 
-  static getSessionInfo (): SessionInfo | null {
-    const sessionInfoValue: string = localStorage.getItem(BrowserStorage.SESSION_KEY);
-    if (sessionInfoValue === null) {
+  static getTokenInfo (): TokenInfo | null {
+    const tokenInfoValue: string = localStorage.getItem(BrowserStorage.TOKEN_INFO_KEY);
+    if (tokenInfoValue === null) {
       return null;
     } else {
-      const sessionInfo: SessionInfo = JSON.parse(sessionInfoValue) as SessionInfo;
-      return sessionInfo;
+      const tokenInfo: TokenInfo = JSON.parse(tokenInfoValue) as TokenInfo;
+      tokenInfo.expiredDate = new Date(tokenInfo.expiredDate);
+      return tokenInfo;
     }
   }
 
-  static setSessionInfo (sessionInfo: SessionInfo): void {
-    localStorage.setItem(BrowserStorage.SESSION_KEY, JSON.stringify(sessionInfo));
+  static setTokenInfo (tokenInfo: TokenInfo): void {
+    localStorage.setItem(BrowserStorage.TOKEN_INFO_KEY, JSON.stringify(tokenInfo));
   }
 }
 

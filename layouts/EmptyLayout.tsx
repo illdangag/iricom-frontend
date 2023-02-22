@@ -1,11 +1,11 @@
 import { ReactNode, useEffect, useState, } from 'react';
 import Head from 'next/head';
 import { useRouter, } from 'next/router';
-import { useToast, } from '@chakra-ui/react';
-import { AccountAuth, SessionInfo, } from '../interfaces';
+import { AccountAuth, TokenInfo, } from '../interfaces';
+import { useIricomAPI, } from '../hooks';
+import tokenInfoAtom from '../recoil/tokenInfo';
+import { useRecoilState, } from 'recoil';
 import { BrowserStorage, } from '../utils';
-import { useSetRecoilState, } from 'recoil';
-import sessionInfoAtom from '../recoil/sessionInfo';
 
 enum LoginState {
   LOGIN,
@@ -27,51 +27,34 @@ const EmptyLayout = ({
   auth = null,
 }: Props) => {
   const router = useRouter();
-  const toast = useToast();
+  const iricomAPI = useIricomAPI();
 
-  const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
+  const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
   const [isValid, setValid,] = useState<boolean>(false);
 
   useEffect(() => {
-    const sessionInfo: SessionInfo = BrowserStorage.getSessionInfo();
-    setSessionInfo(sessionInfo);
+    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+    setTokenInfo(tokenInfo);
   }, []);
 
   useEffect(() => {
-    const sessionInfo: SessionInfo | null = BrowserStorage.getSessionInfo();
     if (loginState === LoginState.ANY
-      || loginState === LoginState.LOGIN && sessionInfo !== null
-      || loginState === LoginState.LOGOUT && sessionInfo === null) {
-
-      if (auth !== null) {
-        if (sessionInfo === null) {
-          toast({
-            title: '권한이 없는 페이지 입니다.',
-            status: 'error',
-            duration: 3000,
-          });
-        } else {
-          const accountAuth: AccountAuth = sessionInfo.myInformation.account.auth;
-          if (auth === AccountAuth.ACCOUNT && (accountAuth === null)
-            || auth === AccountAuth.BOARD_ADMIN && accountAuth === AccountAuth.ACCOUNT
-            || auth === AccountAuth.SYSTEM_ADMIN && accountAuth !== AccountAuth.SYSTEM_ADMIN) {
-            toast({
-              title: '권한이 없는 페이지 입니다.',
-              status: 'error',
-              duration: 3000,
-            });
-            void router.push('/');
-          }
-        }
-      }
-
+      || (loginState === LoginState.LOGIN && tokenInfo !== null)
+      || (loginState === LoginState.LOGOUT && tokenInfo === null)) {
       setValid(true);
-    } else if (loginState === LoginState.LOGIN) {
-      void router.push('/login');
     } else {
       void router.push('/');
     }
   }, [loginState,]);
+
+  useEffect(() => {
+    if (tokenInfo !== null) {
+      void iricomAPI.getMyAccountInfo()
+        .then(myInformation => {
+          console.log(myInformation);
+        });
+    }
+  }, []);
 
   return (
     <>

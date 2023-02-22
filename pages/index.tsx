@@ -4,11 +4,11 @@ import { MainLayout, } from '../layouts';
 import { useRecoilValue, useSetRecoilState, } from 'recoil';
 import testCountAtom, { increaseTestCount, } from '../recoil/testCount';
 
-import { BrowserStorage, } from '../utils';
-import { getBoardList, } from '../utils/IricomAPI';
-import { SessionInfo, } from '../interfaces';
+import useIricomAPI from '../hooks/useIricomAPI';
 
 const IndexPage = () => {
+  const iricomAPI = useIricomAPI();
+
   const testCount = useRecoilValue(testCountAtom);
   const setIncreaseTestCount = useSetRecoilState(increaseTestCount);
 
@@ -17,11 +17,7 @@ const IndexPage = () => {
   };
 
   const onClickBoardList = () => {
-    const sessionInfo: SessionInfo = BrowserStorage.getSessionInfo();
-    void getBoardList(sessionInfo.tokenInfo, 0, 20, null)
-      .catch(error => {
-        console.log(error);
-      });
+    void iricomAPI.getBoardList(0, 20, null);
   };
 
   return (

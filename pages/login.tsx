@@ -5,12 +5,6 @@ import { FcGoogle, } from 'react-icons/fc';
 import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
 
 import { useGoogleAuth, } from '../hooks';
-import { SessionInfo, } from '../interfaces';
-import { getMyAccountInfo, } from '../utils/IricomAPI';
-
-import { BrowserStorage, } from '../utils';
-import { useSetRecoilState, } from 'recoil';
-import sessionInfoAtom from '../recoil/sessionInfo';
 
 enum PageState {
   READY,
@@ -22,29 +16,18 @@ enum PageState {
 const LoginPage = () => {
   const router = useRouter();
   const toast = useToast();
-  const [authState, tokenInfo, requestGoogleAuth,] = useGoogleAuth();
-
-  const setSessionInfo = useSetRecoilState<SessionInfo>(sessionInfoAtom);
+  const [authState, requestGoogleAuth,] = useGoogleAuth();
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
 
   useEffect(() => {
     if (authState === 'success') {
       setPageState(PageState.SUCCESS);
-      void getMyAccountInfo(tokenInfo)
-        .then(myInformation => {
-          const sessionInfo: SessionInfo = {
-            tokenInfo,
-            myInformation,
-          };
-          setSessionInfo(sessionInfo);
-          BrowserStorage.setSessionInfo(sessionInfo);
-          toast({
-            title: '로그인 되었습니다.',
-            status: 'success',
-            duration: 3000,
-          });
-          void router.push('/');
-        });
+      toast({
+        title: '로그인 되었습니다.',
+        status: 'success',
+        duration: 3000,
+      });
+      void router.push('/');
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
     }

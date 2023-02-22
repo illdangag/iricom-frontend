@@ -4,11 +4,7 @@ import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHe
   Button, useToast, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import { AccountAuth, } from '../../../interfaces';
-
-import { useRecoilValue, } from 'recoil';
-import sessionInfoAtom from '../../../recoil/sessionInfo';
-import { SessionInfo, } from '../../../interfaces';
-import { createBoard, } from '../../../utils/IricomAPI';
+import useIricomAPI from '../../../hooks/useIricomAPI';
 
 enum PageState {
   READY,
@@ -21,7 +17,7 @@ enum PageState {
 const AdminBoardCreatePage = () => {
   const router = useRouter();
   const toast = useToast();
-  const sessionInfo = useRecoilValue<SessionInfo>(sessionInfoAtom);
+  const iricomAPI = useIricomAPI();
 
   const [title, setTitle,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
@@ -48,7 +44,7 @@ const AdminBoardCreatePage = () => {
 
   const onClickCreate = () => {
     setPageState(PageState.REQUEST);
-    void createBoard(sessionInfo.tokenInfo, title, description, enabled)
+    void iricomAPI.createBoard(title, description, enabled)
       .then(() => {
         setPageState(PageState.SUCCESS);
         toast({

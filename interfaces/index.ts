@@ -16,12 +16,12 @@ export type TokenInfo = {
   expiredDate: Date,
 }
 
-export type SessionInfo = {
-  tokenInfo: TokenInfo,
-  myInformation: MyInformation,
-}
-
 // backend
+export type IricomError = {
+  code: string,
+  message: string,
+};
+
 export enum AccountAuth {
   SYSTEM_ADMIN = 'systemAdmin',
   BOARD_ADMIN = 'boardAdmin',

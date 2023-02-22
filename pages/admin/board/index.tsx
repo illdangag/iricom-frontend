@@ -1,7 +1,6 @@
 import { VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import { LinkCard, } from '../../../components';
-
 import { AccountAuth, } from '../../../interfaces';
 
 const AdminBoardPage = () => {
