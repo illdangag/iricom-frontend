@@ -48,13 +48,10 @@ const EmptyLayout = ({
           setMyAccountInfo(myAccountInfo);
           validatePageAccess(storageTokenInfo, myAccountInfo);
         });
+    } else if (tokenInfo !== null && myAccountInfo !== null) {
+      validatePageAccess(storageTokenInfo, myAccountInfo);
     }
   }, []);
-
-  useEffect(() => {
-    const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-    validatePageAccess(storageTokenInfo, myAccountInfo);
-  }, [tokenInfo, myAccountInfo,]);
 
   useEffect(() => {
     if (isValid) {
