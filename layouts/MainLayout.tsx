@@ -11,6 +11,7 @@ type Props = {
   headerTitle?: string,
   loginState?: LoginState,
   auth?: AccountAuth,
+  onMount?: () => void,
 }
 
 const MainLayout = ({
@@ -19,9 +20,10 @@ const MainLayout = ({
   headerTitle,
   loginState,
   auth,
+  onMount,
 }: Props) => {
   return (
-    <EmptyLayout title={title} loginState={loginState} auth={auth}>
+    <EmptyLayout title={title} loginState={loginState} auth={auth} onMount={onMount}>
       <Header title={headerTitle}/>
       {children}
     </EmptyLayout>

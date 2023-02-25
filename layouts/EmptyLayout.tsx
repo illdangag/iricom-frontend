@@ -21,12 +21,14 @@ type Props = {
   title?: string,
   loginState?: LoginState,
   auth?: AccountAuth,
+  onMount?: () => void,
 };
 
 const EmptyLayout = ({
   children, title = 'Welcome | iricom',
   loginState = LoginState.ANY,
   auth = null,
+  onMount = () => {},
 }: Props) => {
   const router = useRouter();
   const iricomAPI = useIricomAPI();
@@ -40,25 +42,37 @@ const EmptyLayout = ({
 
     if ((tokenInfo === null && storageTokenInfo !== null) // 로그아웃 상태에서 로그인 한 경우
         || tokenInfo !== null && storageTokenInfo !== null && (tokenInfo.token !== storageTokenInfo.token)) { // 토큰이 갱신된 경우
-      setTokenInfo(storageTokenInfo);
       void iricomAPI.getMyAccountInfo(storageTokenInfo)
         .then(myAccountInfo => {
+          setTokenInfo(storageTokenInfo);
           setMyAccountInfo(myAccountInfo);
+          validatePageAccess(storageTokenInfo, myAccountInfo);
         });
     }
   }, []);
 
   useEffect(() => {
+    const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+    validatePageAccess(storageTokenInfo, myAccountInfo);
+  }, [tokenInfo, myAccountInfo,]);
+
+  useEffect(() => {
+    if (isValid) {
+      onMount();
+    }
+  }, [isValid,]);
+
+  const validatePageAccess = (tokenInfo: TokenInfo | null, myAccountInfo: MyAccountInfo | null) => {
     let isValid: boolean = true;
 
     // 페이지 권한에 따른 접근
     if (auth !== null && myAccountInfo === null) {
       isValid = false;
     } else if (auth === AccountAuth.SYSTEM_ADMIN
-        && myAccountInfo && myAccountInfo.account.auth !== AccountAuth.SYSTEM_ADMIN) {
+      && myAccountInfo && myAccountInfo.account.auth !== AccountAuth.SYSTEM_ADMIN) {
       isValid = false;
     } else if (auth === AccountAuth.BOARD_ADMIN
-        && myAccountInfo && myAccountInfo.account.auth === AccountAuth.ACCOUNT) {
+      && myAccountInfo && myAccountInfo.account.auth === AccountAuth.ACCOUNT) {
       isValid = false;
     }
 
@@ -75,7 +89,7 @@ const EmptyLayout = ({
       setValid(false);
       void router.replace('/');
     }
-  }, [auth, tokenInfo, myAccountInfo,]);
+  };
 
   return (
     <>

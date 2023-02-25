@@ -83,7 +83,7 @@ const AdminBoardCreatePage = () => {
               <Textarea placeholder='설명을 입력해주세요.' value={description} onChange={onChangeDescription}/>
             </FormControl>
             <FormControl>
-              <Checkbox defaultChecked={true} checked={enabled} onChange={onChangeEnabled}>활성화</Checkbox>
+              <Checkbox defaultChecked={false} checked={enabled} onChange={onChangeEnabled}>활성화</Checkbox>
               <FormHelperText>비활성화 게시판은 사용자에게 나타나지 않으며, 게시물 작성 및 댓글 작성이 불가능합니다.</FormHelperText>
             </FormControl>
           </VStack>
