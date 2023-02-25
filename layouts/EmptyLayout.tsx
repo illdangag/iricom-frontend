@@ -8,9 +8,9 @@ import { useRecoilState, } from 'recoil';
 import { BrowserStorage, } from '../utils';
 
 enum LoginState {
-  LOGIN,
-  LOGOUT,
-  ANY,
+  LOGIN = 'LOGIN',
+  LOGOUT = 'LOGOUT',
+  ANY = 'ANY',
 }
 
 type Props = {
@@ -21,8 +21,7 @@ type Props = {
 };
 
 const EmptyLayout = ({
-  children,
-  title = 'Welcome | iricom',
+  children, title = 'Welcome | iricom',
   loginState = LoginState.ANY,
   auth = null,
 }: Props) => {
@@ -33,27 +32,24 @@ const EmptyLayout = ({
   const [isValid, setValid,] = useState<boolean>(false);
 
   useEffect(() => {
-    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-    setTokenInfo(tokenInfo);
-  }, []);
-
-  useEffect(() => {
+    const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (loginState === LoginState.ANY
-      || (loginState === LoginState.LOGIN && tokenInfo !== null)
-      || (loginState === LoginState.LOGOUT && tokenInfo === null)) {
+        || (loginState === LoginState.LOGIN && storageTokenInfo !== null)
+        || (loginState === LoginState.LOGOUT && storageTokenInfo === null)) {
       setValid(true);
     } else {
       void router.push('/');
     }
-  }, [loginState,]);
 
-  useEffect(() => {
-    if (tokenInfo !== null) {
-      void iricomAPI.getMyAccountInfo()
-        .then(myInformation => {
-          console.log(myInformation);
+    if ((tokenInfo === null && storageTokenInfo !== null) // 로그아웃 상태에서 로그인 한 경우
+        || tokenInfo !== null && storageTokenInfo !== null && (tokenInfo.token !== storageTokenInfo.token)) { // 토큰이 갱신된 경우
+      setTokenInfo(storageTokenInfo);
+      void iricomAPI.getMyAccountInfo(storageTokenInfo)
+        .then(myAccountInfo => {
+          console.log(myAccountInfo);
         });
     }
+
   }, []);
 
   return (

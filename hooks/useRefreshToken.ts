@@ -32,7 +32,7 @@ function useRefreshToken (): () => {} {
         refreshToken,
         expiredDate,
       };
-     setTokenInfo(tokenInfo);
+      setTokenInfo(tokenInfo);
       BrowserStorage.setTokenInfo(tokenInfo);
     } catch (error) {
       console.error(error);

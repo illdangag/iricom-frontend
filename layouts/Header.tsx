@@ -6,7 +6,6 @@ import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
 import tokenInfoAtom from '../recoil/tokenInfo';
 import { TokenInfo, } from '../interfaces';
-import { useEffect, } from 'react';
 import { useIricomAPI, } from '../hooks';
 
 type Props = {
@@ -17,7 +16,6 @@ const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
-  const iricomAPI = useIricomAPI();
   const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
 
   const onClickSignOut = () => {

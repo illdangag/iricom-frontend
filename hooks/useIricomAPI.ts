@@ -9,7 +9,7 @@ import tokenInfoAtom from '../recoil/tokenInfo';
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
 type IricomAPI = {
-  getMyAccountInfo: () => Promise<MyInformation>,
+  getMyAccountInfo: (tokenInfo: TokenInfo) => Promise<MyInformation>,
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
 }
@@ -35,7 +35,7 @@ function useIricomAPI (): IricomAPI {
   };
 
   const iricomApi: IricomAPI = {
-    getMyAccountInfo: async () => {
+    getMyAccountInfo: async (tokenInfo: TokenInfo) => {
       const config: AxiosRequestConfig = getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/infos';
       config.method = 'GET';
