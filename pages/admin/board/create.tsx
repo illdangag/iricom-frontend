@@ -1,10 +1,12 @@
+// react
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, HStack, Spacer,
   Button, useToast, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
-import { AccountAuth, } from '../../../interfaces';
 import useIricomAPI from '../../../hooks/useIricomAPI';
+// etc
+import { AccountAuth, } from '../../../interfaces';
 
 enum PageState {
   READY,

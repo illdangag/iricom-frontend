@@ -1,10 +1,10 @@
+// react
 import { Button, ButtonGroup, Box, } from '@chakra-ui/react';
 import { MainLayout, } from '../layouts';
-
+import useIricomAPI from '../hooks/useIricomAPI';
+// store
 import { useRecoilValue, useSetRecoilState, } from 'recoil';
 import testCountAtom, { increaseTestCount, } from '../recoil/testCount';
-
-import useIricomAPI from '../hooks/useIricomAPI';
 
 const IndexPage = () => {
   const iricomAPI = useIricomAPI();

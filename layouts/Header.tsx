@@ -1,11 +1,14 @@
+// react
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { Box, Card, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
+// etc
+import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
+// store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
 import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
-import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 
 type Props = {
   title?: string,

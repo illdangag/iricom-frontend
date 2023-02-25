@@ -1,6 +1,9 @@
+// node
 import process from 'process';
-import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+// etc
 import { FirebaseProperties, TokenInfo, } from '../interfaces';
+import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+// store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
 import { tokenInfoAtom, } from '../recoil';

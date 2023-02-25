@@ -1,11 +1,14 @@
+// react
 import { ReactNode, useEffect, useState, } from 'react';
 import Head from 'next/head';
 import { useRouter, } from 'next/router';
-import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 import { useIricomAPI, } from '../hooks';
-import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
-import { useRecoilState, } from 'recoil';
+// etc
+import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
+// store
 import { BrowserStorage, } from '../utils';
+import { useRecoilState, } from 'recoil';
+import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
 
 enum LoginState {
   LOGIN = 'LOGIN',

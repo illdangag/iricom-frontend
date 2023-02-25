@@ -1,9 +1,9 @@
+// react
 import { ChangeEvent, useState, useEffect, KeyboardEvent, } from 'react';
 import { useRouter, } from 'next/router';
 import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input, Button, Container, useToast, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
-
 import { useEmailAuth, } from '../../hooks';
 
 enum PageState {

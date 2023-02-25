@@ -1,8 +1,12 @@
+// node
 import process from 'process';
+// react
+import useRefreshToken from './useRefreshToken';
+// etc
 import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, } from '../interfaces';
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+// store
 import { useRecoilValue, } from 'recoil';
-import useRefreshToken from './useRefreshToken';
 import { tokenInfoAtom, } from '../recoil';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;

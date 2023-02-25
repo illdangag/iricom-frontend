@@ -1,9 +1,9 @@
+// react
 import { useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, useToast, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
-
 import { useGoogleAuth, } from '../hooks';
 
 enum PageState {

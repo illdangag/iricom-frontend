@@ -1,12 +1,14 @@
+// react
 import { useState, } from 'react';
+import { useIricomAPI, } from './index';
+// etc
 import { FirebaseProperties, TokenInfo, MyAccountInfo, } from '../interfaces';
 import { FirebaseApp, FirebaseOptions, initializeApp, } from 'firebase/app';
 import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, } from 'firebase/auth';
+// store
 import { BrowserStorage, getTokenExpiredDate, } from '../utils';
-
 import { useSetRecoilState, } from 'recoil';
 import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
-import { useIricomAPI, } from './index';
 
 type State = 'ready' | 'request' | 'success' | 'fail';
 
