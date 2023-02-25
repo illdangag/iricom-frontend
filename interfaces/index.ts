@@ -38,7 +38,7 @@ export type Account = {
   auth: AccountAuth,
 }
 
-export type MyInformation = {
+export type MyAccountInfo = {
   account: Account,
 }
 

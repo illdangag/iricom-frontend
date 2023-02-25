@@ -16,7 +16,7 @@ const MainLayout = ({
   title,
   headerTitle,
   loginState,
-  auth = null,
+  auth,
 }: Props) => {
   return (
     <EmptyLayout title={title} loginState={loginState} auth={auth}>

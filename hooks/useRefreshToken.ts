@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import { FirebaseProperties, TokenInfo, } from '../interfaces';
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import tokenInfoAtom from '../recoil/tokenInfo';
+import { tokenInfoAtom, } from '../recoil';
 
 function useRefreshToken (): () => {} {
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;

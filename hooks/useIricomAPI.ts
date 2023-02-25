@@ -1,15 +1,14 @@
 import process from 'process';
-import { } from 'react';
-import { BackendProperties, Board, BoardList, MyInformation, TokenInfo, } from '../interfaces';
+import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, } from '../interfaces';
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import { useRecoilValue, } from 'recoil';
 import useRefreshToken from './useRefreshToken';
-import tokenInfoAtom from '../recoil/tokenInfo';
+import { tokenInfoAtom, } from '../recoil';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
 type IricomAPI = {
-  getMyAccountInfo: (tokenInfo: TokenInfo) => Promise<MyInformation>,
+  getMyAccountInfo: (tokenInfo: TokenInfo) => Promise<MyAccountInfo>,
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
 }
@@ -41,7 +40,7 @@ function useIricomAPI (): IricomAPI {
       config.method = 'GET';
 
       try {
-        let response: AxiosResponse<MyInformation> = await axios.request(config);
+        let response: AxiosResponse<MyAccountInfo> = await axios.request(config);
         return response.data;
       } catch (error) {
         console.error(error);

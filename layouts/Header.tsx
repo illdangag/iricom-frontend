@@ -4,9 +4,8 @@ import { Box, Card, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuL
 import { MdMenu, } from 'react-icons/md';
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import tokenInfoAtom from '../recoil/tokenInfo';
-import { TokenInfo, } from '../interfaces';
-import { useIricomAPI, } from '../hooks';
+import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
+import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 
 type Props = {
   title?: string,
@@ -17,14 +16,66 @@ const Header = ({
 }: Props) => {
   const router = useRouter();
   const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
+  const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
 
   const onClickSignOut = () => {
     BrowserStorage.clear();
     setTokenInfo(null);
+    setMyAccountInfo(null);
     void router.push('/');
   };
 
-  // TODO TokenInfo와 계정의 권한에 따라 메뉴 처리
+  const getLogoutMenu = <>
+    <NextLink href='/login'>
+      <MenuItem fontSize='1rem'>
+        로그인
+      </MenuItem>
+    </NextLink>
+  </>;
+
+  const getLoginMenu = <>
+    <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+      로그아웃
+    </MenuItem>
+  </>;
+
+  const getAccountMenu = <>
+    <MenuItem>
+      내 정보
+    </MenuItem>
+    <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+      로그아웃
+    </MenuItem>
+  </>;
+
+  const getSystemAdminMenu = <>
+    <NextLink href='/admin/board'>
+      <MenuItem fontSize='1rem'>
+        관리자 페이지
+      </MenuItem>
+    </NextLink>
+    <MenuItem>
+      내 정보
+    </MenuItem>
+    <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+      로그아웃
+    </MenuItem>
+  </>;
+
+  const getMenu = () => {
+    if (tokenInfo === null) {
+      return getLogoutMenu;
+    }
+
+    if (myAccountInfo === null) {
+      return getLoginMenu;
+    } else if (myAccountInfo.account.auth === AccountAuth.SYSTEM_ADMIN) {
+      return getSystemAdminMenu;
+    } else {
+      return getAccountMenu;
+    }
+  };
+
   return (
     <Box padding='0.8rem'>
       <Card shadow='none'>
@@ -39,22 +90,7 @@ const Header = ({
             >
             </MenuButton>
             <MenuList>
-              {tokenInfo && <NextLink href='/admin/board'>
-                <MenuItem fontSize='1rem'>
-                  관리자 페이지
-                </MenuItem>
-              </NextLink>}
-              {tokenInfo && <MenuItem>
-                내 정보
-              </MenuItem>}
-              {!tokenInfo && <NextLink href='/login'>
-                <MenuItem fontSize='1rem'>
-                  로그인
-                </MenuItem>
-              </NextLink>}
-              {tokenInfo && <MenuItem fontSize='1rem' onClick={onClickSignOut}>
-                로그아웃
-              </MenuItem>}
+              {getMenu()}
             </MenuList>
           </Menu>
         </Flex>

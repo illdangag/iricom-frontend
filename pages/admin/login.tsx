@@ -4,11 +4,7 @@ import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input,
 import { MdLogin, } from 'react-icons/md';
 import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
 
-import { useEmailAuth, useIricomAPI, } from '../../hooks';
-
-import { BrowserStorage, } from '../../utils';
-import { useSetRecoilState, } from 'recoil';
-import tokenInfoAtom from '../../recoil/tokenInfo';
+import { useEmailAuth, } from '../../hooks';
 
 enum PageState {
   READY,
@@ -21,7 +17,6 @@ enum PageState {
 const LoginPage = () => {
   const router = useRouter();
   const toast = useToast();
-  const iricomAPI = useIricomAPI();
   const [authState, requestEmailAuth,] = useEmailAuth();
 
   const [email, setEmail,] = useState<string>('');
