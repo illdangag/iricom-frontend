@@ -31,7 +31,7 @@ const AdminBoardEditPage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN} onMount={onMount}>
-      <VStack paddingLeft='0.8rem' paddingRight='0.8rem'>
+      <VStack>
         <Container width='100%' maxWidth='none' margin='0' padding='0'>
           <Heading as='h1' size='sm'>게시판 수정</Heading>
         </Container>

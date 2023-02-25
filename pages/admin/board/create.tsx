@@ -68,7 +68,7 @@ const AdminBoardCreatePage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <VStack paddingLeft='0.8rem' paddingRight='0.8rem'>
+      <VStack>
         <Container width='100%' maxWidth='none' margin='0' padding='0'>
           <Heading as='h1' size='sm'>게시판 생성</Heading>
         </Container>

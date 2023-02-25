@@ -4,6 +4,7 @@ import Header from './Header';
 import EmptyLayout, { LoginState, } from './EmptyLayout';
 // etc
 import { AccountAuth, } from '../interfaces';
+import { Box } from '@chakra-ui/react';
 
 type Props = {
   children?: ReactNode,
@@ -24,8 +25,12 @@ const MainLayout = ({
 }: Props) => {
   return (
     <EmptyLayout title={title} loginState={loginState} auth={auth} onMount={onMount}>
-      <Header title={headerTitle}/>
-      {children}
+      <Box padding='.6rem'>
+        <Header title={headerTitle}/>
+        <Box marginTop='.6rem'>
+          {children}
+        </Box>
+      </Box>
     </EmptyLayout>
   );
 };

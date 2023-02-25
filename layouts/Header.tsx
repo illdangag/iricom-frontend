@@ -80,7 +80,7 @@ const Header = ({
   };
 
   return (
-    <Box padding='0.8rem'>
+    <Box>
       <Card shadow='none'>
         <Flex padding='.6rem' alignItems='center'>
           <Heading color='gray.700' size='md'>{title}</Heading>

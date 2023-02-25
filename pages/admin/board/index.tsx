@@ -8,7 +8,7 @@ import { AccountAuth, } from '../../../interfaces';
 const AdminBoardPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <VStack padding='0.8rem'>
+      <VStack>
         <LinkCard
           title='게시판 생성'
           description={['새로운 게시판을 생성합니다.',]}

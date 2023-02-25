@@ -1,12 +1,11 @@
 // node
 import process from 'process';
-// react
-import useRefreshToken from './useRefreshToken';
 // etc
-import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, } from '../interfaces';
+import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, FirebaseProperties, } from '../interfaces';
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
-import { useRecoilValue, } from 'recoil';
+import { BrowserStorage, } from '../utils';
+import { useRecoilState, } from 'recoil';
 import { tokenInfoAtom, } from '../recoil';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
@@ -18,28 +17,62 @@ type IricomAPI = {
 }
 
 function useIricomAPI (): IricomAPI {
-  const requestRefreshToken = useRefreshToken();
-  const tokenInfo: TokenInfo | null = useRecoilValue<TokenInfo | null>(tokenInfoAtom);
+  const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
+  const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
 
-  const getRequestConfig = (tokenInfo: TokenInfo | null): AxiosRequestConfig => {
+  const getRequestConfig = async (tokenInfo: TokenInfo | null): Promise<AxiosRequestConfig> => {
     if (tokenInfo === null) {
       throw Error('Token is not exist.');
     }
 
+    let token: string = tokenInfo.token;
     if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
-      requestRefreshToken();
+      const newTokenInfo: TokenInfo = await refreshToken();
+      token = newTokenInfo.token;
+      BrowserStorage.setTokenInfo(newTokenInfo);
+      setTokenInfo(newTokenInfo);
     }
 
     return {
       headers: {
-        Authorization: 'Bearer ' + tokenInfo.token,
+        Authorization: 'Bearer ' + token,
       },
     } as AxiosRequestConfig;
   };
 
+  const refreshToken = async (): Promise<TokenInfo> => {
+    const config: AxiosRequestConfig = {
+      url: 'https://securetoken.googleapis.com/v1/token',
+      method: 'POST',
+      params: {
+        key: firebaseProperties.apiKey,
+      },
+      data: {
+        grant_type: 'refresh_token',
+        refresh_token: tokenInfo.refreshToken,
+      },
+    };
+
+    try {
+      const response: AxiosResponse<any> = await axios.request(config);
+      const token: string = response.data.id_token;
+      const refreshToken: string = response.data.refresh_token;
+      const expiredDate: Date = new Date((new Date()).getTime() + (Number(response.data.expires_in) * 1000));
+      const tokenInfo: TokenInfo = {
+        token,
+        refreshToken,
+        expiredDate,
+      };
+
+      return tokenInfo;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const iricomApi: IricomAPI = {
     getMyAccountInfo: async (tokenInfo: TokenInfo) => {
-      const config: AxiosRequestConfig = getRequestConfig(tokenInfo);
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/infos';
       config.method = 'GET';
 
@@ -52,7 +85,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null) => {
-      const config: AxiosRequestConfig = getRequestConfig(tokenInfo);
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards';
       config.method = 'GET';
       config.params = {
@@ -73,7 +106,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
     createBoard: async (title: string, description: string, enabled: boolean) => {
-      const config: AxiosRequestConfig = getRequestConfig(tokenInfo);
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards';
       config.method = 'POST';
       config.data = {
