@@ -16,7 +16,7 @@ const BoardCard = ({
         <CardBody>
           <VStack alignItems='flex-start'>
             <Heading size='sm'>
-              <LinkOverlay as={NextLink} href='#'>
+              <LinkOverlay as={NextLink} href={`/admin/board/edit/${board.id}`}>
                 {board.title}
               </LinkOverlay>
             </Heading>

@@ -14,7 +14,6 @@ const AdminBoardEditPage = () => {
   const onMount = () => {
     void iricomApi.getBoardList(0, 20, null)
       .then(boardList => {
-        console.log(boardList);
         setBoardList(boardList.boards);
       });
   };

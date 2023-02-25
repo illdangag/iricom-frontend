@@ -14,6 +14,7 @@ type IricomAPI = {
   getMyAccountInfo: (tokenInfo: TokenInfo) => Promise<MyAccountInfo>,
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
+  getBoard: (id: string) => Promise<Board>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -114,6 +115,19 @@ function useIricomAPI (): IricomAPI {
         description,
         enabled,
       };
+
+      try {
+        const response: AxiosResponse<Board> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
+    getBoard: async (id: string) => {
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = backendProperties.host + '/v1/boards/' + id;
+      config.method = 'GET';
 
       try {
         const response: AxiosResponse<Board> = await axios.request(config);
