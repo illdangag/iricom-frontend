@@ -55,3 +55,35 @@ export type BoardList = {
   limit: number,
   boards: Board[],
 }
+
+export enum PostType {
+  POST = 'post',
+  NOTIFICATION = 'notification',
+}
+
+export enum PostState {
+  TEMPORARY= 'temporary',
+  POST = 'post',
+}
+
+export type Post = {
+  id: string,
+  type: PostType,
+  createDate: Date,
+  updateDate: Date,
+  status: PostState,
+  title: string,
+  content: string,
+  viewCount: number,
+  upvote: number,
+  downvote: number,
+  account: Account,
+  isAllowComment: boolean,
+}
+
+export type PostList = {
+  total: number,
+  skip: number,
+  limit: number,
+  posts: Post[],
+}

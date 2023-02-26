@@ -1,26 +1,31 @@
 // react
-import { Button, ButtonGroup, Box, } from '@chakra-ui/react';
+import { useEffect, useState, } from 'react';
+import { VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '../layouts';
-// store
-import { useRecoilValue, useSetRecoilState, } from 'recoil';
-import testCountAtom, { increaseTestCount, } from '../recoil/testCount';
+import { useIricomAPI, } from '../hooks';
+// etc
+import { Board, } from '../interfaces';
+import BoardPostPreview from '../components/BoardPostPreview';
 
 const IndexPage = () => {
-  const testCount = useRecoilValue(testCountAtom);
-  const setIncreaseTestCount = useSetRecoilState(increaseTestCount);
+  const iricomAPI = useIricomAPI();
 
-  const onClickIncreaseButton = () => {
-    setIncreaseTestCount(100);
-  };
+  const [boardList, setBoardList,] = useState<Board[] | null>(null);
+
+  useEffect(() => {
+    void iricomAPI.getBoardList(0, 100, true)
+      .then(boardList => {
+        setBoardList(boardList.boards);
+      });
+  }, []);
 
   return (
     <MainLayout>
-      <Box>
-        <div>{testCount?.count}</div>
-        <ButtonGroup variant='outline' spacing={6}>
-          <Button colorScheme='blue' onClick={onClickIncreaseButton}>increase</Button>
-        </ButtonGroup>
-      </Box>
+      <VStack alignItems='stretch'>
+        {boardList && boardList.map((board, index) =>
+          <BoardPostPreview board={board} key={index}/>)
+        }
+      </VStack>
     </MainLayout>
   );
 };

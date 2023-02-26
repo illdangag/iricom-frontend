@@ -4,11 +4,11 @@ export class BrowserStorage {
   static TOKEN_INFO_KEY: string = 'tokenInfo';
 
   static clear (): void {
-    localStorage.clear();
+    localStorage.removeItem(this.TOKEN_INFO_KEY);
   }
 
   static getTokenInfo (): TokenInfo | null {
-    const tokenInfoValue: string = localStorage.getItem(BrowserStorage.TOKEN_INFO_KEY);
+    const tokenInfoValue: string = localStorage.getItem(this.TOKEN_INFO_KEY);
     if (tokenInfoValue === null) {
       return null;
     } else {
@@ -19,7 +19,7 @@ export class BrowserStorage {
   }
 
   static setTokenInfo (tokenInfo: TokenInfo): void {
-    localStorage.setItem(BrowserStorage.TOKEN_INFO_KEY, JSON.stringify(tokenInfo));
+    localStorage.setItem(this.TOKEN_INFO_KEY, JSON.stringify(tokenInfo));
   }
 }
 

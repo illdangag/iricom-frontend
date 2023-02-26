@@ -1,7 +1,9 @@
 // node
 import process from 'process';
 // etc
-import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, FirebaseProperties, } from '../interfaces';
+import {
+  BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, FirebaseProperties, PostType, PostList,
+} from '../interfaces';
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -14,6 +16,7 @@ type IricomAPI = {
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
   updateBoard: (board: Board) => Promise<Board>,
+  getPostList: (board: Board, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -83,13 +86,13 @@ function useIricomAPI (): IricomAPI {
       }
     },
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null) => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = backendProperties.host + '/v1/boards';
-      config.method = 'GET';
-      config.params = {
-        skip: skip,
-        limit: limit,
+      const config: AxiosRequestConfig = {
+        url: backendProperties.host + '/v1/boards',
+        method: 'GET',
+        params: {
+          skip: skip,
+          limit: limit,
+        },
       };
 
       if (enabled !== null) {
@@ -146,6 +149,28 @@ function useIricomAPI (): IricomAPI {
 
       try {
         const response: AxiosResponse<Board> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
+    getPostList: async (board: Board, skip: number, limit: number, type: PostType | null) => {
+      const config: AxiosRequestConfig = {
+        url: backendProperties.host + `/v1/boards/${board.id}/posts`,
+        method: 'GET',
+        params: {
+          skip: skip,
+          limit: limit,
+        },
+      };
+
+      if (type !== null) {
+        config.params.type = type;
+      }
+
+      try {
+        const response: AxiosResponse<PostList> = await axios.request(config);
         return response.data;
       } catch (error) {
         console.error(error);
