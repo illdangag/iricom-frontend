@@ -8,7 +8,7 @@ import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
+import { myAccountInfoAtom, tokenInfoAtom, } from '../recoil';
 
 enum LoginState {
   LOGIN = 'LOGIN',
@@ -40,16 +40,42 @@ const EmptyLayout = ({
   useEffect(() => {
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
 
-    if ((tokenInfo === null && storageTokenInfo !== null) // 로그아웃 상태에서 로그인 한 경우
-        || tokenInfo !== null && storageTokenInfo !== null && (tokenInfo.token !== storageTokenInfo.token)) { // 토큰이 갱신된 경우
+    if (loginState === LoginState.ANY) {
+      // 로그인 여부와 상관 없이 페이지를 표시
+      setValid(true);
+    } else if (loginState === LoginState.LOGOUT) {
+      // 토큰이 없는 경우가 로그아웃 상태이므로 토큰이 없는 경우에만 페이지를 표시
+      if (storageTokenInfo === null) {
+        setValid(true);
+      } else {
+        setValid(false);
+        void router.replace('/');
+      }
+    } else { // loginState === LoginState.LOGIN
+      if (storageTokenInfo === null) {
+        setValid(false);
+        void router.replace('/');
+        return;
+      }
+
       void iricomAPI.getMyAccountInfo(storageTokenInfo)
         .then(myAccountInfo => {
-          setTokenInfo(storageTokenInfo);
           setMyAccountInfo(myAccountInfo);
-          validatePageAccess(storageTokenInfo, myAccountInfo);
+
+          const accountAuth: AccountAuth = myAccountInfo.account.auth;
+          if (auth === null || auth === AccountAuth.ACCOUNT) {
+            // 페이지에 권한 확인이 필요 없는 경우
+            // 모든 계정은 ACCOUNT 권한 이상이므로 ACCOUNT인 경우에는 별도의 검사가 필요하지 않음
+            setValid(true);
+          } else if (auth === AccountAuth.SYSTEM_ADMIN && accountAuth === AccountAuth.SYSTEM_ADMIN) {
+            setValid(true);
+          } else if (auth === AccountAuth.BOARD_ADMIN && accountAuth !== AccountAuth.ACCOUNT) {
+            setValid(true);
+          } else {
+            setValid(false);
+            void router.replace('/');
+          }
         });
-    } else if (tokenInfo !== null && myAccountInfo !== null) {
-      validatePageAccess(storageTokenInfo, myAccountInfo);
     }
   }, []);
 
@@ -80,6 +106,7 @@ const EmptyLayout = ({
       isValid = false;
     }
 
+    debugger;
     if (isValid) {
       setValid(true);
     } else {
