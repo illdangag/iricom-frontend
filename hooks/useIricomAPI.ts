@@ -5,8 +5,6 @@ import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, Firebase
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
-import { useRecoilState, } from 'recoil';
-import { tokenInfoAtom, } from '../recoil';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
@@ -20,7 +18,6 @@ type IricomAPI = {
 
 function useIricomAPI (): IricomAPI {
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
-  const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
 
   const getRequestConfig = async (tokenInfo: TokenInfo | null): Promise<AxiosRequestConfig> => {
     if (tokenInfo === null) {
@@ -32,7 +29,6 @@ function useIricomAPI (): IricomAPI {
       const newTokenInfo: TokenInfo = await refreshToken(tokenInfo);
       token = newTokenInfo.token;
       BrowserStorage.setTokenInfo(newTokenInfo);
-      setTokenInfo(newTokenInfo);
     }
 
     return {
@@ -87,6 +83,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null) => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards';
       config.method = 'GET';
@@ -108,6 +105,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
     createBoard: async (title: string, description: string, enabled: boolean) => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards';
       config.method = 'POST';
@@ -126,6 +124,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
     getBoard: async (id: string) => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards/' + id;
       config.method = 'GET';
@@ -139,6 +138,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
     updateBoard: async (board: Board) => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards/' + board.id;
       config.method = 'PATCH';
@@ -155,7 +155,5 @@ function useIricomAPI (): IricomAPI {
   };
   return iricomApi;
 }
-
-
 
 export default useIricomAPI;

@@ -8,7 +8,8 @@ import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
+import { myAccountInfoAtom, } from '../recoil';
+import { useEffect, useState } from 'react';
 
 type Props = {
   title?: string,
@@ -18,8 +19,13 @@ const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
-  const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
   const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
+  const [tokenInfo, setTokenInfo,] = useState<TokenInfo | null>(null);
+
+  useEffect(() => {
+    const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+    setTokenInfo(storageTokenInfo);
+  }, []);
 
   const onClickSignOut = () => {
     BrowserStorage.clear();

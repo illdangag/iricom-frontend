@@ -8,7 +8,7 @@ import { Auth, getAuth, GoogleAuthProvider, signInWithEmailAndPassword, UserCred
 // store
 import { BrowserStorage, getTokenExpiredDate, } from '../utils';
 import { useSetRecoilState, } from 'recoil';
-import { tokenInfoAtom, myAccountInfoAtom, } from '../recoil';
+import { myAccountInfoAtom, } from '../recoil';
 
 type State = 'ready' | 'request' | 'success' | 'fail';
 
@@ -16,7 +16,6 @@ function useEmailAuth (): [State, (email: string, password: string,) => Promise<
   const iricomAPI = useIricomAPI();
 
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
-  const setTokenInfo = useSetRecoilState<TokenInfo | null>(tokenInfoAtom);
   const setMyAccountInfo = useSetRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
   const [state, setState,] = useState<State>('ready');
 
@@ -50,13 +49,11 @@ function useEmailAuth (): [State, (email: string, password: string,) => Promise<
       void iricomAPI.getMyAccountInfo(tokenInfo)
         .then(myAccountInfo => {
           setState('success');
-          setTokenInfo(tokenInfo);
           setMyAccountInfo(myAccountInfo);
           BrowserStorage.setTokenInfo(tokenInfo);
         });
     } catch {
       setState('fail');
-      setTokenInfo(null);
     }
   };
 

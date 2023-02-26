@@ -8,7 +8,7 @@ import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import { myAccountInfoAtom, tokenInfoAtom, } from '../recoil';
+import { myAccountInfoAtom, } from '../recoil';
 
 enum LoginState {
   LOGIN = 'LOGIN',
@@ -33,7 +33,6 @@ const EmptyLayout = ({
   const router = useRouter();
   const iricomAPI = useIricomAPI();
 
-  const [tokenInfo, setTokenInfo,] = useRecoilState<TokenInfo | null>(tokenInfoAtom);
   const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
   const [isValid, setValid,] = useState<boolean>(false);
 
