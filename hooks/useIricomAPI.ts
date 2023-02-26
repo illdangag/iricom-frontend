@@ -15,6 +15,7 @@ type IricomAPI = {
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
+  updateBoard: (board: Board) => Promise<Board>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -28,7 +29,7 @@ function useIricomAPI (): IricomAPI {
 
     let token: string = tokenInfo.token;
     if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
-      const newTokenInfo: TokenInfo = await refreshToken();
+      const newTokenInfo: TokenInfo = await refreshToken(tokenInfo);
       token = newTokenInfo.token;
       BrowserStorage.setTokenInfo(newTokenInfo);
       setTokenInfo(newTokenInfo);
@@ -41,7 +42,7 @@ function useIricomAPI (): IricomAPI {
     } as AxiosRequestConfig;
   };
 
-  const refreshToken = async (): Promise<TokenInfo> => {
+  const refreshToken = async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
     const config: AxiosRequestConfig = {
       url: 'https://securetoken.googleapis.com/v1/token',
       method: 'POST',
@@ -128,6 +129,20 @@ function useIricomAPI (): IricomAPI {
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards/' + id;
       config.method = 'GET';
+
+      try {
+        const response: AxiosResponse<Board> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
+    updateBoard: async (board: Board) => {
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = backendProperties.host + '/v1/boards/' + board.id;
+      config.method = 'PATCH';
+      config.data = board;
 
       try {
         const response: AxiosResponse<Board> = await axios.request(config);

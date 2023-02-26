@@ -1,10 +1,10 @@
 // react
 import { ReactNode, } from 'react';
+import { Box, } from '@chakra-ui/react';
 import Header from './Header';
 import EmptyLayout, { LoginState, } from './EmptyLayout';
 // etc
 import { AccountAuth, } from '../interfaces';
-import { Box } from '@chakra-ui/react';
 
 type Props = {
   children?: ReactNode,

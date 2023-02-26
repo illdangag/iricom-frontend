@@ -1,7 +1,7 @@
 // react
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, HStack, Spacer,
+import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, HStack,
   Button, useToast, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';
@@ -21,10 +21,10 @@ const AdminBoardCreatePage = () => {
   const toast = useToast();
   const iricomAPI = useIricomAPI();
 
+  const [pageState, setPageState,] = useState<PageState>(PageState.READY);
   const [title, setTitle,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
   const [enabled, setEnabled,] = useState<boolean>(true);
-  const [pageState, setPageState,] = useState<PageState>(PageState.READY);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -87,8 +87,7 @@ const AdminBoardCreatePage = () => {
               <FormHelperText>비활성화 게시판은 사용자에게 나타나지 않으며, 게시물 작성 및 댓글 작성이 불가능합니다.</FormHelperText>
             </FormControl>
           </VStack>
-          <HStack marginTop='1rem'>
-            <Spacer/>
+          <HStack marginTop='1rem' justifyContent='flex-end'>
             <Button
               isDisabled={pageState === PageState.READY || pageState === PageState.REQUEST}
               isLoading={pageState === PageState.REQUEST}

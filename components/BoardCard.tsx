@@ -12,7 +12,7 @@ const BoardCard = ({
 }: Props) => {
   return (
     <LinkBox width='100%'>
-      <Card>
+      <Card shadow='none'>
         <CardBody>
           <VStack alignItems='flex-start'>
             <Heading size='sm'>
