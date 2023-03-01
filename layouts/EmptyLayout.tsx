@@ -36,28 +36,36 @@ const EmptyLayout = ({
   const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
   const [isValid, setValid,] = useState<boolean>(false);
 
+  // 계정과 계정의 권한에 따른 페이지 접근 처리
   useEffect(() => {
-    const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-
+    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (loginState === LoginState.ANY) {
       // 로그인 여부와 상관 없이 페이지를 표시
       setValid(true);
+
+      // 토큰이 존재하는 경우 계정 정보를 갱신
+      if (tokenInfo !== null) {
+        void iricomAPI.getMyAccountInfo(tokenInfo)
+          .then(myAccountInfo => {
+            setMyAccountInfo(myAccountInfo);
+          });
+      }
     } else if (loginState === LoginState.LOGOUT) {
       // 토큰이 없는 경우가 로그아웃 상태이므로 토큰이 없는 경우에만 페이지를 표시
-      if (storageTokenInfo === null) {
+      if (tokenInfo === null) {
         setValid(true);
       } else {
         setValid(false);
         void router.replace('/');
       }
     } else { // loginState === LoginState.LOGIN
-      if (storageTokenInfo === null) {
+      if (tokenInfo === null) {
         setValid(false);
         void router.replace('/');
         return;
       }
 
-      void iricomAPI.getMyAccountInfo(storageTokenInfo)
+      void iricomAPI.getMyAccountInfo(tokenInfo)
         .then(myAccountInfo => {
           setMyAccountInfo(myAccountInfo);
 

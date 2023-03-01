@@ -13,7 +13,7 @@ const IndexPage = () => {
   const [boardList, setBoardList,] = useState<Board[] | null>(null);
 
   useEffect(() => {
-    void iricomAPI.getBoardList(0, 100, true)
+    void iricomAPI.getBoardList(0, 20, true)
       .then(boardList => {
         setBoardList(boardList.boards);
       });
