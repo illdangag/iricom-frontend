@@ -77,6 +77,7 @@ export type Post = {
   viewCount: number,
   upvote: number,
   downvote: number,
+  commentCount: number,
   account: Account,
   isAllowComment: boolean,
 }

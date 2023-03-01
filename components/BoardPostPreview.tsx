@@ -1,6 +1,8 @@
 // react
 import { useEffect, useState, } from 'react';
-import { Card, CardBody, CardHeader, Heading, Table, TableContainer, Tbody, Td, Tr, } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { Card, CardBody, CardHeader, Heading, Table, TableContainer, Tbody, Td, Tr, IconButton, HStack, } from '@chakra-ui/react';
+import { MdMoreHoriz, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
 import { Board, Post, PostType, } from '../interfaces';
@@ -19,18 +21,24 @@ const BoardPostPreview = ({
   const [postList, setPostList,] = useState<Post[] | null>(null);
 
   useEffect(() => {
-    void iricomAPI.getPostList(board, 0, postMaxLength, PostType.POST)
+    void iricomAPI.getPostList(board.id, 0, postMaxLength, PostType.POST)
       .then(postList => {
         setPostList(postList.posts);
       });
   }, []);
 
+  // TODO 게시물이 존재하지 않는 경우에 디자인 수정
   return (
     <Card shadow='none'>
       <CardHeader>
-        <Heading size='sm' fontWeight='semibold'>
-          {board.title}
-        </Heading>
+        <HStack justifyContent='space-between'>
+          <Heading size='sm' fontWeight='semibold'>
+            {board.title}
+          </Heading>
+          <NextLink href={`/boards/${board.id}`}>
+            <IconButton icon={<MdMoreHoriz/>} aria-label='more posts' size='sm' variant='ghost'/>
+          </NextLink>
+        </HStack>
       </CardHeader>
       <CardBody>
         {postList !== null && postList.length === 0 && <>

@@ -16,7 +16,7 @@ type IricomAPI = {
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
   updateBoard: (board: Board) => Promise<Board>,
-  getPostList: (board: Board, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
+  getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -155,9 +155,9 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
-    getPostList: async (board: Board, skip: number, limit: number, type: PostType | null) => {
+    getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null) => {
       const config: AxiosRequestConfig = {
-        url: backendProperties.host + `/v1/boards/${board.id}/posts`,
+        url: backendProperties.host + `/v1/boards/${boardId}/posts`,
         method: 'GET',
         params: {
           skip: skip,
