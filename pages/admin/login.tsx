@@ -19,6 +19,8 @@ const LoginPage = () => {
   const toast = useToast();
   const [authState, requestEmailAuth,] = useEmailAuth();
 
+  const { success, } = router.query;
+
   const [email, setEmail,] = useState<string>('');
   const [password, setPassword,] = useState<string>('');
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
@@ -39,7 +41,13 @@ const LoginPage = () => {
         status: 'success',
         duration: 3000,
       });
-      void router.push('/');
+
+      if (typeof success === 'string') {
+        void router.replace(decodeURIComponent(success));
+      } else {
+        void router.replace('/');
+      }
+
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
     }

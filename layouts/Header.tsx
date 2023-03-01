@@ -9,7 +9,7 @@ import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
 import { myAccountInfoAtom, } from '../recoil';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, } from 'react';
 
 type Props = {
   title?: string,

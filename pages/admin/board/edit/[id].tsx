@@ -32,7 +32,7 @@ const AdminBoardEditIdPage = () => {
   const [enabled, setEnabled,] = useState<boolean>(false);
   const [showAlert, setShowAlert,] = useState<boolean>(false);
 
-  const onMount = () => {
+  useEffect(() => {
     if (typeof id !== 'string') {
       // TODO path parameter가 올바르지 않은 경우
       return;
@@ -46,11 +46,9 @@ const AdminBoardEditIdPage = () => {
         setBoard(board);
       })
       .catch(error => {
-        // TODO 예외 처리
-        console.log(error);
         setShowAlert(true);
       });
-  };
+  }, [id,]);
 
   useEffect(() => {
     if (board === null || title.length === 0) {
@@ -117,7 +115,6 @@ const AdminBoardEditIdPage = () => {
     <AlertDialogOverlay/>
     <AlertDialogContent>
       <AlertDialogHeader>저런!</AlertDialogHeader>
-      <AlertDialogCloseButton/>
       <AlertDialogBody>
         존재하지 않는 게시판입니다.
       </AlertDialogBody>
@@ -130,12 +127,12 @@ const AdminBoardEditIdPage = () => {
   </AlertDialog>;
 
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN} onMount={onMount}>
-      <VStack>
-        <Container width='100%' maxWidth='none' margin='0' padding='0'>
+    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
+      <VStack alignItems='stretch'>
+        <Container maxWidth='none' margin='0' padding='0'>
           <Heading as='h1' size='sm'>게시판 수정</Heading>
         </Container>
-        <Card width='100%' padding='0.8rem' shadow='none'>
+        <Card padding='0.8rem' shadow='none'>
           <VStack spacing='1.8rem'>
             <FormControl isRequired>
               <FormLabel>제목</FormLabel>

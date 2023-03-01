@@ -19,6 +19,8 @@ const LoginPage = () => {
   const [authState, requestGoogleAuth,] = useGoogleAuth();
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
 
+  const { success, } = router.query;
+
   useEffect(() => {
     if (authState === 'success') {
       setPageState(PageState.SUCCESS);
@@ -27,7 +29,12 @@ const LoginPage = () => {
         status: 'success',
         duration: 3000,
       });
-      void router.push('/');
+
+      if (typeof success === 'string') {
+        void router.replace(decodeURIComponent(success));
+      } else {
+        void router.replace('/');
+      }
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
     }
