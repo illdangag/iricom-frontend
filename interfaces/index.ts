@@ -26,6 +26,7 @@ export enum AccountAuth {
   SYSTEM_ADMIN = 'systemAdmin',
   BOARD_ADMIN = 'boardAdmin',
   ACCOUNT = 'account',
+  UNREGISTERED_ACCOUNT = 'unregisteredAccount',
   NONE = 'none',
 }
 

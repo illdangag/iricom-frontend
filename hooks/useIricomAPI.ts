@@ -1,10 +1,9 @@
 // node
 import process from 'process';
 // etc
-import {
-  BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, FirebaseProperties, PostType, PostList,
+import { BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomError,
 } from '../interfaces';
-import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
 
@@ -17,6 +16,7 @@ type IricomAPI = {
   getBoard: (id: string) => Promise<Board>,
   updateBoard: (board: Board) => Promise<Board>,
   getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
+  createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -71,6 +71,15 @@ function useIricomAPI (): IricomAPI {
     }
   };
 
+  const commonErrorHandler = (error: AxiosError) => {
+    const iricomError: IricomError = error.response.data as IricomError;
+    if (iricomError.code === '01000002') {
+      alert('TEST');
+    } else {
+      throw error;
+    }
+  };
+
   const iricomApi: IricomAPI = {
     getMyAccountInfo: async (tokenInfo: TokenInfo) => {
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -85,7 +94,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
-    getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null) => {
+    getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null): Promise<BoardList> => {
       const config: AxiosRequestConfig = {
         url: backendProperties.host + '/v1/boards',
         method: 'GET',
@@ -107,7 +116,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
-    createBoard: async (title: string, description: string, enabled: boolean) => {
+    createBoard: async (title: string, description: string, enabled: boolean): Promise<Board> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards';
@@ -140,7 +149,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
-    updateBoard: async (board: Board) => {
+    updateBoard: async (board: Board): Promise<Board> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/boards/' + board.id;
@@ -155,9 +164,9 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
-    getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null) => {
+    getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null): Promise<PostList> => {
       const config: AxiosRequestConfig = {
-        url: backendProperties.host + `/v1/boards/${boardId}/posts`,
+        url:  `${backendProperties.host}/v1/boards/${boardId}/posts`,
         method: 'GET',
         params: {
           skip: skip,
@@ -175,6 +184,25 @@ function useIricomAPI (): IricomAPI {
       } catch (error) {
         console.error(error);
         throw error;
+      }
+    },
+    createPost: async (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean): Promise<Post> => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts`;
+      config.method = 'POST';
+      config.data = {
+        title,
+        content,
+        type,
+        isAllowComment,
+      };
+
+      try {
+        const response: AxiosResponse<Post> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        commonErrorHandler(error);
       }
     },
   };

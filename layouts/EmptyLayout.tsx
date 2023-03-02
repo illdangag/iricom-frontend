@@ -27,7 +27,7 @@ type Props = {
 const EmptyLayout = ({
   children, title = 'Welcome | iricom',
   loginState = LoginState.ANY,
-  auth = null,
+  auth = AccountAuth.NONE,
   onMount = () => {},
 }: Props) => {
   const router = useRouter();
@@ -70,13 +70,16 @@ const EmptyLayout = ({
           setMyAccountInfo(myAccountInfo);
 
           const accountAuth: AccountAuth = myAccountInfo.account.auth;
-          if (auth === null || auth === AccountAuth.ACCOUNT) {
-            // 페이지에 권한 확인이 필요 없는 경우
-            // 모든 계정은 ACCOUNT 권한 이상이므로 ACCOUNT인 경우에는 별도의 검사가 필요하지 않음
+
+          if (auth === AccountAuth.NONE) {
+            setValid(true);
+          } else if (auth === AccountAuth.UNREGISTERED_ACCOUNT && (accountAuth === AccountAuth.UNREGISTERED_ACCOUNT || accountAuth === AccountAuth.ACCOUNT || accountAuth === AccountAuth.BOARD_ADMIN || accountAuth === AccountAuth.SYSTEM_ADMIN)) {
+            setValid(true);
+          } else if (auth === AccountAuth.ACCOUNT && (accountAuth === AccountAuth.ACCOUNT || accountAuth === AccountAuth.BOARD_ADMIN || accountAuth === AccountAuth.SYSTEM_ADMIN)) {
+            setValid(true);
+          } else if (auth === AccountAuth.BOARD_ADMIN && (accountAuth === AccountAuth.BOARD_ADMIN || accountAuth === AccountAuth.SYSTEM_ADMIN)) {
             setValid(true);
           } else if (auth === AccountAuth.SYSTEM_ADMIN && accountAuth === AccountAuth.SYSTEM_ADMIN) {
-            setValid(true);
-          } else if (auth === AccountAuth.BOARD_ADMIN && accountAuth !== AccountAuth.ACCOUNT) {
             setValid(true);
           } else {
             setValid(false);
@@ -91,36 +94,6 @@ const EmptyLayout = ({
       onMount();
     }
   }, [isValid,]);
-
-  const validatePageAccess = (tokenInfo: TokenInfo | null, myAccountInfo: MyAccountInfo | null) => {
-    let isValid: boolean = true;
-
-    // 페이지 권한에 따른 접근
-    if (auth !== null && myAccountInfo === null) {
-      isValid = false;
-    } else if (auth === AccountAuth.SYSTEM_ADMIN
-      && myAccountInfo && myAccountInfo.account.auth !== AccountAuth.SYSTEM_ADMIN) {
-      isValid = false;
-    } else if (auth === AccountAuth.BOARD_ADMIN
-      && myAccountInfo && myAccountInfo.account.auth === AccountAuth.ACCOUNT) {
-      isValid = false;
-    }
-
-    // 로그인 여부에 따른 접근
-    if (loginState === LoginState.LOGIN && tokenInfo === null) {
-      isValid = false;
-    } else if (loginState === LoginState.LOGOUT && tokenInfo !== null) {
-      isValid = false;
-    }
-
-    debugger;
-    if (isValid) {
-      setValid(true);
-    } else {
-      setValid(false);
-      void router.replace('/');
-    }
-  };
 
   return (
     <>

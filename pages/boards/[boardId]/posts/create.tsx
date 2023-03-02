@@ -1,9 +1,7 @@
 // react
-import { ChangeEvent, useState, useEffect, useRef, } from 'react';
+import { ChangeEvent, useEffect, useRef, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import {
-  Card, CardBody, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Textarea, VStack, ButtonGroup, Button, Divider, Box, Checkbox, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter,
-} from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Card, CardBody, Checkbox, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Textarea, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { useAccountState, useIricomAPI, } from '../../../../hooks';
 // etc
@@ -17,7 +15,7 @@ enum PageState {
 
 const PostCreatePage = () => {
   const router = useRouter();
-  const [ loginState, accountAuth, ] = useAccountState();
+  const [loginState, accountAuth,] = useAccountState();
   const iricomAPI = useIricomAPI();
   const notExistBoardCancelRef = useRef();
 
@@ -49,6 +47,10 @@ const PostCreatePage = () => {
     }
   }, [title,]);
 
+  useEffect(() => {
+    console.log(accountAuth);
+  }, [accountAuth,]);
+
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
@@ -67,6 +69,17 @@ const PostCreatePage = () => {
 
   const onCloseNotExistBoardAlert = () => {
     setShowNotExistBoardAlert(false);
+  };
+
+  const onClickTemporary = () => {
+    console.log('onClickTemporary');
+    void iricomAPI.createPost(boardId as string, title, content, type, !disabledComment)
+      .then(post => {
+        console.log(post);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   const notExistBoardAlert = <AlertDialog
@@ -92,7 +105,7 @@ const PostCreatePage = () => {
   </AlertDialog>;
 
   return (
-    <MainLayout loginState={LoginState.LOGIN}>
+    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.ACCOUNT}>
       board id: {boardId}
       <VStack alignItems='stretch'>
         <Card shadow='none'>
@@ -124,8 +137,18 @@ const PostCreatePage = () => {
               </>}
               <HStack justifyContent='flex-end'>
                 <ButtonGroup size='sm'>
-                  <Button variant='outline' isDisabled={pageState === PageState.INVALID || pageState === PageState.INVALID_BOARD}>임시 저장</Button>
-                  <Button isDisabled={pageState === PageState.INVALID || pageState === PageState.INVALID_BOARD}>작성</Button>
+                  <Button
+                    variant='outline'
+                    isDisabled={pageState === PageState.INVALID || pageState === PageState.INVALID_BOARD}
+                    onClick={onClickTemporary}
+                  >
+                    임시 저장
+                  </Button>
+                  <Button
+                    isDisabled={pageState === PageState.INVALID || pageState === PageState.INVALID_BOARD}
+                  >
+                    작성
+                  </Button>
                 </ButtonGroup>
               </HStack>
             </VStack>
