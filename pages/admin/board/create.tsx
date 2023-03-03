@@ -68,11 +68,11 @@ const AdminBoardCreatePage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <VStack>
-        <Container width='100%' maxWidth='none' margin='0' padding='0'>
+      <VStack alignItems='stretch'>
+        <Container maxWidth='none' margin='0' padding='0'>
           <Heading as='h1' size='sm'>게시판 생성</Heading>
         </Container>
-        <Card width='100%' padding='0.8rem' shadow='none'>
+        <Card padding='0.8rem' shadow='none'>
           <VStack spacing='1.8rem'>
             <FormControl isRequired>
               <FormLabel>제목</FormLabel>

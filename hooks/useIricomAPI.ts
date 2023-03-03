@@ -11,6 +11,7 @@ const backendProperties: BackendProperties = process.env.backend as unknown as B
 
 type IricomAPI = {
   getMyAccountInfo: (tokenInfo: TokenInfo) => Promise<MyAccountInfo>,
+  getMyPostList: (skip: number, limit: number) => Promise<PostList>,
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
@@ -88,6 +89,24 @@ function useIricomAPI (): IricomAPI {
 
       try {
         let response: AxiosResponse<MyAccountInfo> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
+    getMyPostList: async (skip: number, limit: number): Promise<PostList> => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = `${backendProperties.host}/v1/infos/posts`;
+      config.method = 'GET';
+      config.params = {
+        skip: skip,
+        limit: limit,
+      };
+
+      try {
+        const response: AxiosResponse<PostList> = await axios.request(config);
         return response.data;
       } catch (error) {
         console.error(error);

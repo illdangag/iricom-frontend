@@ -49,9 +49,11 @@ const Header = ({
   </>;
 
   const getAccountMenu = <>
-    <MenuItem>
-      내 정보
-    </MenuItem>
+    <NextLink href='/info'>
+      <MenuItem>
+        내 정보
+      </MenuItem>
+    </NextLink>
     <MenuItem fontSize='1rem' onClick={onClickSignOut}>
       로그아웃
     </MenuItem>
@@ -63,9 +65,11 @@ const Header = ({
         관리자 페이지
       </MenuItem>
     </NextLink>
-    <MenuItem>
-      내 정보
-    </MenuItem>
+    <NextLink href='/info'>
+      <MenuItem>
+        내 정보
+      </MenuItem>
+    </NextLink>
     <MenuItem fontSize='1rem' onClick={onClickSignOut}>
       로그아웃
     </MenuItem>
