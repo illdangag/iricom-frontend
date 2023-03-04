@@ -2,8 +2,7 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, VStack,
-} from '@chakra-ui/react';
+import { Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PostListTable, } from '../../components';
 import { useIricomAPI, } from '../../hooks';
@@ -23,7 +22,7 @@ const InfoPage = () => {
     void iricomAPI.getMyPostList(0, 20)
       .then(postList => {
         console.log(postList);
-        setPostList(postList)
+        setPostList(postList);
       });
   }, []);
 

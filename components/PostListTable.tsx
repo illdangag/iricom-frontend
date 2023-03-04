@@ -1,7 +1,7 @@
 // react
 import { ReactNode, } from 'react';
 import NextLink from 'next/link';
-import { TableContainer, Table, Tbody, Td, Tr, Badge, Box, ButtonGroup, Button, Thead, Th, LinkOverlay, } from '@chakra-ui/react';
+import { TableContainer, Table, Tbody, Td, Tr, Badge, Box, ButtonGroup, Button, Thead, Th, } from '@chakra-ui/react';
 // etc
 import { PostList, Post, } from '../interfaces';
 
