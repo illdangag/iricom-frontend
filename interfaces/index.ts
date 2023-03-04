@@ -40,10 +40,6 @@ export type Account = {
   auth: AccountAuth,
 }
 
-export type MyAccountInfo = {
-  account: Account,
-}
-
 export type Board = {
   id: string,
   title: string,

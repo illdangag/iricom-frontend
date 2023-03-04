@@ -2,13 +2,13 @@
 import { useState, } from 'react';
 import { useIricomAPI, } from './index';
 // etc
-import { FirebaseProperties, TokenInfo, MyAccountInfo, } from '../interfaces';
+import { FirebaseProperties, TokenInfo, Account, } from '../interfaces';
 import { FirebaseApp, FirebaseOptions, initializeApp, } from 'firebase/app';
 import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, } from 'firebase/auth';
 // store
 import { BrowserStorage, getTokenExpiredDate, } from '../utils';
 import { useSetRecoilState, } from 'recoil';
-import { myAccountInfoAtom, } from '../recoil';
+import { myAccountAtom, } from '../recoil';
 
 type State = 'ready' | 'request' | 'success' | 'fail';
 
@@ -16,7 +16,7 @@ function useGoogleAuth (): [State, () => Promise<void>] {
   const iricomAPI = useIricomAPI();
 
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
-  const setMyAccountInfo = useSetRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
+  const setMyAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const [state, setState,] = useState<State>('ready');
 
   const firebaseOptions: FirebaseOptions = {
@@ -46,10 +46,10 @@ function useGoogleAuth (): [State, () => Promise<void>] {
         expiredDate,
       };
 
-      void iricomAPI.getMyAccountInfo(tokenInfo)
-        .then(myAccountInfo => {
+      void iricomAPI.getMyAccount(tokenInfo)
+        .then(account => {
           setState('success');
-          setMyAccountInfo(myAccountInfo);
+          setMyAccount(account);
           BrowserStorage.setTokenInfo(tokenInfo);
         });
     } catch {

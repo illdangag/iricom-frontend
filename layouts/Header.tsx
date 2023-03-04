@@ -4,11 +4,11 @@ import NextLink from 'next/link';
 import { Box, Card, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 // etc
-import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
+import { AccountAuth, Account, TokenInfo, } from '../interfaces';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
-import { myAccountInfoAtom, } from '../recoil';
+import { myAccountAtom, } from '../recoil';
 import { useEffect, useState, } from 'react';
 
 type Props = {
@@ -19,7 +19,7 @@ const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
-  const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
+  const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [tokenInfo, setTokenInfo,] = useState<TokenInfo | null>(null);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const Header = ({
   const onClickSignOut = () => {
     BrowserStorage.clear();
     setTokenInfo(null);
-    setMyAccountInfo(null);
+    setMyAccount(null);
     void router.push('/');
   };
 
@@ -80,9 +80,9 @@ const Header = ({
       return getLogoutMenu;
     }
 
-    if (myAccountInfo === null) {
+    if (myAccount === null) {
       return getLoginMenu;
-    } else if (myAccountInfo.account.auth === AccountAuth.SYSTEM_ADMIN) {
+    } else if (myAccount.auth === AccountAuth.SYSTEM_ADMIN) {
       return getSystemAdminMenu;
     } else {
       return getAccountMenu;

@@ -15,7 +15,7 @@ enum PageState {
 
 const PostCreatePage = () => {
   const router = useRouter();
-  const [loginState, accountAuth,] = useAccountState();
+  const [_loginState, accountAuth,] = useAccountState();
   const iricomAPI = useIricomAPI();
   const notExistBoardCancelRef = useRef();
 
@@ -72,7 +72,6 @@ const PostCreatePage = () => {
   };
 
   const onClickTemporary = () => {
-    console.log('onClickTemporary');
     void iricomAPI.createPost(boardId as string, title, content, type, !disabledComment)
       .then(post => {
         console.log(post);

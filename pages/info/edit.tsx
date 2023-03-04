@@ -6,9 +6,9 @@ import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, For
 import { useIricomAPI, } from '../../hooks';
 // store
 import { useRecoilState, } from 'recoil';
-import { myAccountInfoAtom, } from '../../recoil';
+import { myAccountAtom, } from '../../recoil';
 // etc
-import { MyAccountInfo, AccountAuth, } from '../../interfaces';
+import { Account, AccountAuth, } from '../../interfaces';
 
 enum PageState {
   INVALID,
@@ -23,16 +23,16 @@ const InfoEditPage = () => {
   const toast = useToast();
 
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
-  const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
+  const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [nickname, setNickname,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
 
   useEffect(() => {
-    if (myAccountInfo !== null) {
-      setNickname(myAccountInfo.account.nickname);
-      setDescription(myAccountInfo.account.description);
+    if (myAccount !== null) {
+      setNickname(myAccount.nickname);
+      setDescription(myAccount.description);
     }
-  }, [myAccountInfo,]);
+  }, [myAccount,]);
 
   useEffect(() => {
     if (nickname.length > 0) {
@@ -55,6 +55,7 @@ const InfoEditPage = () => {
     void iricomAPI.updateMyAccountInfo(nickname, description)
       .then(account => {
         setPageState(PageState.VALID);
+        setMyAccount(account);
         toast({
           title: '저장 하였습니다.',
           status: 'success',
@@ -69,9 +70,9 @@ const InfoEditPage = () => {
         <Card shadow='none'>
           <CardHeader padding='0.8rem'>
             <HStack>
-              <Heading size='sm' color='gray.600'>{myAccountInfo ? myAccountInfo.account.email : ''}</Heading>
-              {myAccountInfo && myAccountInfo.account.auth === AccountAuth.SYSTEM_ADMIN && <Badge>시스템 관리자</Badge>}
-              {myAccountInfo && myAccountInfo.account.auth === AccountAuth.BOARD_ADMIN && <Badge>게시판 관리자</Badge>}
+              <Heading size='sm' color='gray.600'>{myAccount ? myAccount.email : ''}</Heading>
+              {myAccount && myAccount.auth === AccountAuth.SYSTEM_ADMIN && <Badge>시스템 관리자</Badge>}
+              {myAccount && myAccount.auth === AccountAuth.BOARD_ADMIN && <Badge>게시판 관리자</Badge>}
             </HStack>
           </CardHeader>
           <CardBody alignItems='stretch' padding='0 0.8rem 0.8rem 0.8rem'>

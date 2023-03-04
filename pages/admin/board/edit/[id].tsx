@@ -2,7 +2,7 @@
 import { ChangeEvent, useState, useRef, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, Textarea, VStack,
-  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody,
+  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody,
   AlertDialogFooter, useToast, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../../hooks';
@@ -45,7 +45,7 @@ const AdminBoardEditIdPage = () => {
         setEnabled(board.enabled);
         setBoard(board);
       })
-      .catch(error => {
+      .catch(() => {
         setShowAlert(true);
       });
   }, [id,]);

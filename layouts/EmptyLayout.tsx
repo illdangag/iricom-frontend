@@ -4,11 +4,11 @@ import Head from 'next/head';
 import { useRouter, } from 'next/router';
 import { useIricomAPI, } from '../hooks';
 // etc
-import { AccountAuth, MyAccountInfo, TokenInfo, } from '../interfaces';
+import { AccountAuth, Account, TokenInfo, } from '../interfaces';
 // store
 import { BrowserStorage, } from '../utils';
-import { useRecoilState, } from 'recoil';
-import { myAccountInfoAtom, } from '../recoil';
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../recoil';
 
 enum LoginState {
   LOGIN = 'LOGIN',
@@ -33,7 +33,7 @@ const EmptyLayout = ({
   const router = useRouter();
   const iricomAPI = useIricomAPI();
 
-  const [myAccountInfo, setMyAccountInfo,] = useRecoilState<MyAccountInfo | null>(myAccountInfoAtom);
+  const setMyAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const [isValid, setValid,] = useState<boolean>(false);
 
   // 계정과 계정의 권한에 따른 페이지 접근 처리
@@ -45,9 +45,9 @@ const EmptyLayout = ({
 
       // 토큰이 존재하는 경우 계정 정보를 갱신
       if (tokenInfo !== null) {
-        void iricomAPI.getMyAccountInfo(tokenInfo)
-          .then(myAccountInfo => {
-            setMyAccountInfo(myAccountInfo);
+        void iricomAPI.getMyAccount(tokenInfo)
+          .then(account => {
+            setMyAccount(account);
           });
       }
     } else if (loginState === LoginState.LOGOUT) {
@@ -65,11 +65,11 @@ const EmptyLayout = ({
         return;
       }
 
-      void iricomAPI.getMyAccountInfo(tokenInfo)
-        .then(myAccountInfo => {
-          setMyAccountInfo(myAccountInfo);
+      void iricomAPI.getMyAccount(tokenInfo)
+        .then(account => {
+          setMyAccount(account);
 
-          const accountAuth: AccountAuth = myAccountInfo.account.auth;
+          const accountAuth: AccountAuth = account.auth;
 
           if (auth === AccountAuth.NONE) {
             setValid(true);

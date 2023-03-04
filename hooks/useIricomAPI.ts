@@ -1,8 +1,7 @@
 // node
 import process from 'process';
 // etc
-import {
-  BackendProperties, Board, BoardList, MyAccountInfo, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomError, Account,
+import { BackendProperties, Board, BoardList, Account, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomError,
 } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
@@ -11,7 +10,7 @@ import { BrowserStorage, } from '../utils';
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
 type IricomAPI = {
-  getMyAccountInfo: (tokenInfo: TokenInfo) => Promise<MyAccountInfo>,
+  getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   getMyPostList: (skip: number, limit: number) => Promise<PostList>,
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
@@ -84,13 +83,13 @@ function useIricomAPI (): IricomAPI {
   };
 
   const iricomApi: IricomAPI = {
-    getMyAccountInfo: async (tokenInfo: TokenInfo) => {
+    getMyAccount: async (tokenInfo: TokenInfo) => {
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = backendProperties.host + '/v1/infos';
       config.method = 'GET';
 
       try {
-        let response: AxiosResponse<MyAccountInfo> = await axios.request(config);
+        let response: AxiosResponse<Account> = await axios.request(config);
         return response.data;
       } catch (error) {
         console.error(error);

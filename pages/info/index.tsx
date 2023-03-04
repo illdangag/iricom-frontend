@@ -5,17 +5,17 @@ import NextLink from 'next/link';
 import { Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, VStack,
 } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
-import { useIricomAPI, useAccountState, } from '../../hooks';
+import { useIricomAPI, } from '../../hooks';
 // store
 import { useRecoilValue, } from 'recoil';
-import { myAccountInfoAtom, } from '../../recoil';
+import { myAccountAtom, } from '../../recoil';
 // etc
-import { AccountAuth, MyAccountInfo, } from '../../interfaces';
+import { AccountAuth, Account, } from '../../interfaces';
 
 const InfoPage = () => {
   const iricomAPI = useIricomAPI();
   const router = useRouter();
-  const myAccountInfo = useRecoilValue<MyAccountInfo | null>(myAccountInfoAtom);
+  const myAccount = useRecoilValue<Account | null>(myAccountAtom);
 
   useEffect(() => {
     void iricomAPI.getMyPostList(0, 20)
@@ -30,9 +30,9 @@ const InfoPage = () => {
         <Card shadow='none'>
           <CardHeader padding='0.8rem'>
             <HStack justifyContent='flex-start'>
-              <Heading size='sm' color='gray.600'>{myAccountInfo ? myAccountInfo.account.email : ''}</Heading>
-              {myAccountInfo && myAccountInfo.account.auth === AccountAuth.SYSTEM_ADMIN && <Badge>시스템 관리자</Badge>}
-              {myAccountInfo && myAccountInfo.account.auth === AccountAuth.BOARD_ADMIN && <Badge>게시판 관리자</Badge>}
+              <Heading size='sm' color='gray.600'>{myAccount ? myAccount.email : ''}</Heading>
+              {myAccount && myAccount.auth === AccountAuth.SYSTEM_ADMIN && <Badge>시스템 관리자</Badge>}
+              {myAccount && myAccount.auth === AccountAuth.BOARD_ADMIN && <Badge>게시판 관리자</Badge>}
               <Spacer/>
               <NextLink href='/info/edit'>
                 <Button size='xs'>수정</Button>
@@ -43,11 +43,11 @@ const InfoPage = () => {
             <VStack alignItems='stretch'>
               <FormControl>
                 <FormLabel>닉네임</FormLabel>
-                <Input value={myAccountInfo ? myAccountInfo.account.nickname : ''} isDisabled/>
+                <Input value={myAccount ? myAccount.nickname : ''} isDisabled/>
               </FormControl>
               <FormControl>
                 <FormLabel>설명</FormLabel>
-                <Input value={myAccountInfo ? myAccountInfo.account.description : ''} isDisabled/>
+                <Input value={myAccount ? myAccount.description : ''} isDisabled/>
               </FormControl>
             </VStack>
           </CardBody>
