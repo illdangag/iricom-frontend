@@ -78,6 +78,8 @@ export type Post = {
   commentCount: number,
   account: Account,
   isAllowComment: boolean,
+  isPublish: boolean,
+  hasTemporary: boolean,
 }
 
 export type PostList = {

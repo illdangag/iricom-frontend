@@ -1,11 +1,12 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { Card, CardBody, CardHeader, Heading, Table, TableContainer, Tbody, Td, Tr, IconButton, HStack, } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Heading, Text, IconButton, HStack, } from '@chakra-ui/react';
 import { MdMoreHoriz, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
-import { Board, Post, PostType, } from '../interfaces';
+import { Board, Post, PostList, PostType, } from '../interfaces';
+import PostListTable from './PostListTable';
 
 type Props = {
   board: Board,
@@ -18,12 +19,12 @@ const BoardPostPreview = ({
 }: Props) => {
   const iricomAPI = useIricomAPI();
 
-  const [postList, setPostList,] = useState<Post[] | null>(null);
+  const [postList, setPostList,] = useState<PostList | null>(null);
 
   useEffect(() => {
     void iricomAPI.getPostList(board.id, 0, postMaxLength, PostType.POST)
       .then(postList => {
-        setPostList(postList.posts);
+        setPostList(postList);
       });
   }, []);
 
@@ -41,21 +42,8 @@ const BoardPostPreview = ({
         </HStack>
       </CardHeader>
       <CardBody>
-        {postList !== null && postList.length === 0 && <>
-          게시물이 존재하지 않습니다.
-        </>}
-        {postList !== null && postList.length > 0 && <TableContainer>
-          <Table size='sm' variant='unstyled'>
-            <Tbody>
-              <Tr>
-                <Td>글 제목</Td>
-              </Tr>
-              <Tr>
-                <Td>글 제목</Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </TableContainer>}
+        {postList !== null && postList.posts.length === 0 && <Text>게시물이 존재하지 않습니다.</Text>}
+        {postList !== null && postList.posts.length > 0 && <PostListTable postList={postList}/>}
       </CardBody>
     </Card>
   );

@@ -93,7 +93,9 @@ const Header = ({
     <Box>
       <Card shadow='none'>
         <Flex padding='.6rem' alignItems='center'>
-          <Heading color='gray.700' size='md'>{title}</Heading>
+          <NextLink href='/'>
+            <Heading color='gray.700' size='md'>{title}</Heading>
+          </NextLink>
           <Spacer/>
           <Menu>
             <MenuButton

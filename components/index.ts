@@ -1,3 +1,6 @@
+import BoardCard from './BoardCard';
+import BoardPostPreview from './BoardPostPreview';
 import LinkCard from './LinkCard';
+import PostListTable from './PostListTable';
 
-export { LinkCard, };
+export { BoardCard, BoardPostPreview, LinkCard, PostListTable, };
