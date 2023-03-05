@@ -1,7 +1,8 @@
 // node
 import process from 'process';
 // etc
-import { BackendProperties, Board, BoardList, Account, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomError,
+import {
+  BackendProperties, Board, BoardList, Account, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomError, PostState,
 } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
@@ -19,6 +20,7 @@ type IricomAPI = {
   getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
   createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
   updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
+  getPost: (boardId: string, postId: string, postState: PostState | null) => Promise<Post>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -240,6 +242,24 @@ function useIricomAPI (): IricomAPI {
 
       try {
         const response: AxiosResponse<Account> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        commonErrorHandler(error);
+      }
+    },
+    getPost: async (boardId: string, postId: string, postState: PostState | null): Promise<Post> => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
+      config.method = 'GET';
+      if (postState !== null) {
+        config.params = {
+          state: postState,
+        };
+      }
+
+      try {
+        const response: AxiosResponse<Post> = await axios.request(config);
         return response.data;
       } catch (error) {
         commonErrorHandler(error);

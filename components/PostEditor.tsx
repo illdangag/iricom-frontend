@@ -60,7 +60,7 @@ const PostEditor = ({
   };
 
   const onClickSave = () => {
-    onChange(title, content, postType, disabledComment, PostState.POST);
+    onChange(title, content, postType, disabledComment, PostState.PUBLISH);
   };
 
   return (
@@ -68,11 +68,11 @@ const PostEditor = ({
       <VStack alignItems='stretch' spacing='1rem'>
         <FormControl isRequired>
           <FormLabel>제목</FormLabel>
-          <Input onChange={onChangeTitle}></Input>
+          <Input value={title} onChange={onChangeTitle}></Input>
         </FormControl>
         <FormControl>
           <FormLabel>내용</FormLabel>
-          <Textarea onChange={onChangeContent}/>
+          <Textarea value={content} onChange={onChangeContent}/>
         </FormControl>
       </VStack>
       {accountAuth === AccountAuth.SYSTEM_ADMIN && <>

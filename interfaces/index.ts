@@ -60,8 +60,8 @@ export enum PostType {
 }
 
 export enum PostState {
-  TEMPORARY= 'temporary',
-  POST = 'post',
+  TEMPORARY = 'temporary',
+  PUBLISH = 'publish',
 }
 
 export type Post = {
