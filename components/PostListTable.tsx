@@ -8,24 +8,28 @@ import { PostList, Post, } from '../interfaces';
 type Props = {
   postList: PostList,
   isShowHeader?: boolean,
+  isShowPostState?: boolean,
   isShowPagination?: boolean,
+  isShowPostNumber?: boolean,
 }
 
 const PostListTable = ({
   postList,
   isShowHeader = true,
+  isShowPostState = true,
   isShowPagination = true,
+  isShowPostNumber = true,
 }: Props) => {
 
   const getRow = (post: Post, index: number): ReactNode => {
     return <Tr key={post.id}>
-      <Td>{postList.skip + postList.posts.length - index}</Td>
+      {isShowPostNumber && <Td>{postList.skip + postList.posts.length - index}</Td>}
       <Td width='100%'>
         {post.title}
-        {post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
+        {isShowPostState && post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
           <Badge marginLeft='0.4rem' colorScheme='green' variant='solid'>발행</Badge>
         </NextLink>}
-        {post.hasTemporary && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
+        {isShowPostState && post.hasTemporary && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
           <Badge marginLeft='0.4rem' variant='outline'>임시저장</Badge>
         </NextLink>}
       </Td>
@@ -65,10 +69,10 @@ const PostListTable = ({
 
   return (
     <TableContainer>
-      <Table size='sm'>
+      <Table size='sm' variant='unstyled'>
         {isShowHeader && <Thead>
           <Tr>
-            <Th>번호</Th>
+            {isShowPostNumber && <Th>번호</Th>}
             <Th>제목</Th>
             <Th>작성일</Th>
             <Th>조회수</Th>

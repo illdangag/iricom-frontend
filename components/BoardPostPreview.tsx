@@ -43,7 +43,13 @@ const BoardPostPreview = ({
       </CardHeader>
       <CardBody>
         {postList !== null && postList.posts.length === 0 && <Text>게시물이 존재하지 않습니다.</Text>}
-        {postList !== null && postList.posts.length > 0 && <PostListTable postList={postList}/>}
+        {postList !== null && postList.posts.length > 0 && <PostListTable
+          postList={postList}
+          isShowHeader={false}
+          isShowPagination={false}
+          isShowPostState={false}
+          isShowPostNumber={false}
+        />}
       </CardBody>
     </Card>
   );

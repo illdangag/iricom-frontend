@@ -2,8 +2,7 @@
 import { ChangeEvent, useState, useRef, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, Textarea, VStack,
-  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody,
-  AlertDialogFooter, useToast, } from '@chakra-ui/react';
+  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, useToast, CardBody, CardFooter, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
@@ -132,25 +131,27 @@ const AdminBoardEditIdPage = () => {
         <Container maxWidth='none' margin='0' padding='0'>
           <Heading as='h1' size='sm'>게시판 수정</Heading>
         </Container>
-        <Card padding='0.8rem' shadow='none'>
-          <VStack spacing='1.8rem'>
-            <FormControl isRequired>
-              <FormLabel>제목</FormLabel>
-              <Input autoFocus value={title} onChange={onChangeTitle} isDisabled={board === null || pageState === PageState.REQUEST}/>
-            </FormControl>
-            <FormControl>
-              <FormLabel>설명</FormLabel>
-              <Textarea placeholder='설명을 입력해주세요.' value={description} onChange={onChangeDescription} isDisabled={board === null || pageState === PageState.REQUEST}/>
-            </FormControl>
-            <FormControl>
-              {board === null && <Checkbox isDisabled>활성화</Checkbox>}
-              {board !== null && <Checkbox defaultChecked={board.enabled} checked={true} onChange={onChangeEnabled} isDisabled={pageState === PageState.REQUEST}>활성화</Checkbox>}
-              <FormHelperText>비활성화 게시판은 사용자에게 나타나지 않으며, 게시물 작성 및 댓글 작성이 불가능합니다.</FormHelperText>
-            </FormControl>
-          </VStack>
-          <HStack marginTop='1rem' justifyContent='flex-end'>
+        <Card shadow='none'>
+          <CardBody>
+            <VStack spacing='1.8rem'>
+              <FormControl isRequired>
+                <FormLabel>제목</FormLabel>
+                <Input autoFocus value={title} onChange={onChangeTitle} isDisabled={board === null || pageState === PageState.REQUEST}/>
+              </FormControl>
+              <FormControl>
+                <FormLabel>설명</FormLabel>
+                <Textarea placeholder='설명을 입력해주세요.' value={description} onChange={onChangeDescription} isDisabled={board === null || pageState === PageState.REQUEST}/>
+              </FormControl>
+              <FormControl>
+                {board === null && <Checkbox isDisabled>활성화</Checkbox>}
+                {board !== null && <Checkbox defaultChecked={board.enabled} checked={true} onChange={onChangeEnabled} isDisabled={pageState === PageState.REQUEST}>활성화</Checkbox>}
+                <FormHelperText>비활성화 게시판은 사용자에게 나타나지 않으며, 게시물 작성 및 댓글 작성이 불가능합니다.</FormHelperText>
+              </FormControl>
+            </VStack>
+          </CardBody>
+          <CardFooter justifyContent='flex-end'>
             <Button isDisabled={pageState !== PageState.VALID} onClick={onClickEdit}>수정</Button>
-          </HStack>
+          </CardFooter>
         </Card>
       </VStack>
       {notExistBoardAlert}

@@ -1,7 +1,7 @@
 // react
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Card, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Flex, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 // etc
 import { AccountAuth, Account, TokenInfo, } from '../interfaces';
@@ -92,23 +92,24 @@ const Header = ({
   return (
     <Box>
       <Card shadow='none'>
-        <Flex padding='.6rem' alignItems='center'>
-          <NextLink href='/'>
-            <Heading color='gray.700' size='md'>{title}</Heading>
-          </NextLink>
-          <Spacer/>
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              icon={<MdMenu/>}
-              variant='ghost'
-            >
-            </MenuButton>
-            <MenuList>
-              {getMenu()}
-            </MenuList>
-          </Menu>
-        </Flex>
+        <CardBody paddingTop='0.4rem' paddingBottom='0.4rem'>
+          <Flex justifyContent='space-between' alignItems='center'>
+            <NextLink href='/'>
+              <Heading color='gray.700' size='md'>{title}</Heading>
+            </NextLink>
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                icon={<MdMenu/>}
+                variant='ghost'
+              >
+              </MenuButton>
+              <MenuList>
+                {getMenu()}
+              </MenuList>
+            </Menu>
+          </Flex>
+        </CardBody>
       </Card>
     </Box>
   );
