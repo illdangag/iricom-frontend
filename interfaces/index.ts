@@ -16,8 +16,21 @@ export type TokenInfo = {
   expiredDate: Date,
 }
 
+export class IricomError extends Error {
+  private _code: string;
+
+  constructor (code: string, message: string) {
+    super(message);
+    this._code = code;
+  }
+
+  get code (): string {
+    return this._code;
+  }
+}
+
 // backend
-export type IricomError = {
+export type IricomErrorResponse = {
   code: string,
   message: string,
 };

@@ -7,7 +7,7 @@ import { PostEditor, } from '../../../../components';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../../../hooks';
 // etc
-import { AccountAuth, PostState, PostType, } from '../../../../interfaces';
+import { AccountAuth, Post, PostState, } from '../../../../interfaces';
 
 enum PageState {
   INVALID,
@@ -38,18 +38,12 @@ const PostCreatePage = () => {
     setShowNotExistBoardAlert(false);
   };
 
-  // const onClickTemporary = () => {
-  //   void iricomAPI.createPost(boardId as string, title, content, type, !disabledComment)
-  //     .then(post => {
-  //       console.log(post);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
-  // };
+  const onRequest = (postState: PostState, post: Post) => {
+    if (postState === PostState.TEMPORARY) {
 
-  const onChangePostEditor = (title: string, content: string, postType: PostType, isDisabledComment: boolean, status: PostState) => {
-    console.log(title, content, postType, isDisabledComment, status);
+    } else { // POST.PUBLISH
+
+    }
   };
 
   return (
@@ -57,7 +51,7 @@ const PostCreatePage = () => {
       <VStack alignItems='stretch'>
         <Card>
           <CardBody>
-            <PostEditor accountAuth={accountAuth} disabled={pageState === PageState.INVALID_BOARD} onChange={onChangePostEditor}/>
+            <PostEditor accountAuth={accountAuth} disabled={pageState === PageState.INVALID_BOARD} onRequest={onRequest}/>
           </CardBody>
         </Card>
       </VStack>

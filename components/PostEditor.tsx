@@ -1,6 +1,7 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, Textarea, VStack, } from '@chakra-ui/react';
+import { useIricomAPI, } from '../hooks';
 // etc
 import { AccountAuth, Post, PostState, PostType, } from '../interfaces';
 
@@ -8,21 +9,26 @@ type Props = {
   defaultValue?: Post,
   disabled?: boolean,
   accountAuth: AccountAuth,
-  onChange?: (title: string, content: string, postType: PostType, isDisabledComment: boolean, status: PostState) => void,
+  boardId?: string,
+  onRequest?: (status: PostState, post: Post) => void,
 }
 
 enum EditorState {
   INVALID,
   VALID,
+  REQUEST,
 }
 
 const PostEditor = ({
   defaultValue = null,
   disabled = false,
   accountAuth,
-  onChange = () => {
+  boardId = '',
+  onRequest = () => {
   },
 }: Props) => {
+  const iricomAPI = useIricomAPI();
+
   const [editorState, setEditorState,] = useState<EditorState>(EditorState.INVALID);
   const [title, setTitle,] = useState<string>(defaultValue ? defaultValue.title : '');
   const [content, setContent,] = useState<string>(defaultValue ? defaultValue.content : '');
@@ -55,12 +61,32 @@ const PostEditor = ({
     setDisabledComment(event.target.checked);
   };
 
-  const onClickTemporary = () => {
-    onChange(title, content, postType, disabledComment, PostState.TEMPORARY);
+  const onClickTemporary = async () => {
+    setEditorState(EditorState.REQUEST);
+    const post: Post = await savePost();
+    setEditorState(EditorState.VALID);
+    onRequest(PostState.TEMPORARY, post);
   };
 
-  const onClickSave = () => {
-    onChange(title, content, postType, disabledComment, PostState.PUBLISH);
+  const onClickSave = async () => {
+    setEditorState(EditorState.REQUEST);
+    let post: Post = await savePost();
+    post = await publishPost(post);
+    setEditorState(EditorState.VALID);
+    onRequest(PostState.PUBLISH, post);
+  };
+
+  const savePost = async (): Promise<Post> => {
+    const postId: string | null = defaultValue ? defaultValue.id : null;
+    if (postId === null) {
+      return await iricomAPI.createPost(boardId, title, content, postType, !disabledComment);
+    } else {
+      return await iricomAPI.updatePost(boardId, postId, title, content, postType, !disabledComment);
+    }
+  };
+
+  const publishPost = async (post: Post): Promise<Post> => {
+    return await iricomAPI.publishPost(post.boardId, post.id);
   };
 
   return (
@@ -68,11 +94,11 @@ const PostEditor = ({
       <VStack alignItems='stretch' spacing='1rem'>
         <FormControl isRequired>
           <FormLabel>제목</FormLabel>
-          <Input value={title} onChange={onChangeTitle}></Input>
+          <Input value={title} disabled={disabled || editorState === EditorState.REQUEST} onChange={onChangeTitle}></Input>
         </FormControl>
         <FormControl>
           <FormLabel>내용</FormLabel>
-          <Textarea value={content} onChange={onChangeContent}/>
+          <Textarea value={content} disabled={disabled || editorState === EditorState.REQUEST} onChange={onChangeContent}/>
         </FormControl>
       </VStack>
       {accountAuth === AccountAuth.SYSTEM_ADMIN && <>
@@ -80,7 +106,7 @@ const PostEditor = ({
         <VStack alignItems='stretch' spacing='1rem' marginTop='.8rem'>
           <Text>관리자 설정</Text>
           <FormControl>
-            <RadioGroup defaultValue={DEFAULT_POST_TYPE} onChange={onChangePostType}>
+            <RadioGroup defaultValue={DEFAULT_POST_TYPE} isDisabled={disabled || editorState === EditorState.REQUEST} onChange={onChangePostType}>
               <HStack>
                 <Radio size='sm' value={PostType.POST}>일반 게시물</Radio>
                 <Radio size='sm' value={PostType.NOTIFICATION}>공지사항 게시물</Radio>
@@ -89,7 +115,7 @@ const PostEditor = ({
             <FormHelperText>공지사항 게시물은 게시판 상단에 고정으로 나타납니다.</FormHelperText>
           </FormControl>
           <FormControl>
-            <Checkbox size='sm' defaultChecked={DEFAULT_DISABLED_COMMENT} onChange={onChangeDisabledComment}>댓글 비활성화</Checkbox>
+            <Checkbox size='sm' defaultChecked={DEFAULT_DISABLED_COMMENT} isDisabled={disabled || editorState === EditorState.REQUEST} onChange={onChangeDisabledComment}>댓글 비활성화</Checkbox>
             <FormHelperText>댓글을 비활성화 하면 게시물에 댓글을 추가 할 수 없습니다.</FormHelperText>
           </FormControl>
         </VStack>
@@ -97,16 +123,16 @@ const PostEditor = ({
       <HStack justifyContent='flex-end' marginTop='.8rem'>
         <ButtonGroup size='sm'>
           <Button
-            isDisabled={disabled || editorState === EditorState.INVALID}
+            isDisabled={disabled || editorState === EditorState.INVALID || editorState === EditorState.REQUEST}
             onClick={onClickTemporary}
           >
             임시 저장
           </Button>
           <Button
-            isDisabled={disabled || editorState === EditorState.INVALID}
+            isDisabled={disabled || editorState === EditorState.INVALID || editorState === EditorState.REQUEST}
             onClick={onClickSave}
           >
-            작성
+            발행
           </Button>
         </ButtonGroup>
       </HStack>

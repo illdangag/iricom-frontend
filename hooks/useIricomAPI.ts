@@ -2,7 +2,7 @@
 import process from 'process';
 // etc
 import {
-  BackendProperties, Board, BoardList, Account, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomError, PostState,
+  BackendProperties, Board, BoardList, Account, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomErrorResponse, PostState, IricomError,
 } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
@@ -13,14 +13,18 @@ const backendProperties: BackendProperties = process.env.backend as unknown as B
 type IricomAPI = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   getMyPostList: (skip: number, limit: number) => Promise<PostList>,
+  updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
+
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
   updateBoard: (board: Board) => Promise<Board>,
+
   getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
-  createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
-  updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
   getPost: (boardId: string, postId: string, postState: PostState | null) => Promise<Post>,
+  createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
+  updatePost: (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null) => Promise<Post>,
+  publishPost: (boardId: string, postId: string) => Promise<Post>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -75,13 +79,9 @@ function useIricomAPI (): IricomAPI {
     }
   };
 
-  const commonErrorHandler = (error: AxiosError) => {
-    const iricomError: IricomError = error.response.data as IricomError;
-    if (iricomError.code === '01000002') {
-      alert('TEST');
-    } else {
-      throw error;
-    }
+  const defaultErrorHandler = (error: AxiosError) => {
+    const iricomErrorResponse: IricomErrorResponse = error.response.data as IricomErrorResponse;
+    throw new IricomError(iricomErrorResponse.code, iricomErrorResponse.message);
   };
 
   const iricomApi: IricomAPI = {
@@ -208,7 +208,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
-    createPost: async (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean): Promise<Post> => {
+    createPost: async (boardId: string, title: string, content: string, postType: PostType, isAllowComment: boolean): Promise<Post> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = `${backendProperties.host}/v1/boards/${boardId}/posts`;
@@ -216,7 +216,7 @@ function useIricomAPI (): IricomAPI {
       config.data = {
         title,
         content,
-        type,
+        type: postType,
         isAllowComment,
       };
 
@@ -224,7 +224,47 @@ function useIricomAPI (): IricomAPI {
         const response: AxiosResponse<Post> = await axios.request(config);
         return response.data;
       } catch (error) {
-        commonErrorHandler(error);
+        defaultErrorHandler(error);
+      }
+    },
+    updatePost: async (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null): Promise<Post> => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
+      config.method = 'PATCH';
+      config.data = {};
+
+      if (title) {
+        config.data.title = title;
+      }
+      if (content) {
+        config.data.content = content;
+      }
+      if (postType) {
+        config.data.type = postType;
+      }
+      if (isAllowComment) {
+        config.data.isAllowComment = isAllowComment;
+      }
+
+      try {
+        const response: AxiosResponse<Post> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+    publishPost: async (boardId: string, postId: string): Promise<Post> => {
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/publish`;
+      config.method = 'POST';
+
+      try {
+        const response: AxiosResponse<Post> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
       }
     },
     updateMyAccountInfo: async (nickname: string | null, description: string | null): Promise<Account> => {
@@ -244,7 +284,7 @@ function useIricomAPI (): IricomAPI {
         const response: AxiosResponse<Account> = await axios.request(config);
         return response.data;
       } catch (error) {
-        commonErrorHandler(error);
+        defaultErrorHandler(error);
       }
     },
     getPost: async (boardId: string, postId: string, postState: PostState | null): Promise<Post> => {
@@ -262,7 +302,7 @@ function useIricomAPI (): IricomAPI {
         const response: AxiosResponse<Post> = await axios.request(config);
         return response.data;
       } catch (error) {
-        commonErrorHandler(error);
+        defaultErrorHandler(error);
       }
     },
   };
