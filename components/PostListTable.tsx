@@ -21,9 +21,10 @@ const PostListTable = ({
     return <Tr key={post.id}>
       <Td>{postList.skip + postList.posts.length - index}</Td>
       <Td width='100%'>
-        <NextLink href={`#${post.id}`}>
-          {post.title}{!post.isPublish && <Badge marginLeft='0.4rem'>임시저장</Badge>}
-        </NextLink>
+        {post.title}
+        {!post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
+          <Badge marginLeft='0.4rem'>임시저장</Badge>
+        </NextLink>}
       </Td>
       <Td>{post.createDate}</Td>
       <Td>{post.viewCount}</Td>

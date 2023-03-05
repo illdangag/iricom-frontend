@@ -80,6 +80,7 @@ export type Post = {
   isAllowComment: boolean,
   isPublish: boolean,
   hasTemporary: boolean,
+  boardId: string,
 }
 
 export type PostList = {
