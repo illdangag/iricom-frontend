@@ -20,12 +20,13 @@ const PostCreatePage = () => {
   const [_loginState, accountAuth,] = useAccountState();
   const iricomAPI = useIricomAPI();
 
-  const { boardId, } = router.query;
+  // const { boardId, } = router.query;
+  const boardId: string = router.query.boardId as string;
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [isShowNotExistBoardAlert, setShowNotExistBoardAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof boardId === 'string') {
+    if (boardId) {
       void iricomAPI.getBoard(boardId)
         .catch(() => {
           setPageState(PageState.INVALID_BOARD);
@@ -40,9 +41,9 @@ const PostCreatePage = () => {
 
   const onRequest = (postState: PostState, post: Post) => {
     if (postState === PostState.TEMPORARY) {
-
+      void router.replace(`/boards/${post.boardId}/posts/${post.id}/edit`);
     } else { // POST.PUBLISH
-
+      void router.push('/');
     }
   };
 
@@ -51,7 +52,7 @@ const PostCreatePage = () => {
       <VStack alignItems='stretch'>
         <Card>
           <CardBody>
-            <PostEditor accountAuth={accountAuth} disabled={pageState === PageState.INVALID_BOARD} onRequest={onRequest}/>
+            <PostEditor accountAuth={accountAuth} boardId={boardId} disabled={pageState === PageState.INVALID_BOARD} onRequest={onRequest}/>
           </CardBody>
         </Card>
       </VStack>
