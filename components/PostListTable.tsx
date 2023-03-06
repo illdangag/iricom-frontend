@@ -25,9 +25,10 @@ const PostListTable = ({
     return <Tr key={post.id}>
       {isShowPostNumber && <Td>{postList.skip + postList.posts.length - index}</Td>}
       <Td width='100%'>
-        {post.title}
-        {isShowPostState && post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
-          <Badge marginLeft='0.4rem' colorScheme='green' variant='solid'>발행</Badge>
+        {!post.isPublish && <>{post.title}</>}
+        {post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}`}>
+          {post.title}
+          {isShowPostState && <Badge marginLeft='0.4rem' colorScheme='green' variant='solid'>발행</Badge>}
         </NextLink>}
         {isShowPostState && post.hasTemporary && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
           <Badge marginLeft='0.4rem' variant='outline'>임시저장</Badge>

@@ -20,13 +20,19 @@ const BoardsPostsPage = () => {
       void iricomAPI.getPost(boardId, postId, PostState.PUBLISH)
         .then(post => {
           console.log(post);
+          setPost(post);
+        })
+        .catch((error) => {
+          console.log(error);
         });
     }
   }, [boardId, postId,]);
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-
+      {post && post.id}
+      {post && post.title}
+      {post && post.content}
     </MainLayout>
   );
 };

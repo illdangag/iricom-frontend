@@ -1,9 +1,10 @@
 // react
-import { ChangeEvent, useState, useRef, useEffect, } from 'react';
+import { ChangeEvent, useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, Textarea, VStack,
-  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, useToast, CardBody, CardFooter, } from '@chakra-ui/react';
+import { Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, Input, Textarea, VStack,
+  useToast, CardBody, CardFooter, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
+import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, } from '../../../../interfaces';
@@ -20,7 +21,6 @@ const AdminBoardEditIdPage = () => {
   const router = useRouter();
   const toast = useToast();
   const iriconAPI = useIricomAPI();
-  const alertCancelRef = useRef();
 
   const { id, } = router.query;
 
@@ -103,28 +103,6 @@ const AdminBoardEditIdPage = () => {
     setShowAlert(false);
   };
 
-  const notExistBoardAlert = <AlertDialog
-    motionPreset='slideInBottom'
-    size='xs'
-    leastDestructiveRef={alertCancelRef}
-    onClose={onCloseAlert}
-    isOpen={showAlert}
-    isCentered
-  >
-    <AlertDialogOverlay/>
-    <AlertDialogContent>
-      <AlertDialogHeader>저런!</AlertDialogHeader>
-      <AlertDialogBody>
-        존재하지 않는 게시판입니다.
-      </AlertDialogBody>
-      <AlertDialogFooter>
-        <Button ref={alertCancelRef} onClick={onCloseAlert}>
-          닫기
-        </Button>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>;
-
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
       <VStack alignItems='stretch'>
@@ -154,7 +132,7 @@ const AdminBoardEditIdPage = () => {
           </CardFooter>
         </Card>
       </VStack>
-      {notExistBoardAlert}
+      {<NotExistBoardAlert isOpen={showAlert} onClose={onCloseAlert}/>}
     </MainLayout>
   );
 };
