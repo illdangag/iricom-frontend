@@ -2,6 +2,7 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
+import { PostPreview, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { Post, PostState, } from '../../../../interfaces';
@@ -33,6 +34,7 @@ const BoardsPostsPage = () => {
       {post && post.id}
       {post && post.title}
       {post && post.content}
+      {post && <PostPreview post={post}/>}
     </MainLayout>
   );
 };
