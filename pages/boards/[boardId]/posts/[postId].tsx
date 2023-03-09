@@ -31,9 +31,6 @@ const BoardsPostsPage = () => {
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-      {post && post.id}
-      {post && post.title}
-      {post && post.content}
       {post && <PostPreview post={post}/>}
     </MainLayout>
   );

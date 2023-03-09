@@ -1,9 +1,7 @@
 // node
 import process from 'process';
 // etc
-import {
-  BackendProperties, Board, BoardList, Account, TokenInfo, FirebaseProperties, PostType, PostList, Post, IricomErrorResponse, PostState, IricomError,
-} from '../interfaces';
+import { Account, BackendProperties, Board, BoardList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList, PostState, PostType, TokenInfo, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -287,9 +285,17 @@ function useIricomAPI (): IricomAPI {
         defaultErrorHandler(error);
       }
     },
+
     getPost: async (boardId: string, postId: string, postState: PostState | null): Promise<Post> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
+      let config: AxiosRequestConfig;
+      if (postState === PostState.TEMPORARY) {
+        // 임시 저장한 문서는 token이 필요함
+        const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+        config = await getRequestConfig(token);
+      } else {
+        config = {};
+      }
+
       config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
       config.method = 'GET';
       if (postState !== null) {
