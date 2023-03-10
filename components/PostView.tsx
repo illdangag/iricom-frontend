@@ -9,9 +9,20 @@ type Props = {
   post: Post,
 }
 
-const PostPreview = ({
+const PostView = ({
   post,
 }: Props) => {
+
+  const getPostDate = (time: Date): string => {
+    const postDate: Date = new Date(time);
+    const year: number = postDate.getFullYear();
+    const month: number = postDate.getMonth() + 1;
+    const date: number = postDate.getDate();
+    let hour: number = postDate.getHours();
+    const minute: number = postDate.getMinutes();
+
+    return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
+  };
 
   return (
     <VStack alignItems='stretch'>
@@ -35,7 +46,7 @@ const PostPreview = ({
             <Flex marginTop='0.4rem'>
               <Text fontSize='0.8rem'>{post.account.nickname}</Text>
               <Spacer/>
-              <Text fontSize='0.8rem'>{post.createDate}</Text>
+              <Text fontSize='0.8rem'>{getPostDate(post.createDate)}</Text>
             </Flex>
           </Flex>
         </CardHeader>
@@ -53,4 +64,4 @@ const PostPreview = ({
   );
 };
 
-export default PostPreview;
+export default PostView;

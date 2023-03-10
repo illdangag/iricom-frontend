@@ -102,3 +102,24 @@ export type PostList = {
   limit: number,
   posts: Post[],
 }
+
+export type Comment = {
+  id: string,
+  content: string,
+  referenceCommentId: string,
+  createDate: Date,
+  updateDate: Date,
+  upvote: number,
+  downvote: number,
+  hasNestedComment: boolean,
+  deleted: boolean,
+  account: Account,
+  nestedComments: Comment[],
+}
+
+export type CommentList = {
+  total: number,
+  skip: number,
+  limit: number,
+  comments: Comment[],
+}

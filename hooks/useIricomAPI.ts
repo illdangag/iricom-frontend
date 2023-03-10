@@ -1,7 +1,7 @@
 // node
 import process from 'process';
 // etc
-import { Account, BackendProperties, Board, BoardList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList, PostState, PostType, TokenInfo, } from '../interfaces';
+import { Account, BackendProperties, Board, BoardList, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList, PostState, PostType, TokenInfo, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -23,6 +23,9 @@ type IricomAPI = {
   createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
   updatePost: (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null) => Promise<Post>,
   publishPost: (boardId: string, postId: string) => Promise<Post>,
+
+  getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
+  createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -96,6 +99,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     getMyPostList: async (skip: number, limit: number): Promise<PostList> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -114,6 +118,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null): Promise<BoardList> => {
       const config: AxiosRequestConfig = {
         url: backendProperties.host + '/v1/boards',
@@ -136,6 +141,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     createBoard: async (title: string, description: string, enabled: boolean): Promise<Board> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -155,6 +161,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     getBoard: async (id: string) => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -169,6 +176,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     updateBoard: async (board: Board): Promise<Board> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -184,6 +192,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null): Promise<PostList> => {
       const config: AxiosRequestConfig = {
         url:  `${backendProperties.host}/v1/boards/${boardId}/posts`,
@@ -206,6 +215,7 @@ function useIricomAPI (): IricomAPI {
         throw error;
       }
     },
+
     createPost: async (boardId: string, title: string, content: string, postType: PostType, isAllowComment: boolean): Promise<Post> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -225,6 +235,7 @@ function useIricomAPI (): IricomAPI {
         defaultErrorHandler(error);
       }
     },
+
     updatePost: async (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null): Promise<Post> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -252,6 +263,7 @@ function useIricomAPI (): IricomAPI {
         defaultErrorHandler(error);
       }
     },
+
     publishPost: async (boardId: string, postId: string): Promise<Post> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -265,6 +277,7 @@ function useIricomAPI (): IricomAPI {
         defaultErrorHandler(error);
       }
     },
+
     updateMyAccountInfo: async (nickname: string | null, description: string | null): Promise<Account> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
@@ -306,6 +319,41 @@ function useIricomAPI (): IricomAPI {
 
       try {
         const response: AxiosResponse<Post> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    getCommentList: async (boardId: string, postId: string): Promise<CommentList> => {
+      const config: AxiosRequestConfig = {
+        url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`,
+        method: 'GET',
+      };
+      try {
+        const response: AxiosResponse<CommentList> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    createComment: async (boardId: string, postId: string, content: string, referenceCommentId: string | null): Promise<Comment> => {
+      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(token);
+
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`;
+      config.method = 'POST';
+      config.data = {
+        content: content,
+      };
+
+      if (referenceCommentId) {
+        config.data.referenceCommentId = referenceCommentId;
+      }
+
+      try {
+        const response: AxiosResponse<Comment> = await axios.request(config);
         return response.data;
       } catch (error) {
         defaultErrorHandler(error);
