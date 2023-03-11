@@ -20,7 +20,8 @@ const RequireLoginAlert = ({
   const router = useRouter();
 
   const onClickLogin = () => {
-    void router.push('/login?success=' + encodeURIComponent(successURL));
+    const successQueryParam: string = successURL ? '?success=' + encodeURIComponent(successURL) : '';
+    void router.push('/login' + successQueryParam);
   };
 
   return (<AlertDialog

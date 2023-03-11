@@ -1,6 +1,6 @@
 // react
 import { VStack, Card, CardHeader, CardBody, Text, Heading, Flex, Spacer, CardFooter, ButtonGroup, IconButton, Menu, MenuButton, MenuList,
-  MenuItem, } from '@chakra-ui/react';
+  MenuItem, Button, } from '@chakra-ui/react';
 import { MdThumbUpOffAlt, MdThumbDownOffAlt, MdMoreHoriz, MdShare, MdOutlineReport, } from 'react-icons/md';
 // etc
 import { Post, } from '../interfaces';
@@ -55,8 +55,8 @@ const PostView = ({
         </CardBody>
         <CardFooter justifyContent='center'>
           <ButtonGroup>
-            <IconButton aria-label='upvote' icon={<MdThumbUpOffAlt/>}/>
-            <IconButton aria-label='upvote' icon={<MdThumbDownOffAlt/>}/>
+            <Button rightIcon={<MdThumbUpOffAlt/>}>{post.upvote}</Button>
+            <Button rightIcon={<MdThumbDownOffAlt/>}>{post.downvote}</Button>
           </ButtonGroup>
         </CardFooter>
       </Card>

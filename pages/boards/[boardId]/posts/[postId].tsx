@@ -38,14 +38,18 @@ const BoardsPostsPage = () => {
     <MainLayout loginState={LoginState.ANY}>
       <VStack alignItems='stretch'>
         {post && <PostView post={post}/>}
-        {commentList && commentList.length > 0 && <CommentView commentList={commentList}/>}
+        {commentList && commentList.map((comment, index) =>
+          <Card shadow='none' key={index}>
+            <CardBody>
+              <CommentView boardId={boardId} postId={postId} comment={comment} allowNestedComment={true}/>
+            </CardBody>
+          </Card>)}
         <Card shadow='none'>
           <CardBody>
             <CommentEditor boardId={boardId} postId={postId}/>
           </CardBody>
         </Card>
       </VStack>
-
     </MainLayout>
   );
 };

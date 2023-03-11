@@ -1,7 +1,9 @@
 // react
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { Box, Button, HStack, Textarea, } from '@chakra-ui/react';
+import { RequireLoginAlert, } from '../components/alerts';
 import { useIricomAPI, } from '../hooks';
+import { IricomError, NotExistTokenError } from '../interfaces';
 // etc
 
 enum EditorState {
@@ -25,6 +27,7 @@ const CommentEditor = ({
 
   const [state, setState,] = useState<EditorState>(EditorState.INVALID);
   const [commentContent, setCommentContent,] = useState<string>('');
+  const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
 
   useEffect(() => {
     if (commentContent && commentContent.length > 0) {
@@ -45,8 +48,13 @@ const CommentEditor = ({
       .then(comment => {
         console.log(comment);
       })
-      .catch(() => {
-
+      .catch((error) => {
+        debugger;
+        if (error instanceof NotExistTokenError) {
+          setShowLoginAlert(true);
+        } else {
+          console.error(error);
+        }
       })
       .finally(() => {
         setCommentContent('');
@@ -59,6 +67,11 @@ const CommentEditor = ({
       <HStack justifyContent='flex-end' paddingTop='1rem'>
         <Button size='sm' isDisabled={state === EditorState.INVALID || state === EditorState.REQUEST} onClick={onClickConfirm}>작성</Button>
       </HStack>
+      <RequireLoginAlert
+        isOpen={showLoginAlert}
+        text='댓글을 쓰기 위해서는 로그인이 필요합니다.'
+        successURL={`/boards/${boardId}/posts/${postId}`}
+      />
     </Box>
   );
 };

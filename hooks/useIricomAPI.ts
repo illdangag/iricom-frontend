@@ -1,7 +1,8 @@
 // node
 import process from 'process';
 // etc
-import { Account, BackendProperties, Board, BoardList, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList, PostState, PostType, TokenInfo, } from '../interfaces';
+import { Account, BackendProperties, Board, BoardList, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList,
+  PostState, PostType, TokenInfo, NotExistTokenError, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -33,7 +34,7 @@ function useIricomAPI (): IricomAPI {
 
   const getRequestConfig = async (tokenInfo: TokenInfo | null): Promise<AxiosRequestConfig> => {
     if (tokenInfo === null) {
-      throw Error('Token is not exist.');
+      throw new NotExistTokenError('Token is not exist.');
     }
 
     let token: string = tokenInfo.token;
@@ -329,6 +330,9 @@ function useIricomAPI (): IricomAPI {
       const config: AxiosRequestConfig = {
         url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`,
         method: 'GET',
+        params: {
+          includeComment: true,
+        },
       };
       try {
         const response: AxiosResponse<CommentList> = await axios.request(config);

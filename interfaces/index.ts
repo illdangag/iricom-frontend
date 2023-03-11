@@ -16,6 +16,10 @@ export type TokenInfo = {
   expiredDate: Date,
 }
 
+export class NotExistTokenError extends Error {
+
+}
+
 export class IricomError extends Error {
   private _code: string;
 
