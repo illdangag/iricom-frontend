@@ -1,12 +1,14 @@
 // react
 import { useState, } from 'react';
-import { Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, Box, Divider, } from '@chakra-ui/react';
-import { MdThumbDownOffAlt, MdThumbUpOffAlt, MdEdit, MdDeleteOutline, } from 'react-icons/md';
+import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack,
+  useToast, } from '@chakra-ui/react';
+import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
+import { useIricomAPI, } from '../hooks';
 // store
 import { useRecoilValue, } from 'recoil';
 import { myAccountAtom, } from '../recoil';
 // etc
-import { Comment, Account, } from '../interfaces';
+import { Account, Comment, VoteType, } from '../interfaces';
 import CommentEditor from './CommentEditor';
 
 type Props = {
@@ -16,6 +18,12 @@ type Props = {
   allowNestedComment?: boolean,
   onChange?: (comment: Comment) => void,
 }
+
+enum ViewState {
+  IDLE,
+  REQUEST,
+}
+
 const CommentView = ({
   boardId,
   postId,
@@ -23,8 +31,11 @@ const CommentView = ({
   allowNestedComment = false,
   onChange = () => {},
 }: Props) => {
+  const iricomAPI = useIricomAPI();
+  const toast = useToast();
 
   const account: Account | null = useRecoilValue<Account | null>(myAccountAtom);
+  const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
   const [showCommentEditor, setShowCommentEditor,] = useState<boolean>(false);
 
   const onClickReReply = () => {
@@ -40,6 +51,42 @@ const CommentView = ({
     const minute: number = postDate.getMinutes();
 
     return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
+  };
+
+  const onClickUpvote = () => {
+    setViewState(ViewState.REQUEST);
+    void iricomAPI.voteComment(boardId, postId, comment.id, VoteType.UP)
+      .then((comment) => {
+        onChange(comment);
+      })
+      .catch(() => {
+        toast({
+          title: '이미 \'좋아요\'한 댓글입니다.',
+          status: 'warning',
+          duration: 3000,
+        });
+      })
+      .finally(() => {
+        setViewState(ViewState.IDLE);
+      });
+  };
+
+  const onClickDownvote = () => {
+    setViewState(ViewState.REQUEST);
+    void iricomAPI.voteComment(boardId, postId, comment.id, VoteType.DOWN)
+      .then((comment) => {
+        onChange(comment);
+      })
+      .catch(() => {
+        toast({
+          title: '이미 \'싫어요\'한 댓글입니다.',
+          status: 'warning',
+          duration: 3000,
+        });
+      })
+      .finally(() => {
+        setViewState(ViewState.IDLE);
+      });
   };
 
   return (
@@ -61,8 +108,20 @@ const CommentView = ({
           {allowNestedComment && <Button size='xs' onClick={onClickReReply}>답글</Button>}
           <Spacer/>
           <ButtonGroup size='xs' variant='outline'>
-            <Button rightIcon={<MdThumbUpOffAlt/>}>{comment.upvote}</Button>
-            <Button rightIcon={<MdThumbDownOffAlt/>}>{comment.downvote}</Button>
+            <Button
+              rightIcon={<MdThumbUpOffAlt/>}
+              onClick={onClickUpvote}
+              isDisabled={viewState === ViewState.REQUEST}
+            >
+              {comment.upvote}
+            </Button>
+            <Button
+              rightIcon={<MdThumbDownOffAlt/>}
+              onClick={onClickDownvote}
+              isDisabled={viewState === ViewState.REQUEST}
+            >
+              {comment.downvote}
+            </Button>
           </ButtonGroup>
         </HStack>
       </VStack>

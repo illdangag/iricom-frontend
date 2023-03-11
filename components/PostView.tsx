@@ -12,7 +12,7 @@ type Props = {
   onChange?: (post: Post) => void,
 }
 
-enum PageState {
+enum ViewState {
   IDLE,
   REQUEST,
 }
@@ -24,7 +24,7 @@ const PostView = ({
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
-  const [pageState, setPageState,] = useState<PageState>(PageState.IDLE);
+  const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
 
   const getPostDate = (time: Date): string => {
     const postDate: Date = new Date(time);
@@ -38,7 +38,7 @@ const PostView = ({
   };
 
   const onClickUpvote = () => {
-    setPageState(PageState.REQUEST);
+    setViewState(ViewState.REQUEST);
     void iricomAPI.votePost(post.boardId, post.id, VoteType.UP)
       .then((post) => {
         onChange(post);
@@ -51,12 +51,12 @@ const PostView = ({
         });
       })
       .finally(() => {
-        setPageState(PageState.IDLE);
+        setViewState(ViewState.IDLE);
       });
   };
 
   const onClickDownvote = () => {
-    setPageState(PageState.REQUEST);
+    setViewState(ViewState.REQUEST);
     void iricomAPI.votePost(post.boardId, post.id, VoteType.DOWN)
       .then((post) => {
         onChange(post);
@@ -69,7 +69,7 @@ const PostView = ({
         });
       })
       .finally(() => {
-        setPageState(PageState.IDLE);
+        setViewState(ViewState.IDLE);
       });
   };
 
@@ -110,14 +110,14 @@ const PostView = ({
             <Button
               rightIcon={<MdThumbUpOffAlt/>}
               onClick={onClickUpvote}
-              isDisabled={pageState === PageState.REQUEST}
+              isDisabled={viewState === ViewState.REQUEST}
             >
               {post.upvote}
             </Button>
             <Button
               rightIcon={<MdThumbDownOffAlt/>}
               onClick={onClickDownvote}
-              isDisabled={pageState === PageState.REQUEST}
+              isDisabled={viewState === ViewState.REQUEST}
             >
               {post.downvote}
             </Button>

@@ -42,8 +42,25 @@ const BoardsPostsPage = () => {
     setPost(post);
   };
 
-  const onChangeCommentView = () => {
+  const onChangeCommentView = (comment: Comment) => {
+    const newCommentList: Comment[] = updateComment([...commentList,], comment);
+    setCommentList(newCommentList);
     init(boardId, postId);
+  };
+
+  const updateComment = (commentList: Comment[], newComment: Comment) => {
+    const length: number = commentList.length;
+    for (let index = 0; index < length; index++) {
+      const comment: Comment = commentList[index];
+      if (comment.id === newComment.id) {
+        commentList[index] = newComment;
+        return [...commentList];
+      }
+      if (comment.nestedComments && comment.nestedComments.length > 0) {
+        comment.nestedComments = updateComment(comment.nestedComments, newComment);
+      }
+    }
+    return commentList;
   };
 
   return (

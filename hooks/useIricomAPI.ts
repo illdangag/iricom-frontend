@@ -1,8 +1,7 @@
 // node
 import process from 'process';
 // etc
-import { Account, BackendProperties, Board, BoardList, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList,
-  PostState, PostType, TokenInfo, NotExistTokenError, Comment, VoteType, } from '../interfaces';
+import { Account, BackendProperties, Board, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -28,6 +27,7 @@ type IricomAPI = {
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
+  voteComment: (boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -70,13 +70,11 @@ function useIricomAPI (): IricomAPI {
       const token: string = response.data.id_token;
       const refreshToken: string = response.data.refresh_token;
       const expiredDate: Date = new Date((new Date()).getTime() + (Number(response.data.expires_in) * 1000));
-      const tokenInfo: TokenInfo = {
+      return {
         token,
         refreshToken,
         expiredDate,
       };
-
-      return tokenInfo;
     } catch (error) {
       console.error(error);
     }
@@ -374,6 +372,24 @@ function useIricomAPI (): IricomAPI {
       if (referenceCommentId) {
         config.data.referenceCommentId = referenceCommentId;
       }
+
+      try {
+        const response: AxiosResponse<Comment> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    voteComment: async (boardId: string, postId: string, commentId: string, type: VoteType): Promise<Comment> => {
+      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(token);
+
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments/${commentId}/vote`;
+      config.method = 'PATCH';
+      config.data = {
+        type: type,
+      };
 
       try {
         const response: AxiosResponse<Comment> = await axios.request(config);
