@@ -14,12 +14,14 @@ type Props = {
   postId: string,
   comment: Comment,
   allowNestedComment?: boolean,
+  onChange?: (comment: Comment) => void,
 }
 const CommentView = ({
   boardId,
   postId,
   comment,
   allowNestedComment = false,
+  onChange = () => {},
 }: Props) => {
 
   const account: Account | null = useRecoilValue<Account | null>(myAccountAtom);
@@ -65,12 +67,12 @@ const CommentView = ({
         </HStack>
       </VStack>
       {showCommentEditor && <Box marginTop='0.8rem'>
-        <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id}/>
+        <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id} onChange={onChange}/>
       </Box>}
       {comment.nestedComments && comment.nestedComments.map((nestedComment, index) => (
         <Card shadow='none' backgroundColor='gray.50' marginTop='.5rem' key={index}>
-          <CardBody>
-            <CommentView boardId={boardId} postId={postId} comment={nestedComment}/>
+          <CardBody padding='.5rem'>
+            <CommentView boardId={boardId} postId={postId} comment={nestedComment} onChange={onChange}/>
           </CardBody>
         </Card>
       ))}

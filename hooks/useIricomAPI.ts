@@ -2,7 +2,7 @@
 import process from 'process';
 // etc
 import { Account, BackendProperties, Board, BoardList, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList,
-  PostState, PostType, TokenInfo, NotExistTokenError, } from '../interfaces';
+  PostState, PostType, TokenInfo, NotExistTokenError, Comment, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -332,6 +332,7 @@ function useIricomAPI (): IricomAPI {
         method: 'GET',
         params: {
           includeComment: true,
+          includeCommentLimit: 20,
         },
       };
       try {

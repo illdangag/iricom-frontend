@@ -3,8 +3,8 @@ import { ChangeEvent, useState, useEffect, } from 'react';
 import { Box, Button, HStack, Textarea, } from '@chakra-ui/react';
 import { RequireLoginAlert, } from '../components/alerts';
 import { useIricomAPI, } from '../hooks';
-import { IricomError, NotExistTokenError } from '../interfaces';
 // etc
+import { NotExistTokenError, Comment, } from '../interfaces';
 
 enum EditorState {
   INVALID,
@@ -16,12 +16,14 @@ type Props = {
   boardId: string,
   postId: string,
   referenceCommentId?: string,
+  onChange?: (comment: Comment) => void,
 };
 
 const CommentEditor = ({
   boardId,
   postId,
   referenceCommentId = null,
+  onChange = () => {},
 }: Props) => {
   const iricomAPI = useIricomAPI();
 
@@ -45,11 +47,10 @@ const CommentEditor = ({
     setState(EditorState.REQUEST);
 
     void iricomAPI.createComment(boardId, postId, commentContent, referenceCommentId)
-      .then(comment => {
-        console.log(comment);
+      .then((comment: Comment) => {
+        onChange(comment);
       })
       .catch((error) => {
-        debugger;
         if (error instanceof NotExistTokenError) {
           setShowLoginAlert(true);
         } else {
