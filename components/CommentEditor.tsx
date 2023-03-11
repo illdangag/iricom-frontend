@@ -16,6 +16,7 @@ type Props = {
   boardId: string,
   postId: string,
   referenceCommentId?: string,
+  autoFocus?: boolean,
   onChange?: (comment: Comment) => void,
 };
 
@@ -23,6 +24,7 @@ const CommentEditor = ({
   boardId,
   postId,
   referenceCommentId = null,
+  autoFocus = false,
   onChange = () => {},
 }: Props) => {
   const iricomAPI = useIricomAPI();
@@ -64,7 +66,7 @@ const CommentEditor = ({
 
   return (
     <Box>
-      <Textarea resize='none' value={commentContent} onChange={onChangeCommentContent} isDisabled={state === EditorState.REQUEST}/>
+      <Textarea autoFocus={autoFocus} resize='none' value={commentContent} onChange={onChangeCommentContent} isDisabled={state === EditorState.REQUEST}/>
       <HStack justifyContent='flex-end' paddingTop='1rem'>
         <Button size='sm' isDisabled={state === EditorState.INVALID || state === EditorState.REQUEST} onClick={onClickConfirm}>작성</Button>
       </HStack>

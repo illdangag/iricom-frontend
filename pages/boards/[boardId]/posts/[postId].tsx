@@ -38,6 +38,10 @@ const BoardsPostsPage = () => {
       });
   };
 
+  const onChangePostView = (post: Post) => {
+    setPost(post);
+  };
+
   const onChangeCommentView = () => {
     init(boardId, postId);
   };
@@ -45,7 +49,7 @@ const BoardsPostsPage = () => {
   return (
     <MainLayout loginState={LoginState.ANY}>
       <VStack alignItems='stretch'>
-        {post && <PostView post={post}/>}
+        {post && <PostView post={post} onChange={onChangePostView}/>}
         {commentList && commentList.map((comment, index) =>
           <Card shadow='none' key={index}>
             <CardBody>

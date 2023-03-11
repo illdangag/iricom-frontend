@@ -67,7 +67,7 @@ const CommentView = ({
         </HStack>
       </VStack>
       {showCommentEditor && <Box marginTop='0.8rem'>
-        <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id} onChange={onChange}/>
+        <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id} onChange={onChange} autoFocus/>
       </Box>}
       {comment.nestedComments && comment.nestedComments.map((nestedComment, index) => (
         <Card shadow='none' backgroundColor='gray.50' marginTop='.5rem' key={index}>

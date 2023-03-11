@@ -2,7 +2,7 @@
 import process from 'process';
 // etc
 import { Account, BackendProperties, Board, BoardList, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, Post, PostList,
-  PostState, PostType, TokenInfo, NotExistTokenError, Comment, } from '../interfaces';
+  PostState, PostType, TokenInfo, NotExistTokenError, Comment, VoteType, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -24,6 +24,7 @@ type IricomAPI = {
   createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
   updatePost: (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null) => Promise<Post>,
   publishPost: (boardId: string, postId: string) => Promise<Post>,
+  votePost: (boardId: string, postId: string, type: VoteType) => Promise<Post>,
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
@@ -270,6 +271,23 @@ function useIricomAPI (): IricomAPI {
       const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
       config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/publish`;
       config.method = 'POST';
+
+      try {
+        const response: AxiosResponse<Post> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    votePost: async (boardId: string, postId: string, type: VoteType): Promise<Post> => {
+      const tokeInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(tokeInfo);
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/vote`;
+      config.method = 'PATCH';
+      config.data = {
+        type: type,
+      };
 
       try {
         const response: AxiosResponse<Post> = await axios.request(config);

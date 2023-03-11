@@ -127,3 +127,8 @@ export type CommentList = {
   limit: number,
   comments: Comment[],
 }
+
+export enum VoteType {
+  UP = 'upvote',
+  DOWN = 'downvote',
+}
