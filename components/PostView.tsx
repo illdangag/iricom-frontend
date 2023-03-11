@@ -1,6 +1,7 @@
 // react
 import { useState, } from 'react';
-import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, VStack, } from '@chakra-ui/react';
+import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList,
+  Spacer, Text, VStack, useToast, } from '@chakra-ui/react';
 import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
@@ -21,6 +22,7 @@ const PostView = ({
   onChange = () => {},
 }: Props) => {
   const iricomAPI = useIricomAPI();
+  const toast = useToast();
 
   const [pageState, setPageState,] = useState<PageState>(PageState.IDLE);
 
@@ -39,8 +41,17 @@ const PostView = ({
     setPageState(PageState.REQUEST);
     void iricomAPI.votePost(post.boardId, post.id, VoteType.UP)
       .then((post) => {
-        setPageState(PageState.IDLE);
         onChange(post);
+      })
+      .catch(() => {
+        toast({
+          title: '이미 \'좋아요\'한 게시물입니다.',
+          status: 'warning',
+          duration: 3000,
+        });
+      })
+      .finally(() => {
+        setPageState(PageState.IDLE);
       });
   };
 
@@ -48,8 +59,17 @@ const PostView = ({
     setPageState(PageState.REQUEST);
     void iricomAPI.votePost(post.boardId, post.id, VoteType.DOWN)
       .then((post) => {
-        setPageState(PageState.IDLE);
         onChange(post);
+      })
+      .catch(() => {
+        toast({
+          title: '이미 \'싫어요\'한 게시물입니다.',
+          status: 'warning',
+          duration: 3000,
+        });
+      })
+      .finally(() => {
+        setPageState(PageState.IDLE);
       });
   };
 
