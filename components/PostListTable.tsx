@@ -4,6 +4,7 @@ import NextLink from 'next/link';
 import { TableContainer, Table, Tbody, Td, Tr, Badge, Box, ButtonGroup, Button, Thead, Th, } from '@chakra-ui/react';
 // etc
 import { PostList, Post, } from '../interfaces';
+import { getFormattedDateTime, } from '../utils';
 
 type Props = {
   postList: PostList,
@@ -34,7 +35,7 @@ const PostListTable = ({
           <Badge marginLeft='0.4rem' variant='outline'>임시저장</Badge>
         </NextLink>}
       </Td>
-      <Td>{post.createDate}</Td>
+      <Td>{getFormattedDateTime(post.createDate)}</Td>
       <Td>{post.viewCount}</Td>
     </Tr>;
   };

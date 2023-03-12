@@ -6,6 +6,7 @@ import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffA
 import { useIricomAPI, } from '../hooks';
 // etc
 import { Post, VoteType, } from '../interfaces';
+import { getFormattedDateTime, } from '../utils';
 
 type Props = {
   post: Post,
@@ -25,17 +26,6 @@ const PostView = ({
   const toast = useToast();
 
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
-
-  const getPostDate = (time: Date): string => {
-    const postDate: Date = new Date(time);
-    const year: number = postDate.getFullYear();
-    const month: number = postDate.getMonth() + 1;
-    const date: number = postDate.getDate();
-    let hour: number = postDate.getHours();
-    const minute: number = postDate.getMinutes();
-
-    return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
-  };
 
   const onClickUpvote = () => {
     setViewState(ViewState.REQUEST);
@@ -96,7 +86,7 @@ const PostView = ({
               <Text fontSize='0.8rem'>{post.account.nickname}</Text>
               <Spacer/>
               <VStack alignItems='flex-end' spacing='0.2rem'>
-                <Text fontSize='0.8rem'>{getPostDate(post.createDate)}</Text>
+                <Text fontSize='0.8rem'>{getFormattedDateTime(post.createDate)}</Text>
                 <Text fontSize='0.8rem'>조회수: {post.viewCount}</Text>
               </VStack>
             </Flex>

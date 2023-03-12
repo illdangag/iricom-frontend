@@ -10,6 +10,7 @@ import { myAccountAtom, } from '../recoil';
 // etc
 import { Account, Comment, VoteType, } from '../interfaces';
 import CommentEditor from './CommentEditor';
+import { getFormattedDateTime, } from '../utils';
 
 type Props = {
   boardId: string,
@@ -40,17 +41,6 @@ const CommentView = ({
 
   const onClickReReply = () => {
     setShowCommentEditor(!showCommentEditor);
-  };
-
-  const getCommentDate = (time: Date): string => {
-    const postDate: Date = new Date(time);
-    const year: number = postDate.getFullYear();
-    const month: number = postDate.getMonth() + 1;
-    const date: number = postDate.getDate();
-    let hour: number = postDate.getHours();
-    const minute: number = postDate.getMinutes();
-
-    return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
   };
 
   const onClickUpvote = () => {
@@ -95,7 +85,7 @@ const CommentView = ({
         <HStack>
           <VStack alignItems='stretch'>
             <Text fontSize='.8rem'>{comment.account.nickname}</Text>
-            <Text fontSize='.6rem'>{getCommentDate(comment.createDate)}</Text>
+            <Text fontSize='.6rem'>{getFormattedDateTime(comment.createDate)}</Text>
           </VStack>
           <Spacer/>
           {account && account.id === comment.account.id && <ButtonGroup size='xs' variant='outline' justifyContent='flex-end'>

@@ -20,11 +20,12 @@ const BoardsPostsPage = () => {
 
   useEffect(() => {
     if (boardId && postId) {
-      init(boardId, postId);
+      initPost(boardId, postId);
+      initCommentList(boardId, postId);
     }
   }, [boardId, postId,]);
 
-  const init = (boardId: string, postId: string) => {
+  const initPost = (boardId: string, postId: string) => {
     void iricomAPI.getPost(boardId, postId, PostState.PUBLISH)
       .then(post => {
         setPost(post);
@@ -32,6 +33,9 @@ const BoardsPostsPage = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const initCommentList = (boardId: string, postId: string) => {
     void iricomAPI.getCommentList(boardId, postId)
       .then(commentList => {
         setCommentList(commentList.comments);
@@ -45,7 +49,7 @@ const BoardsPostsPage = () => {
   const onChangeCommentView = (comment: Comment) => {
     const newCommentList: Comment[] = updateComment([...commentList,], comment);
     setCommentList(newCommentList);
-    init(boardId, postId);
+    initCommentList(boardId, postId);
   };
 
   const updateComment = (commentList: Comment[], newComment: Comment) => {
@@ -54,7 +58,7 @@ const BoardsPostsPage = () => {
       const comment: Comment = commentList[index];
       if (comment.id === newComment.id) {
         commentList[index] = newComment;
-        return [...commentList];
+        return [...commentList,];
       }
       if (comment.nestedComments && comment.nestedComments.length > 0) {
         comment.nestedComments = updateComment(comment.nestedComments, newComment);

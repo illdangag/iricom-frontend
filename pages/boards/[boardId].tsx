@@ -1,9 +1,10 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, HStack, } from '@chakra-ui/react';
+import { Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
+import { PostListTable, } from '../../components';
 import { RequireLoginAlert, RequireAccountDetailAlert, } from '../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../hooks';
 // etc
@@ -16,7 +17,8 @@ const BoardsPage = () => {
 
   const { boardId, } = router.query;
 
-  const [postList, setPostList,] = useState<Post[] | null>(null);
+  // const [postList, setPostList,] = useState<Post[] | null>(null);
+  const [postList, setPostList,] = useState<PostList | null>(null);
   const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
@@ -30,7 +32,7 @@ const BoardsPage = () => {
 
   const init = async (boardId: string) => {
     const postList: PostList = await iricomAPI.getPostList(boardId, 0, 20, null);
-    setPostList(postList.posts);
+    setPostList(postList);
   };
 
   const onClickCreatePost = () => {
@@ -53,9 +55,16 @@ const BoardsPage = () => {
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-      <HStack justifyContent='flex-end'>
-        <Button size='sm' variant='outline' backgroundColor='gray.50' leftIcon={<MdCreate/>} onClick={onClickCreatePost}>글 쓰기</Button>
-      </HStack>
+      <VStack alignItems='stretch'>
+        <HStack justifyContent='flex-end'>
+          <Button size='sm' variant='outline' backgroundColor='gray.50' leftIcon={<MdCreate/>} onClick={onClickCreatePost}>글 쓰기</Button>
+        </HStack>
+        <Card shadow='none'>
+          <CardBody>
+            {postList && <PostListTable postList={postList} isShowPostState={false}/>}
+          </CardBody>
+        </Card>
+      </VStack>
       <RequireLoginAlert
         text='글을 쓰기 위해서는 로그인이 필요합니다.'
         successURL={`/boards/${boardId}/posts/create`}

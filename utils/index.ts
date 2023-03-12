@@ -29,3 +29,14 @@ export function getTokenExpiredDate (token: string): Date {
   const payload: any = JSON.parse(decodedPayload);
   return new Date(payload.exp * 1000);
 }
+
+export function getFormattedDateTime (time: number): string {
+  const targetDate: Date = new Date(time);
+  const year: number = targetDate.getFullYear();
+  const month: number = targetDate.getMonth() + 1;
+  const date: number = targetDate.getDate();
+  let hour: number = targetDate.getHours();
+  const minute: number = targetDate.getMinutes();
+
+  return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
+}
