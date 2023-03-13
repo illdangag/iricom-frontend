@@ -1,30 +1,35 @@
 // react
 import { ReactNode, } from 'react';
 import NextLink from 'next/link';
-import { TableContainer, Table, Tbody, Td, Tr, Badge, Box, ButtonGroup, Button, Thead, Th, } from '@chakra-ui/react';
+import { TableContainer, Table, Tbody, Td, Tr, Badge, Box, ButtonGroup, Button, Thead, Th,
+  Text, } from '@chakra-ui/react';
 // etc
 import { PostList, Post, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
 
 type Props = {
   postList: PostList,
+  page: number,
   isShowHeader?: boolean,
   isShowPostState?: boolean,
   isShowPagination?: boolean,
   isShowPostNumber?: boolean,
+  onClickPagination?: (page: number) => void,
 }
 
 const PostListTable = ({
   postList,
+  page,
   isShowHeader = true,
   isShowPostState = true,
   isShowPagination = true,
   isShowPostNumber = true,
+  onClickPagination = () => {},
 }: Props) => {
 
   const getRow = (post: Post, index: number): ReactNode => {
     return <Tr key={post.id}>
-      {isShowPostNumber && <Td>{postList.skip + postList.posts.length - index}</Td>}
+      {isShowPostNumber && <Td>{postList.total - postList.skip - index}</Td>}
       <Td width='100%'>
         {!post.isPublish && <>{post.title}</>}
         {post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}`}>
@@ -35,7 +40,7 @@ const PostListTable = ({
           <Badge marginLeft='0.4rem' variant='outline'>임시저장</Badge>
         </NextLink>}
       </Td>
-      <Td>{getFormattedDateTime(post.createDate)}</Td>
+      <Td><Text fontSize='.8rem' textAlign='center'>{getFormattedDateTime(post.createDate)}</Text></Td>
       <Td>{post.viewCount}</Td>
     </Tr>;
   };
@@ -43,10 +48,9 @@ const PostListTable = ({
   const getPagination = (): ReactNode => {
     const buttonMaxLength: number = 5;
     const total: number = postList.total;
-    const skip: number = postList.skip;
     const limit: number = postList.limit;
 
-    const currentPage: number = (skip / limit) + 1;
+    const currentPage: number = postList.currentPage;
     const totalPage: number = Math.ceil(total / limit);
     const paddingLength: number = Math.floor(buttonMaxLength / 2);
 
@@ -57,11 +61,13 @@ const PostListTable = ({
       endPage += startPage * -1;
       startPage = 1;
     }
+
     endPage = Math.min(endPage, totalPage);
     const buttonList: ReactNode[] = [];
-    for (let page = startPage; page <= endPage; page++) {
-      buttonList.push(<Button key={page}>{page}</Button>);
+    for (let indexPage = startPage; indexPage <= endPage; indexPage++) {
+      buttonList.push(<Button key={indexPage} backgroundColor={indexPage === page ? 'gray.100' : 'transparent'} onClick={() => {onClickPagination(indexPage);}}>{indexPage}</Button>);
     }
+
     return <Box marginTop='0.4rem'>
       <ButtonGroup size='xs' variant='outline' isAttached>
         {...buttonList}
@@ -70,22 +76,24 @@ const PostListTable = ({
   };
 
   return (
-    <TableContainer>
-      <Table size='sm' variant='unstyled'>
-        {isShowHeader && <Thead>
-          <Tr>
-            {isShowPostNumber && <Th>번호</Th>}
-            <Th>제목</Th>
-            <Th>작성일</Th>
-            <Th>조회수</Th>
-          </Tr>
-        </Thead>}
-        <Tbody>
-          {postList.posts.map((post, index) => getRow(post, index))}
-        </Tbody>
-      </Table>
+    <>
+      <TableContainer>
+        <Table size='sm' variant='unstyled'>
+          {isShowHeader && <Thead>
+            <Tr>
+              {isShowPostNumber && <Th>번호</Th>}
+              <Th>제목</Th>
+              <Th>작성일</Th>
+              <Th>조회수</Th>
+            </Tr>
+          </Thead>}
+          <Tbody>
+            {postList.posts.map((post, index) => getRow(post, index))}
+          </Tbody>
+        </Table>
+      </TableContainer>
       {isShowPagination && getPagination()}
-    </TableContainer>
+    </>
   );
 };
 

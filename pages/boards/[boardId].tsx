@@ -15,23 +15,23 @@ const BoardsPage = () => {
   const iricomAPI = useIricomAPI();
   const [loginState, accountAuth,] = useAccountState();
 
-  const { boardId, } = router.query;
+  const boardId: string = router.query.boardId as string;
 
-  // const [postList, setPostList,] = useState<Post[] | null>(null);
+  const PAGE_LIMIT: number = 5;
+
   const [postList, setPostList,] = useState<PostList | null>(null);
+  const [page, setPage,] = useState<number>(1);
   const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof boardId === 'string') {
-      void init(boardId);
-    } else {
-      // TODO 잘못된 요청 처리
+    if (boardId) {
+      void initPostList(boardId, page);
     }
-  }, []);
+  }, [boardId,]);
 
-  const init = async (boardId: string) => {
-    const postList: PostList = await iricomAPI.getPostList(boardId, 0, 20, null);
+  const initPostList = async (boardId: string, page: number) => {
+    const postList: PostList = await iricomAPI.getPostList(boardId, PAGE_LIMIT * (page - 1), PAGE_LIMIT, null);
     setPostList(postList);
   };
 
@@ -53,6 +53,11 @@ const BoardsPage = () => {
     setShowRegisteredAccountAlert(false);
   };
 
+  const onClickPagination = (page: number) => {
+    setPage(page);
+    void initPostList(boardId, page);
+  };
+
   return (
     <MainLayout loginState={LoginState.ANY}>
       <VStack alignItems='stretch'>
@@ -61,7 +66,12 @@ const BoardsPage = () => {
         </HStack>
         <Card shadow='none'>
           <CardBody>
-            {postList && <PostListTable postList={postList} isShowPostState={false}/>}
+            {postList && <PostListTable
+              postList={postList}
+              page={page}
+              isShowPostState={false}
+              onClickPagination={onClickPagination}
+            />}
           </CardBody>
         </Card>
       </VStack>

@@ -111,8 +111,10 @@ function useIricomAPI (): IricomAPI {
       };
 
       try {
-        const response: AxiosResponse<PostList> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: PostList = new PostList();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         console.error(error);
         throw error;
@@ -208,8 +210,10 @@ function useIricomAPI (): IricomAPI {
       }
 
       try {
-        const response: AxiosResponse<PostList> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: PostList = new PostList();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         console.error(error);
         throw error;
@@ -352,8 +356,10 @@ function useIricomAPI (): IricomAPI {
         },
       };
       try {
-        const response: AxiosResponse<CommentList> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: CommentList = new CommentList();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         defaultErrorHandler(error);
       }

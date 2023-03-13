@@ -100,11 +100,17 @@ export type Post = {
   boardId: string,
 }
 
-export type PostList = {
-  total: number,
-  skip: number,
-  limit: number,
-  posts: Post[],
+class ListResponse {
+  public total: number;
+  public skip: number;
+  public limit: number;
+  public get currentPage (): number {
+    return (this.skip / this.limit) + 1;
+  }
+}
+
+export class PostList extends ListResponse {
+  public posts: Post[];
 }
 
 export type Comment = {
@@ -121,11 +127,8 @@ export type Comment = {
   nestedComments: Comment[],
 }
 
-export type CommentList = {
-  total: number,
-  skip: number,
-  limit: number,
-  comments: Comment[],
+export class CommentList extends ListResponse {
+  public comments: Comment[];
 }
 
 export enum VoteType {
