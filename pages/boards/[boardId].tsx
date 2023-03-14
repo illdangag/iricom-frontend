@@ -8,7 +8,7 @@ import { PostListTable, } from '../../components';
 import { RequireLoginAlert, RequireAccountDetailAlert, } from '../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../hooks';
 // etc
-import { AccountAuth, Post, PostList, } from '../../interfaces';
+import { AccountAuth, PostList, } from '../../interfaces';
 
 const BoardsPage = () => {
   const router = useRouter();
@@ -16,8 +16,9 @@ const BoardsPage = () => {
   const [loginState, accountAuth,] = useAccountState();
 
   const boardId: string = router.query.boardId as string;
+  const pageQuery: string = router.query.page as string;
 
-  const PAGE_LIMIT: number = 5;
+  const PAGE_LIMIT: number = 10;
 
   const [postList, setPostList,] = useState<PostList | null>(null);
   const [page, setPage,] = useState<number>(1);
@@ -25,10 +26,12 @@ const BoardsPage = () => {
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    if (boardId) {
+    if (router.isReady) {
+      const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
+      setPage(page);
       void initPostList(boardId, page);
     }
-  }, [boardId,]);
+  }, [router.isReady, pageQuery,]);
 
   const initPostList = async (boardId: string, page: number) => {
     const postList: PostList = await iricomAPI.getPostList(boardId, PAGE_LIMIT * (page - 1), PAGE_LIMIT, null);
@@ -55,7 +58,7 @@ const BoardsPage = () => {
 
   const onClickPagination = (page: number) => {
     setPage(page);
-    void initPostList(boardId, page);
+    void router.push(`/boards/${boardId}?page=${page}`);
   };
 
   return (

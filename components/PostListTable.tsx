@@ -1,49 +1,30 @@
 // react
 import { ReactNode, } from 'react';
 import NextLink from 'next/link';
-import { TableContainer, Table, Tbody, Td, Tr, Badge, Box, ButtonGroup, Button, Thead, Th,
-  Text, } from '@chakra-ui/react';
+import { Badge, Button, ButtonGroup, Divider, Heading, HStack, Text, VStack,
+  LinkBox, LinkOverlay, } from '@chakra-ui/react';
+import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 // etc
-import { PostList, Post, } from '../interfaces';
+import { Post, PostList, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
 
 type Props = {
   postList: PostList,
   page: number,
-  isShowHeader?: boolean,
   isShowPostState?: boolean,
   isShowPagination?: boolean,
-  isShowPostNumber?: boolean,
+  isShowEditButton?: boolean,
   onClickPagination?: (page: number) => void,
 }
 
 const PostListTable = ({
   postList,
   page,
-  isShowHeader = true,
   isShowPostState = true,
   isShowPagination = true,
-  isShowPostNumber = true,
+  isShowEditButton = false,
   onClickPagination = () => {},
 }: Props) => {
-
-  const getRow = (post: Post, index: number): ReactNode => {
-    return <Tr key={post.id}>
-      {isShowPostNumber && <Td>{postList.total - postList.skip - index}</Td>}
-      <Td width='100%'>
-        {!post.isPublish && <>{post.title}</>}
-        {post.isPublish && <NextLink href={`/boards/${post.boardId}/posts/${post.id}`}>
-          {post.title}
-          {isShowPostState && <Badge marginLeft='0.4rem' colorScheme='green' variant='solid'>발행</Badge>}
-        </NextLink>}
-        {isShowPostState && post.hasTemporary && <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
-          <Badge marginLeft='0.4rem' variant='outline'>임시저장</Badge>
-        </NextLink>}
-      </Td>
-      <Td><Text fontSize='.8rem' textAlign='center'>{getFormattedDateTime(post.createDate)}</Text></Td>
-      <Td>{post.viewCount}</Td>
-    </Tr>;
-  };
 
   const getPagination = (): ReactNode => {
     const buttonMaxLength: number = 5;
@@ -68,30 +49,51 @@ const PostListTable = ({
       buttonList.push(<Button key={indexPage} backgroundColor={indexPage === page ? 'gray.100' : 'transparent'} onClick={() => {onClickPagination(indexPage);}}>{indexPage}</Button>);
     }
 
-    return <Box marginTop='0.4rem'>
+    return <HStack justifyContent='center' marginTop='0.4rem'>
       <ButtonGroup size='xs' variant='outline' isAttached>
         {...buttonList}
       </ButtonGroup>
-    </Box>;
+    </HStack>;
+  };
+
+  const getPostItem = (post: Post, index: number) => {
+    return <LinkBox key={index} as='article'>
+      <VStack alignItems='stretch'>
+        <HStack justifyContent='space-between'>
+          <Heading size='xs' fontWeight='medium' width='100%'>
+            <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
+              {post.title}
+            </LinkOverlay>
+          </Heading>
+          {isShowPostState && <HStack>
+            {post.isPublish && <Badge colorScheme='blue'>발행</Badge>}
+            {post.hasTemporary && <Badge colorScheme='gray'>임시저장</Badge>}
+          </HStack>}
+        </HStack>
+        <HStack alignItems='center'>
+          <Badge><HStack><MdThumbUpOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.upvote}</Text></HStack></Badge>
+          <Badge><HStack><MdThumbDownOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.downvote}</Text></HStack></Badge>
+          <Badge><HStack><MdOutlineModeComment size='.8rem'/><Text fontSize='.8rem'>{post.commentCount}</Text></HStack></Badge>
+        </HStack>
+        <HStack>
+          <Text fontSize='.5rem'>작성시간: {getFormattedDateTime(post.createDate)}</Text>
+          <Divider orientation='vertical'/>
+          <Text fontSize='.5rem'>조회수: {post.viewCount}</Text>
+        </HStack>
+        {isShowEditButton && <HStack justifyContent='flex-end'>
+          <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}><Button size='xs'>수정</Button></NextLink>
+          <Button size='xs'>삭제</Button>
+        </HStack>}
+        <Divider/>
+      </VStack>
+    </LinkBox>;
   };
 
   return (
     <>
-      <TableContainer>
-        <Table size='sm' variant='unstyled'>
-          {isShowHeader && <Thead>
-            <Tr>
-              {isShowPostNumber && <Th>번호</Th>}
-              <Th>제목</Th>
-              <Th>작성일</Th>
-              <Th>조회수</Th>
-            </Tr>
-          </Thead>}
-          <Tbody>
-            {postList.posts.map((post, index) => getRow(post, index))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      <VStack alignItems='stretch' spacing='1rem'>
+        {postList.posts.map((post: Post, index: number) => getPostItem(post, index))}
+      </VStack>
       {isShowPagination && getPagination()}
     </>
   );

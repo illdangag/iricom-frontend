@@ -10,21 +10,37 @@ import { useIricomAPI, } from '../../hooks';
 import { useRecoilValue, } from 'recoil';
 import { myAccountAtom, } from '../../recoil';
 // etc
-import { AccountAuth, Account, PostList, } from '../../interfaces';
+import { Account, AccountAuth, PostList, } from '../../interfaces';
 
 const InfoPage = () => {
-  const iricomAPI = useIricomAPI();
   const router = useRouter();
+  const iricomAPI = useIricomAPI();
+
+  const PAGE_LIMIT: number = 10;
+
+  const pageQuery: string = router.query.page as string;
 
   const myAccount = useRecoilValue<Account | null>(myAccountAtom);
   const [postList, setPostList,] = useState<PostList | null>(null);
+  const [page, setPage,] = useState<number>(1);
+
   useEffect(() => {
-    void iricomAPI.getMyPostList(0, 20)
-      .then(postList => {
-        console.log(postList);
-        setPostList(postList);
-      });
-  }, []);
+    if (router.isReady) {
+      const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
+      setPage(page);
+      void initPostList(page);
+    }
+  }, [router.isReady, pageQuery,]);
+
+  const initPostList = async (page: number) => {
+    const postList: PostList = await iricomAPI.getMyPostList(PAGE_LIMIT * (page - 1), PAGE_LIMIT);
+    setPostList(postList);
+  };
+
+  const onClickPagination = (page: number) => {
+    setPage(page);
+    void router.push(`/info?page=${page}`);
+  };
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
@@ -59,7 +75,12 @@ const InfoPage = () => {
             <Heading size='sm'>작성한 글 목록</Heading>
           </CardHeader>
           <CardBody paddingTop='0'>
-            {postList && <PostListTable postList={postList}/>}
+            {postList && <PostListTable
+              postList={postList}
+              onClickPagination={onClickPagination}
+              isShowEditButton
+              page={page}
+            />}
           </CardBody>
         </Card>
       </VStack>
