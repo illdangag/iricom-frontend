@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { Card, CardBody, CardHeader, Heading, Text, IconButton, HStack, } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Heading, Text, IconButton, HStack, LinkBox, LinkOverlay, Alert, AlertIcon, AlertTitle, } from '@chakra-ui/react';
 import { MdMoreHoriz, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
@@ -28,21 +28,26 @@ const BoardPostPreview = ({
       });
   }, []);
 
-  // TODO 게시물이 존재하지 않는 경우에 디자인 수정
   return (
     <Card shadow='none'>
-      <CardHeader>
-        <HStack justifyContent='space-between'>
-          <Heading size='sm' fontWeight='semibold'>
-            {board.title}
-          </Heading>
-          <NextLink href={`/boards/${board.id}`}>
-            <IconButton icon={<MdMoreHoriz/>} aria-label='more posts' size='sm' variant='ghost'/>
-          </NextLink>
-        </HStack>
-      </CardHeader>
+      <LinkBox>
+        <CardHeader>
+          <HStack justifyContent='space-between'>
+            <Heading size='md' fontWeight='semibold'>
+              <LinkOverlay as={NextLink} href={`/boards/${board.id}`}>
+                {board.title}
+              </LinkOverlay>
+            </Heading>
+            <NextLink href={`/boards/${board.id}`}>
+              <IconButton icon={<MdMoreHoriz/>} aria-label='more posts' size='sm' variant='ghost'/>
+            </NextLink>
+          </HStack>
+        </CardHeader>
+      </LinkBox>
       <CardBody>
-        {postList !== null && postList.posts.length === 0 && <Text>게시물이 존재하지 않습니다.</Text>}
+        {postList !== null && postList.posts.length === 0 && <Alert status='info' borderRadius='.5rem'>
+          <AlertTitle>게시물이 존재하지 않습니다.</AlertTitle>
+        </Alert>}
         {postList !== null && postList.posts.length > 0 && <PostListTable
           postList={postList}
           isShowPagination={false}

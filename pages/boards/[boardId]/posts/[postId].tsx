@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, VStack, } from '@chakra-ui/react';
+import { Card, CardBody, VStack, Alert, AlertIcon, AlertTitle, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { CommentView, PostView, CommentEditor, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
@@ -21,7 +21,6 @@ const BoardsPostsPage = () => {
   useEffect(() => {
     if (boardId && postId) {
       initPost(boardId, postId);
-      initCommentList(boardId, postId);
     }
   }, [boardId, postId,]);
 
@@ -29,6 +28,9 @@ const BoardsPostsPage = () => {
     void iricomAPI.getPost(boardId, postId, PostState.PUBLISH)
       .then(post => {
         setPost(post);
+        if (post.isAllowComment) {
+          initCommentList(boardId, postId);
+        }
       })
       .catch(() => {
         // TODO
@@ -39,6 +41,9 @@ const BoardsPostsPage = () => {
     void iricomAPI.getCommentList(boardId, postId)
       .then(commentList => {
         setCommentList(commentList.comments);
+      })
+      .catch(error => {
+        console.log(error);
       });
   };
 
@@ -77,11 +82,19 @@ const BoardsPostsPage = () => {
               <CommentView boardId={boardId} postId={postId} comment={comment} allowNestedComment={true} onChange={onChangeCommentView}/>
             </CardBody>
           </Card>)}
-        <Card shadow='none'>
+        {post && post.isAllowComment && <Card shadow='none'>
           <CardBody>
             <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
           </CardBody>
-        </Card>
+        </Card>}
+        {post && !post.isAllowComment && <Card shadow='none'>
+          <CardBody>
+            <Alert status='warning' borderRadius='.5rem'>
+              <AlertIcon/>
+              <AlertTitle>댓글을 허용하지 않는 게시물입니다.</AlertTitle>
+            </Alert>
+          </CardBody>
+        </Card>}
       </VStack>
     </MainLayout>
   );

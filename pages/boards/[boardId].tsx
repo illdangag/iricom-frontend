@@ -5,10 +5,10 @@ import { Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PostListTable, } from '../../components';
-import { RequireLoginAlert, RequireAccountDetailAlert, } from '../../components/alerts';
+import { RequireAccountDetailAlert, RequireLoginAlert, } from '../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../hooks';
 // etc
-import { AccountAuth, PostList, } from '../../interfaces';
+import { AccountAuth, PostList, PostType, } from '../../interfaces';
 
 const BoardsPage = () => {
   const router = useRouter();
@@ -21,6 +21,8 @@ const BoardsPage = () => {
   const PAGE_LIMIT: number = 10;
 
   const [postList, setPostList,] = useState<PostList | null>(null);
+  const [notificationList, setNotificationList,] = useState<PostList | null>(null);
+
   const [page, setPage,] = useState<number>(1);
   const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
@@ -30,12 +32,18 @@ const BoardsPage = () => {
       const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
       setPage(page);
       void initPostList(boardId, page);
+      void initNotificationList(boardId);
     }
   }, [router.isReady, pageQuery,]);
 
   const initPostList = async (boardId: string, page: number) => {
-    const postList: PostList = await iricomAPI.getPostList(boardId, PAGE_LIMIT * (page - 1), PAGE_LIMIT, null);
+    const postList: PostList = await iricomAPI.getPostList(boardId, PAGE_LIMIT * (page - 1), PAGE_LIMIT, PostType.POST);
     setPostList(postList);
+  };
+
+  const initNotificationList = async (boardId: string) => {
+    const notificationList: PostList = await iricomAPI.getPostList(boardId, 0, 5, PostType.NOTIFICATION);
+    setNotificationList(notificationList);
   };
 
   const onClickCreatePost = () => {
@@ -67,6 +75,16 @@ const BoardsPage = () => {
         <HStack justifyContent='flex-end'>
           <Button size='sm' variant='outline' backgroundColor='gray.50' leftIcon={<MdCreate/>} onClick={onClickCreatePost}>글 쓰기</Button>
         </HStack>
+        {notificationList && notificationList.total > 0 && <Card shadow='none'>
+          <CardBody>
+            <PostListTable
+              postList={notificationList}
+              page={1}
+              isShowPagination={false}
+              isShowPostState={false}
+            />
+          </CardBody>
+        </Card>}
         <Card shadow='none'>
           <CardBody>
             {postList && <PostListTable

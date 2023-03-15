@@ -1,12 +1,11 @@
 // react
 import { ReactNode, useRef, useState, } from 'react';
 import NextLink from 'next/link';
-import { Badge, Button, ButtonGroup, Divider, Heading, HStack, Text, VStack, AlertDialog, AlertDialogOverlay, AlertDialogContent,
-  LinkBox, LinkOverlay, AlertDialogHeader, AlertDialogFooter, AlertDialogBody, } from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Button, ButtonGroup, Divider, Heading, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
-import { Post, PostList, } from '../interfaces';
+import { Post, PostList, PostType, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
 
 type Props = {
@@ -83,9 +82,9 @@ const PostListTable = ({
 
   const getPostItem = (post: Post, index: number) => {
     return <LinkBox key={index} as='article'>
-      <VStack alignItems='stretch'>
+      <VStack alignItems='stretch' marginTop='.25rem' marginBottom='.25rem'>
         <HStack justifyContent='space-between'>
-          <Heading size='xs' fontWeight='medium' width='100%'>
+          <Heading size='sm' color={post.type === PostType.POST ? 'gary.800' : 'red'} fontWeight='medium' width='100%'>
             <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
               {post.title}
             </LinkOverlay>
@@ -101,15 +100,14 @@ const PostListTable = ({
           <Badge><HStack><MdOutlineModeComment size='.8rem'/><Text fontSize='.8rem'>{post.commentCount}</Text></HStack></Badge>
         </HStack>
         <HStack>
-          <Text fontSize='.5rem'>작성시간: {getFormattedDateTime(post.createDate)}</Text>
+          <Text fontSize='.8rem'>작성시간: {getFormattedDateTime(post.createDate)}</Text>
           <Divider orientation='vertical'/>
-          <Text fontSize='.5rem'>조회수: {post.viewCount}</Text>
+          <Text fontSize='.8rem'>조회수: {post.viewCount}</Text>
         </HStack>
         {isShowEditButton && <HStack justifyContent='flex-end'>
           <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}><Button size='xs'>수정</Button></NextLink>
           <Button size='xs' colorScheme='red' variant='solid' onClick={() => onClickDelete(post)}>삭제</Button>
         </HStack>}
-        <Divider/>
       </VStack>
     </LinkBox>;
   };
