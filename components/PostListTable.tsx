@@ -1,9 +1,10 @@
 // react
-import { ReactNode, } from 'react';
+import { ReactNode, useRef, useState, } from 'react';
 import NextLink from 'next/link';
-import { Badge, Button, ButtonGroup, Divider, Heading, HStack, Text, VStack,
-  LinkBox, LinkOverlay, } from '@chakra-ui/react';
+import { Badge, Button, ButtonGroup, Divider, Heading, HStack, Text, VStack, AlertDialog, AlertDialogOverlay, AlertDialogContent,
+  LinkBox, LinkOverlay, AlertDialogHeader, AlertDialogFooter, AlertDialogBody, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
+import { useIricomAPI, } from '../hooks';
 // etc
 import { Post, PostList, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
@@ -15,6 +16,7 @@ type Props = {
   isShowPagination?: boolean,
   isShowEditButton?: boolean,
   onClickPagination?: (page: number) => void,
+  onChangePost?: () => void,
 }
 
 const PostListTable = ({
@@ -24,7 +26,30 @@ const PostListTable = ({
   isShowPagination = true,
   isShowEditButton = false,
   onClickPagination = () => {},
+  onChangePost = () => {},
 }: Props) => {
+  const deleteAlertCancelRef = useRef();
+  const iricomAPI = useIricomAPI();
+
+  const [showDeleteAlert, setShowDeleteAlert,] = useState<boolean>(false);
+  const [deletePost, setDeletePost,] = useState<Post | null>(null);
+
+  const onClickDeleteAlertCancel = () => {
+    setShowDeleteAlert(false);
+  };
+
+  const onClickDeleteAlertConfirm = () => {
+    setShowDeleteAlert(false);
+    void iricomAPI.deletePost(deletePost.boardId, deletePost.id)
+      .then(() => {
+        onChangePost();
+      });
+  };
+
+  const onClickDelete = (post: Post) => {
+    setDeletePost(post);
+    setShowDeleteAlert(true);
+  };
 
   const getPagination = (): ReactNode => {
     const buttonMaxLength: number = 5;
@@ -82,7 +107,7 @@ const PostListTable = ({
         </HStack>
         {isShowEditButton && <HStack justifyContent='flex-end'>
           <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}><Button size='xs'>수정</Button></NextLink>
-          <Button size='xs'>삭제</Button>
+          <Button size='xs' colorScheme='red' variant='solid' onClick={() => onClickDelete(post)}>삭제</Button>
         </HStack>}
         <Divider/>
       </VStack>
@@ -95,6 +120,22 @@ const PostListTable = ({
         {postList.posts.map((post: Post, index: number) => getPostItem(post, index))}
       </VStack>
       {isShowPagination && getPagination()}
+      <AlertDialog isOpen={showDeleteAlert} onClose={onClickDeleteAlertCancel} leastDestructiveRef={deleteAlertCancelRef} size='xs'>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+              게시물 삭제
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              {deletePost && <Text>"{deletePost.title}" 게시물을 삭제합니다.</Text>}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={deleteAlertCancelRef} onClick={onClickDeleteAlertCancel}>취소</Button>
+              <Button colorScheme='red' onClick={onClickDeleteAlertConfirm} marginLeft='1rem'>삭제</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 };

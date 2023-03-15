@@ -45,7 +45,7 @@ const BoardsPostsEditPage = () => {
     setOpenInvalidPostAlert(false);
   };
 
-  const onRequest = (postState: PostState, post: Post) => {
+  const onRequest = (postState: PostState, _post: Post) => {
     if (postState === PostState.TEMPORARY) {
 
     } else { // POST.PUBLISH

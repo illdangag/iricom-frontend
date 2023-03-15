@@ -1,7 +1,7 @@
 // react
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, HStack, CardBody, CardFooter,
+import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
   Button, useToast, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';

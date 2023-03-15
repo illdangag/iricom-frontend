@@ -24,6 +24,7 @@ type IricomAPI = {
   updatePost: (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null) => Promise<Post>,
   publishPost: (boardId: string, postId: string) => Promise<Post>,
   votePost: (boardId: string, postId: string, type: VoteType) => Promise<Post>,
+  deletePost: (boardId: string, postId: string) => Promise<Post>,
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
@@ -399,6 +400,21 @@ function useIricomAPI (): IricomAPI {
 
       try {
         const response: AxiosResponse<Comment> = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    deletePost: async (boardId: string, postId: string): Promise<Post> => {
+      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(token);
+
+      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
+      config.method = 'DELETE';
+
+      try {
+        const response: AxiosResponse<Post> = await axios.request(config);
         return response.data;
       } catch (error) {
         defaultErrorHandler(error);

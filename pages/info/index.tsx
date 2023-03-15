@@ -42,6 +42,10 @@ const InfoPage = () => {
     void router.push(`/info?page=${page}`);
   };
 
+  const onChangePost = () => {
+    void initPostList(page);
+  };
+
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
       <VStack alignItems='stretch'>
@@ -80,6 +84,7 @@ const InfoPage = () => {
               onClickPagination={onClickPagination}
               isShowEditButton
               page={page}
+              onChangePost={onChangePost}
             />}
           </CardBody>
         </Card>

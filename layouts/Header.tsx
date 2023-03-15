@@ -1,7 +1,7 @@
 // react
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Card, CardBody, Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Flex, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Flex, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 // etc
 import { AccountAuth, Account, TokenInfo, } from '../interfaces';

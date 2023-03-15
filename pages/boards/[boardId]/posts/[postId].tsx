@@ -30,8 +30,8 @@ const BoardsPostsPage = () => {
       .then(post => {
         setPost(post);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        // TODO
       });
   };
 

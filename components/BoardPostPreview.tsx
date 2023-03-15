@@ -5,7 +5,7 @@ import { Card, CardBody, CardHeader, Heading, Text, IconButton, HStack, } from '
 import { MdMoreHoriz, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
-import { Board, Post, PostList, PostType, } from '../interfaces';
+import { Board, PostList, PostType, } from '../interfaces';
 import PostListTable from './PostListTable';
 
 type Props = {
@@ -45,10 +45,9 @@ const BoardPostPreview = ({
         {postList !== null && postList.posts.length === 0 && <Text>게시물이 존재하지 않습니다.</Text>}
         {postList !== null && postList.posts.length > 0 && <PostListTable
           postList={postList}
-          isShowHeader={false}
           isShowPagination={false}
           isShowPostState={false}
-          isShowPostNumber={false}
+          page={0}
         />}
       </CardBody>
     </Card>
