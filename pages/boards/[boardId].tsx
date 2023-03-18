@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
+import { Button, Card, CardBody, HStack, VStack, Alert, AlertIcon, Text, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PostListTable, } from '../../components';
@@ -87,7 +87,13 @@ const BoardsPage = () => {
         </Card>}
         <Card shadow='none'>
           <CardBody>
-            {postList && <PostListTable
+            {postList && postList.total === 0 && <>
+              <Alert status='info' borderRadius='.5rem'>
+                <AlertIcon/>
+                <Text>게시판에 게시물이 없습니다.</Text>
+              </Alert>
+            </>}
+            {postList && postList.total > 0 && <PostListTable
               postList={postList}
               page={page}
               isShowPostState={false}

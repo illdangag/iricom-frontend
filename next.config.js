@@ -1,4 +1,5 @@
-const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
+const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
+const removeImports = require('next-remove-imports')();
 const localConfig = require('./config/local.next.config');
 
 module.exports = (phase) => {
@@ -9,10 +10,10 @@ module.exports = (phase) => {
     env = localConfig.env;
   }
 
-  return {
+  return removeImports({
     env: env,
     eslint: {
       ignoreDuringBuilds: true,
     },
-  };
+  });
 };

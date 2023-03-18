@@ -1,9 +1,18 @@
 // react
 import { useState, } from 'react';
-import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList,
-  Spacer, Text, VStack, useToast, } from '@chakra-ui/react';
+import {
+  Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList,
+  Spacer, Text, VStack, useToast, Box,
+} from '@chakra-ui/react';
 import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
+
+import dynamic from 'next/dynamic';
+const MDPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
+  ssr: false,
+});
+
+
 // etc
 import { Post, VoteType, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
@@ -93,7 +102,9 @@ const PostView = ({
           </Flex>
         </CardHeader>
         <CardBody>
-          {post.content}
+          <Box>
+            <MDPreview source={post.content}/>
+          </Box>
         </CardBody>
         <CardFooter justifyContent='center'>
           <ButtonGroup>

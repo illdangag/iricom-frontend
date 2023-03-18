@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { Card, CardBody, CardHeader, Heading, Text, IconButton, HStack, LinkBox, LinkOverlay, Alert, AlertIcon, AlertTitle, } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Heading, IconButton, HStack, LinkBox, LinkOverlay, Alert, AlertTitle, } from '@chakra-ui/react';
 import { MdMoreHoriz, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc

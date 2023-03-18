@@ -4,7 +4,7 @@ import { useRouter, } from 'next/router';
 import { Card, CardBody, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../../layouts/MainLayout';
 import { PostEditor, } from '../../../../../components';
-import { InvalidPostAlert, } from '../../../../../components/alerts';
+import { InvalidPostAlert, PostPublishAlert, } from '../../../../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../../../../hooks';
 // etc
 import { AccountAuth, Post, PostState, } from '../../../../../interfaces';
@@ -18,7 +18,9 @@ const BoardsPostsEditPage = () => {
   const postId: string = router.query.postId as string;
 
   const [post, setPost,] = useState<Post | null>(null);
+  const [publishPost, setPublishPost,] = useState<Post | null>(null);
   const [isOpenInvalidPostAlert, setOpenInvalidPostAlert,] = useState<boolean>(false);
+  const [isOpenPostPublishAlert, setOpenPostPublishAlert,] = useState<boolean>(false);
 
   useEffect(() => {
     if (boardId && postId) {
@@ -45,11 +47,16 @@ const BoardsPostsEditPage = () => {
     setOpenInvalidPostAlert(false);
   };
 
-  const onRequest = (postState: PostState, _post: Post) => {
+  const onClosePostPublishAlert = () => {
+    setOpenPostPublishAlert(false);
+  };
+
+  const onRequest = (postState: PostState, post: Post) => {
     if (postState === PostState.TEMPORARY) {
-
+      // TODO 임시 저장에 성공한 메시지를 나타내야 함
     } else { // POST.PUBLISH
-
+      setPublishPost(post);
+      setOpenPostPublishAlert(true);
     }
   };
 
@@ -58,12 +65,25 @@ const BoardsPostsEditPage = () => {
       <VStack alignItems='stretch'>
         <Card>
           <CardBody>
-            {!post && <PostEditor accountAuth={accountAuth} disabled={true}/>}
-            {post && <PostEditor accountAuth={accountAuth} defaultValue={post} boardId={boardId as string} onRequest={onRequest}/>}
+            {!post && <PostEditor
+              accountAuth={accountAuth}
+              disabled={true}
+            />}
+            {post && <PostEditor
+              accountAuth={accountAuth}
+              defaultValue={post}
+              boardId={boardId}
+              onRequest={onRequest}
+            />}
           </CardBody>
         </Card>
       </VStack>
       <InvalidPostAlert isOpen={isOpenInvalidPostAlert} onClose={onCloseInvalidPostAlert}/>
+      {publishPost && <PostPublishAlert
+        isOpen={isOpenPostPublishAlert}
+        post={publishPost}
+        onClose={onClosePostPublishAlert}
+      />}
     </MainLayout>
   );
 };

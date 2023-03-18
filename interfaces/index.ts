@@ -104,6 +104,7 @@ class ListResponse {
   public total: number;
   public skip: number;
   public limit: number;
+
   public get currentPage (): number {
     return (this.skip / this.limit) + 1;
   }

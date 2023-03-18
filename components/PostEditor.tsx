@@ -1,9 +1,19 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
-import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, Textarea, VStack, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text,
+  VStack, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../hooks';
+
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
+import dynamic from 'next/dynamic';
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
+  ssr: false,
+});
+
 // etc
 import { AccountAuth, Post, PostState, PostType, } from '../interfaces';
+
 
 type Props = {
   defaultValue?: Post,
@@ -24,8 +34,7 @@ const PostEditor = ({
   disabled = false,
   accountAuth,
   boardId = '',
-  onRequest = () => {
-  },
+  onRequest = () => {},
 }: Props) => {
   const iricomAPI = useIricomAPI();
 
@@ -49,8 +58,8 @@ const PostEditor = ({
     setTitle(event.target.value);
   };
 
-  const onChangeContent = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(event.target.value);
+  const onChangeEditor = (value: string) => {
+    setContent(value);
   };
 
   const onChangePostType = (value: PostType) => {
@@ -98,7 +107,15 @@ const PostEditor = ({
         </FormControl>
         <FormControl>
           <FormLabel>내용</FormLabel>
-          <Textarea value={content} disabled={disabled || editorState === EditorState.REQUEST} onChange={onChangeContent}/>
+          <Box>
+            <MDEditor
+              height={500}
+              value={content}
+              defaultValue={content}
+              visiableDragbar={false}
+              onChange={onChangeEditor}
+            />
+          </Box>
         </FormControl>
       </VStack>
       {accountAuth === AccountAuth.SYSTEM_ADMIN && <>
