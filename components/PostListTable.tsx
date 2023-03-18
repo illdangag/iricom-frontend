@@ -100,6 +100,8 @@ const PostListTable = ({
           <Badge><HStack><MdOutlineModeComment size='.8rem'/><Text fontSize='.8rem'>{post.commentCount}</Text></HStack></Badge>
         </HStack>
         <HStack>
+          <Text fontSize='.8rem'>작성자: {post.account.nickname}</Text>
+          <Divider orientation='vertical'/>
           <Text fontSize='.8rem'>작성시간: {getFormattedDateTime(post.createDate)}</Text>
           <Divider orientation='vertical'/>
           <Text fontSize='.8rem'>조회수: {post.viewCount}</Text>
