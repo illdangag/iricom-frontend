@@ -139,8 +139,10 @@ function useIricomAPI (): IricomAPI {
       }
 
       try {
-        const response: AxiosResponse<BoardList> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: BoardList = new BoardList();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         console.error(error);
         throw error;

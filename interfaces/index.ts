@@ -47,6 +47,31 @@ class ListResponse {
   public get currentPage (): number {
     return (this.skip / this.limit) + 1;
   }
+
+  public get totalPate (): number {
+    return Math.ceil(this.total / this.limit);
+  }
+
+  public getPaginationList (maxSize: number): number[] {
+    const paddingLength: number = Math.floor(maxSize / 2);
+
+    let startPage: number = this.currentPage - paddingLength;
+    let endPage: number = this.currentPage + paddingLength;
+
+    if (startPage < 1) {
+      endPage += startPage * -1;
+      startPage = 1;
+    }
+
+    endPage = Math.min(endPage, this.totalPate);
+
+    const resultList: number[] = [];
+    for (let index = startPage; index <= endPage; index++) {
+      resultList.push(index);
+    }
+
+    return resultList;
+  }
 }
 
 export enum AccountAuth {
@@ -78,11 +103,8 @@ export type Board = {
   enabled: boolean,
 }
 
-export type BoardList = {
-  total: number,
-  skip: number,
-  limit: number,
-  boards: Board[],
+export class BoardList extends ListResponse {
+  public boards: Board[];
 }
 
 export enum PostType {

@@ -1,8 +1,7 @@
 // react
 import { ReactNode, useRef, useState, } from 'react';
 import NextLink from 'next/link';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Button,
-  ButtonGroup, Divider, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Button, ButtonGroup, Divider, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
@@ -25,8 +24,10 @@ const PostListTable = ({
   isShowPostState = true,
   isShowPagination = true,
   isShowEditButton = false,
-  onClickPagination = () => {},
-  onChangePost = () => {},
+  onClickPagination = () => {
+  },
+  onChangePost = () => {
+  },
 }: Props) => {
   const deleteAlertCancelRef = useRef();
   const iricomAPI = useIricomAPI();
@@ -52,31 +53,17 @@ const PostListTable = ({
   };
 
   const getPagination = (): ReactNode => {
-    const buttonMaxLength: number = 5;
-    const total: number = postList.total;
-    const limit: number = postList.limit;
-
-    const currentPage: number = postList.currentPage;
-    const totalPage: number = Math.ceil(total / limit);
-    const paddingLength: number = Math.floor(buttonMaxLength / 2);
-
-    let startPage: number = currentPage - paddingLength;
-    let endPage: number = currentPage + paddingLength;
-
-    if (startPage < 1) {
-      endPage += startPage * -1;
-      startPage = 1;
-    }
-
-    endPage = Math.min(endPage, totalPage);
-    const buttonList: ReactNode[] = [];
-    for (let indexPage = startPage; indexPage <= endPage; indexPage++) {
-      buttonList.push(<Button key={indexPage} backgroundColor={indexPage === page ? 'gray.100' : 'transparent'} onClick={() => {onClickPagination(indexPage);}}>{indexPage}</Button>);
-    }
-
+    const paginationList: number[] = postList.getPaginationList(5);
     return <HStack justifyContent='center' marginTop='0.4rem'>
       <ButtonGroup size='xs' variant='outline' isAttached>
-        {...buttonList}
+        {paginationList.map((pagination, index) => <Button
+          key={index}
+          backgroundColor={pagination === page ? 'gray.100' : 'transparent'}
+          onClick={() => {
+            onClickPagination(pagination);
+          }}>
+          {pagination}
+        </Button>)}
       </ButtonGroup>
     </HStack>;
   };
