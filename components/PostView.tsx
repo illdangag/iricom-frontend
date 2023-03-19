@@ -74,7 +74,7 @@ const PostView = ({
 
   return (
     <VStack alignItems='stretch'>
-      <Card shadow='none'>
+      <Card shadow='none' borderRadius='0'>
         <CardHeader>
           <Flex flexDirection='column'>
             <Flex flexDirection='row' justifyContent='space-between'>

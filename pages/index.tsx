@@ -21,7 +21,7 @@ const IndexPage = () => {
 
   return (
     <MainLayout>
-      <VStack alignItems='stretch'>
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         {boardList && boardList.map((board, index) =>
           <BoardPostPreview board={board} key={index}/>)
         }

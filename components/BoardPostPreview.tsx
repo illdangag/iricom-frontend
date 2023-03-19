@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { Card, CardBody, CardHeader, Heading, IconButton, HStack, LinkBox, LinkOverlay, Alert, AlertTitle, } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Heading, IconButton, HStack, LinkBox, LinkOverlay, Alert, AlertTitle, Text, Divider, } from '@chakra-ui/react';
 import { MdMoreHoriz, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
@@ -38,15 +38,12 @@ const BoardPostPreview = ({
                 {board.title}
               </LinkOverlay>
             </Heading>
-            <NextLink href={`/boards/${board.id}`}>
-              <IconButton icon={<MdMoreHoriz/>} aria-label='more posts' size='sm' variant='ghost'/>
-            </NextLink>
           </HStack>
         </CardHeader>
       </LinkBox>
-      <CardBody>
-        {postList !== null && postList.posts.length === 0 && <Alert status='info' borderRadius='.5rem'>
-          <AlertTitle>게시물이 존재하지 않습니다.</AlertTitle>
+      <CardBody paddingTop='0'>
+        {postList !== null && postList.posts.length === 0 && <Alert status='info' borderRadius='.375rem'>
+          <Text>게시판에 게시물이 없습니다.</Text>
         </Alert>}
         {postList !== null && postList.posts.length > 0 && <PostListTable
           postList={postList}

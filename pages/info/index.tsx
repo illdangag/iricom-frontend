@@ -2,7 +2,7 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, VStack, } from '@chakra-ui/react';
+import { Alert, Badge, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PostListTable, } from '../../components';
 import { useIricomAPI, } from '../../hooks';
@@ -48,7 +48,19 @@ const InfoPage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
-      <VStack alignItems='stretch'>
+      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
+        <CardBody>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/info' isCurrentPage>내 정보</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </CardBody>
+      </Card>
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         <Card shadow='none'>
           <CardHeader>
             <HStack justifyContent='flex-start'>
@@ -79,13 +91,16 @@ const InfoPage = () => {
             <Heading size='sm'>작성한 글 목록</Heading>
           </CardHeader>
           <CardBody paddingTop='0'>
-            {postList && <PostListTable
+            {postList && postList.total > 0 && <PostListTable
               postList={postList}
               onClickPagination={onClickPagination}
               isShowEditButton
               page={page}
               onChangePost={onChangePost}
             />}
+            {postList && postList.total === 0 && <Alert status='info' borderRadius='.375rem'>
+              <Text>등록한 게시물이 없습니다.</Text>
+            </Alert>}
           </CardBody>
         </Card>
       </VStack>

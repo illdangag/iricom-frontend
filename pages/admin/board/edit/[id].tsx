@@ -1,8 +1,10 @@
 // react
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, Input, Textarea, VStack,
-  useToast, CardBody, CardFooter, } from '@chakra-ui/react';
+import {
+  Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, Input, Textarea, VStack,
+  useToast, CardBody, CardFooter, Breadcrumb, BreadcrumbItem, BreadcrumbLink,
+} from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { useIricomAPI, } from '../../../../hooks';
@@ -22,7 +24,7 @@ const AdminBoardEditIdPage = () => {
   const toast = useToast();
   const iriconAPI = useIricomAPI();
 
-  const { id, } = router.query;
+  const id = router.query.id as string;
 
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [board, setBoard,] = useState<Board | null>(null);
@@ -105,10 +107,25 @@ const AdminBoardEditIdPage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <VStack alignItems='stretch'>
-        <Container maxWidth='none' margin='0' padding='0'>
-          <Heading as='h1' size='sm'>게시판 수정</Heading>
-        </Container>
+      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
+        <CardBody>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/admin/board/edit'>수정</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem isCurrentPage>
+              {board && <BreadcrumbLink href={`/admin/board/edit/${id}`}>{board.title}</BreadcrumbLink>}
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </CardBody>
+      </Card>
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         <Card shadow='none'>
           <CardBody>
             <VStack spacing='1.8rem'>

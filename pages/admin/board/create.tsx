@@ -1,8 +1,10 @@
 // react
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
-  Button, useToast, } from '@chakra-ui/react';
+import {
+  Heading, VStack, Container, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
+  Button, useToast, BreadcrumbItem, BreadcrumbLink, Breadcrumb,
+} from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';
 // etc
@@ -68,24 +70,38 @@ const AdminBoardCreatePage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <VStack alignItems='stretch'>
-        <Container maxWidth='none' margin='0' padding='0'>
-          <Heading as='h1' size='sm'>게시판 생성</Heading>
-        </Container>
+      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
+        <CardBody>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem isCurrentPage>
+              <BreadcrumbLink href='/admin/board/create'>생성</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </CardBody>
+      </Card>
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         <Card shadow='none'>
           <CardBody>
-            <FormControl isRequired>
-              <FormLabel>제목</FormLabel>
-              <Input autoFocus value={title} onChange={onChangeTitle}/>
-            </FormControl>
-            <FormControl>
-              <FormLabel>설명</FormLabel>
-              <Textarea placeholder='설명을 입력해주세요.' value={description} onChange={onChangeDescription}/>
-            </FormControl>
-            <FormControl>
-              <Checkbox defaultChecked={false} checked={enabled} onChange={onChangeEnabled}>활성화</Checkbox>
-              <FormHelperText>비활성화 게시판은 사용자에게 나타나지 않으며, 게시물 작성 및 댓글 작성이 불가능합니다.</FormHelperText>
-            </FormControl>
+            <VStack spacing='1rem'>
+              <FormControl isRequired>
+                <FormLabel>제목</FormLabel>
+                <Input autoFocus value={title} onChange={onChangeTitle}/>
+              </FormControl>
+              <FormControl>
+                <FormLabel>설명</FormLabel>
+                <Textarea placeholder='설명을 입력해주세요.' value={description} onChange={onChangeDescription}/>
+              </FormControl>
+              <FormControl>
+                <Checkbox defaultChecked={false} checked={enabled} onChange={onChangeEnabled}>활성화</Checkbox>
+                <FormHelperText>비활성화 게시판은 사용자에게 나타나지 않으며, 게시물 작성 및 댓글 작성이 불가능합니다.</FormHelperText>
+              </FormControl>
+            </VStack>
           </CardBody>
           <CardFooter justifyContent='flex-end'>
             <Button

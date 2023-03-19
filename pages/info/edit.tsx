@@ -1,8 +1,9 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
+import { useRouter, } from 'next/router';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, FormControl, FormLabel, Heading, HStack, Input, VStack,
-  useToast, } from '@chakra-ui/react';
+  useToast, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../../hooks';
 // store
 import { useRecoilState, } from 'recoil';
@@ -19,6 +20,7 @@ enum PageState {
 }
 
 const InfoEditPage = () => {
+  const router = useRouter();
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
@@ -61,12 +63,28 @@ const InfoEditPage = () => {
           status: 'success',
           duration: 3000,
         });
+        void router.push('/info');
       });
   };
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
-      <VStack alignItems='stretch' padding='0'>
+      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
+        <CardBody>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/info'>내 정보</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/info/edit' isCurrentPage>수정</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </CardBody>
+      </Card>
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         <Card shadow='none'>
           <CardHeader padding='0.8rem'>
             <HStack>

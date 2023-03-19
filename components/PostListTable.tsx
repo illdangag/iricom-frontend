@@ -84,7 +84,7 @@ const PostListTable = ({
     return <LinkBox key={index} as='article'>
       <VStack alignItems='stretch' marginTop='.25rem' marginBottom='.25rem'>
         <HStack justifyContent='space-between'>
-          <Heading size='sm' color={post.type === PostType.POST ? 'gary.800' : 'red'} fontWeight='medium' width='100%'>
+          <Heading size='sm' fontWeight='medium' width='100%'>
             <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
               {post.title}
             </LinkOverlay>

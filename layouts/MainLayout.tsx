@@ -25,9 +25,9 @@ const MainLayout = ({
 }: Props) => {
   return (
     <EmptyLayout title={title} loginState={loginState} auth={auth} onMount={onMount}>
-      <Box padding='.6rem'>
+      <Box>
         <Header title={headerTitle}/>
-        <Box marginTop='.6rem'>
+        <Box marginTop='1rem'>
           {children}
         </Box>
       </Box>

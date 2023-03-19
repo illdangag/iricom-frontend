@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Container, Heading, VStack, Card, Image, HStack, Spacer, Text, } from '@chakra-ui/react';
+import { Container, Heading, VStack, Card, Image, HStack, Spacer, Text, CardBody, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../hooks';
 // etc
@@ -30,10 +30,22 @@ const AdminBoardEditPage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN} onMount={onMount}>
-      <VStack>
-        <Container width='100%' maxWidth='none' margin='0' padding='0'>
-          <Heading as='h1' size='sm'>게시판 수정</Heading>
-        </Container>
+      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
+        <CardBody>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem isCurrentPage>
+              <BreadcrumbLink href='/admin/board/edit'>수정</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </CardBody>
+      </Card>
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         {boardList && boardList.length === 0 && emptyBoardList}
         {boardList && boardList.map((board, index) => <BoardCard board={board} key={index}/>)}
       </VStack>

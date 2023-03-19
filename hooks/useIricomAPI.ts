@@ -166,10 +166,10 @@ function useIricomAPI (): IricomAPI {
     },
 
     getBoard: async (id: string) => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = backendProperties.host + '/v1/boards/' + id;
-      config.method = 'GET';
+      const config: AxiosRequestConfig = {
+        url: backendProperties.host + '/v1/boards/' + id,
+        method: 'GET',
+      };
 
       try {
         const response: AxiosResponse<Board> = await axios.request(config);

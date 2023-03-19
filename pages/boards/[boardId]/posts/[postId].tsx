@@ -74,15 +74,15 @@ const BoardsPostsPage = () => {
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-      <VStack alignItems='stretch'>
+      <VStack alignItems='stretch' spacing='1rem'>
         {post && <PostView post={post} onChange={onChangePostView}/>}
         {commentList && commentList.map((comment, index) =>
-          <Card shadow='none' key={index}>
+          <Card shadow='none' key={index} borderRadius='0'>
             <CardBody>
               <CommentView boardId={boardId} postId={postId} comment={comment} allowNestedComment={true} onChange={onChangeCommentView}/>
             </CardBody>
           </Card>)}
-        {post && post.isAllowComment && <Card shadow='none'>
+        {post && post.isAllowComment && <Card shadow='none' borderRadius='0'>
           <CardBody>
             <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
           </CardBody>

@@ -91,7 +91,7 @@ const Header = ({
 
   return (
     <Box>
-      <Card shadow='none'>
+      <Card shadow='none' borderRadius='0'>
         <CardBody paddingTop='0.4rem' paddingBottom='0.4rem'>
           <Flex justifyContent='space-between' alignItems='center'>
             <NextLink href='/'>
