@@ -39,6 +39,16 @@ export type IricomErrorResponse = {
   message: string,
 };
 
+class ListResponse {
+  public total: number;
+  public skip: number;
+  public limit: number;
+
+  public get currentPage (): number {
+    return (this.skip / this.limit) + 1;
+  }
+}
+
 export enum AccountAuth {
   SYSTEM_ADMIN = 'systemAdmin',
   BOARD_ADMIN = 'boardAdmin',
@@ -55,6 +65,10 @@ export type Account = {
   nickname: string,
   description: string,
   auth: AccountAuth,
+}
+
+export class AccountList extends ListResponse {
+  public accounts: Account[];
 }
 
 export type Board = {
@@ -98,16 +112,6 @@ export type Post = {
   isPublish: boolean,
   hasTemporary: boolean,
   boardId: string,
-}
-
-class ListResponse {
-  public total: number;
-  public skip: number;
-  public limit: number;
-
-  public get currentPage (): number {
-    return (this.skip / this.limit) + 1;
-  }
 }
 
 export class PostList extends ListResponse {

@@ -1,7 +1,7 @@
 // node
 import process from 'process';
 // etc
-import { Account, BackendProperties, Board, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, BackendProperties, Board, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
@@ -29,6 +29,8 @@ type IricomAPI = {
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
   voteComment: (boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
+
+  getAccountList: (skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -420,7 +422,33 @@ function useIricomAPI (): IricomAPI {
         defaultErrorHandler(error);
       }
     },
+
+    getAccountList: async (skip: number, limit: number, keyword: string | null): Promise<AccountList> => {
+      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(token);
+
+      config.url = `${backendProperties.host}/v1/accounts`;
+      config.method = 'GET';
+      config.params = {
+        skip: skip,
+        limit: limit,
+      };
+
+      if (keyword !== null) {
+        config.params.keyword = keyword;
+      }
+
+      try {
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: AccountList = new AccountList();
+        Object.assign(result, response.data);
+        return result;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
   };
+
   return iricomApi;
 }
 

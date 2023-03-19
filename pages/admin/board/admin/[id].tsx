@@ -6,7 +6,7 @@ import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { AccountAuth, } from '../../../../interfaces';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
-import { Board, } from '../../../../interfaces';
+import { Board, AccountList, } from '../../../../interfaces';
 
 const AdminBoardAdminEditPage = () => {
   const router = useRouter();
@@ -15,6 +15,7 @@ const AdminBoardAdminEditPage = () => {
   const id: string = router.query.id as string;
 
   const [board, setBoard,] = useState<Board | null>(null);
+  const [accountList, setAccountList,] = useState<AccountList | null>(null);
 
   useEffect(() => {
     if (router.isReady) {
@@ -24,7 +25,9 @@ const AdminBoardAdminEditPage = () => {
 
   const init = async (boardId: string) => {
     const board: Board = await iricomAPI.getBoard(boardId);
+    const accountList: AccountList = await iricomAPI.getAccountList(0, 20, null);
     setBoard(board);
+    setAccountList(accountList);
   };
 
   return (
