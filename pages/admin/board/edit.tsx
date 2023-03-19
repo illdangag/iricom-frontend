@@ -1,11 +1,12 @@
 // react
 import { useState, } from 'react';
-import { Container, Heading, VStack, Card, Image, HStack, Spacer, Text, CardBody, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { VStack, Card, Image, HStack, Spacer, Text, CardBody, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+import { BoardView, } from '../../../components';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../hooks';
 // etc
 import { AccountAuth, Board, } from '../../../interfaces';
-import BoardCard from '../../../components/BoardCard';
 
 const AdminBoardEditPage = () => {
   const iricomApi = useIricomAPI();
@@ -47,7 +48,13 @@ const AdminBoardEditPage = () => {
       </Card>
       <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
         {boardList && boardList.length === 0 && emptyBoardList}
-        {boardList && boardList.map((board, index) => <BoardCard board={board} key={index}/>)}
+        {boardList && boardList.map((board, index) => <NextLink href={`/admin/board/edit/${board.id}`} key={index}>
+          <Card shadow='none'>
+            <CardBody>
+              <BoardView board={board}/>
+            </CardBody>
+          </Card>
+        </NextLink>)}
       </VStack>
     </MainLayout>
   );
