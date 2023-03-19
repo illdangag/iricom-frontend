@@ -4,7 +4,7 @@ import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, HStack, VStack, Alert, Text, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
-import { PostListTable, } from '../../components';
+import { PostListTable, NoContent, } from '../../components';
 import { RequireAccountDetailAlert, RequireLoginAlert, } from '../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../hooks';
 // etc
@@ -113,9 +113,7 @@ const BoardsPage = () => {
           <Card shadow='none' borderRadius='0'>
             <CardBody>
               {postList && postList.total === 0 && <>
-                <Alert status='info' borderRadius='.375rem'>
-                  <Text>게시판에 게시물이 없습니다.</Text>
-                </Alert>
+                <NoContent message='게시물이 존재하지 않습니다.'/>
               </>}
               {postList && postList.total > 0 && <PostListTable
                 postList={postList}
