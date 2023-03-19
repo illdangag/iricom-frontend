@@ -117,9 +117,9 @@ const PostListTable = ({
         </HStack>
         {/* 상세 정보 */}
         <HStack>
-          <Text fontSize='.8rem'>작성자: {post.account.nickname}</Text>
+          <Text fontSize='.8rem'>{post.account.nickname}</Text>
           <Divider orientation='vertical'/>
-          <Text fontSize='.8rem'>작성시간: {getFormattedDateTime(post.createDate)}</Text>
+          <Text fontSize='.8rem'>{getFormattedDateTime(post.createDate)}</Text>
           <Divider orientation='vertical'/>
           <Text fontSize='.8rem'>조회수: {post.viewCount}</Text>
         </HStack>
