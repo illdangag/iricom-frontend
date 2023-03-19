@@ -1,10 +1,8 @@
 // react
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
-import {
-  Button, Card, Checkbox, Container, FormControl, FormHelperText, FormLabel, Heading, Input, Textarea, VStack,
-  useToast, CardBody, CardFooter, Breadcrumb, BreadcrumbItem, BreadcrumbLink,
-} from '@chakra-ui/react';
+import { Button, Card, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, VStack,
+  useToast, CardBody, CardFooter, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { useIricomAPI, } from '../../../../hooks';

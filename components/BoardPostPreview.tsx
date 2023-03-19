@@ -1,8 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { Card, CardBody, CardHeader, Heading, IconButton, HStack, LinkBox, LinkOverlay, Alert, AlertTitle, Text, Divider, } from '@chakra-ui/react';
-import { MdMoreHoriz, } from 'react-icons/md';
+import { Card, CardBody, CardHeader, Heading, HStack, LinkBox, LinkOverlay, Alert, Text, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../hooks';
 // etc
 import { Board, PostList, PostType, } from '../interfaces';

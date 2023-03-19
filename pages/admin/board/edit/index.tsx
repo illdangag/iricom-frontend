@@ -1,7 +1,7 @@
 // react
 import { useState, } from 'react';
 import NextLink from 'next/link';
-import { VStack, Card, Image, HStack, Spacer, Text, CardBody, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+import { VStack, Card, CardBody, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
 import { BoardView, NoContent, } from '../../../../components';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../../hooks';

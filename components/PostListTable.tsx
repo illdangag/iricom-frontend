@@ -1,11 +1,12 @@
 // react
 import { ReactNode, useRef, useState, } from 'react';
 import NextLink from 'next/link';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Button, ButtonGroup, Divider, Heading, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Button,
+  ButtonGroup, Divider, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
-import { Post, PostList, PostType, } from '../interfaces';
+import { Post, PostList, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
 
 type Props = {

@@ -43,7 +43,7 @@ const BoardsPostsPage = () => {
         setCommentList(commentList.comments);
       })
       .catch(error => {
-        console.log(error);
+        // TODO error
       });
   };
 

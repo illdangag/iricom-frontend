@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, HStack, VStack, Alert, AlertIcon, Text, Box, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+import { Button, Card, CardBody, HStack, VStack, Alert, Text, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PostListTable, } from '../../components';
