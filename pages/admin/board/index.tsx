@@ -39,7 +39,7 @@ const AdminBoardPage = () => {
             '게시판에 관리자를 설정합니다.',
             '게시판 관리자는 해당 게시판에 공지사항을 작성 할 수 있으며, 게시물을 차단 할 수 있습니다.',
           ]}
-          href='#'
+          href='/admin/board/admin'
         />
       </VStack>
     </MainLayout>

@@ -2,11 +2,11 @@
 import { useState, } from 'react';
 import NextLink from 'next/link';
 import { VStack, Card, Image, HStack, Spacer, Text, CardBody, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
-import { BoardView, } from '../../../components';
-import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
-import { useIricomAPI, } from '../../../hooks';
+import { BoardView, NoContent, } from '../../../../components';
+import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
+import { useIricomAPI, } from '../../../../hooks';
 // etc
-import { AccountAuth, Board, } from '../../../interfaces';
+import { AccountAuth, Board, } from '../../../../interfaces';
 
 const AdminBoardEditPage = () => {
   const iricomApi = useIricomAPI();
@@ -18,16 +18,6 @@ const AdminBoardEditPage = () => {
         setBoardList(boardList.boards);
       });
   };
-
-  const emptyBoardList =
-    <Card shadow='sm' padding='1rem'>
-      <HStack>
-        <Spacer/>
-        <Image src='/static/images/empty.png' width='6rem' alt='empty board list'/>
-        <Spacer/>
-      </HStack>
-      <Text marginTop='1rem' fontSize='lg'>게시판이 존재하지 않습니다.</Text>
-    </Card>;
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN} onMount={onMount}>
@@ -41,13 +31,17 @@ const AdminBoardEditPage = () => {
               <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href='/admin/board/edit'>수정</BreadcrumbLink>
+              <BreadcrumbLink href='/admin/board/edit'>게시판 수정</BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
         </CardBody>
       </Card>
       <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
-        {boardList && boardList.length === 0 && emptyBoardList}
+        {boardList && boardList.length === 0 && <Card shadow='none'>
+          <CardBody>
+            <NoContent message='게시판이 존재하지 않습니다.'/>
+          </CardBody>
+        </Card>}
         {boardList && boardList.map((board, index) => <NextLink href={`/admin/board/edit/${board.id}`} key={index}>
           <Card shadow='none'>
             <CardBody>
