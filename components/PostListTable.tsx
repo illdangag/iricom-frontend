@@ -80,25 +80,42 @@ const PostListTable = ({
     </HStack>;
   };
 
-  const getPostItem = (post: Post, index: number) => {
-    return <LinkBox key={index} as='article'>
-      <VStack alignItems='stretch' marginTop='.25rem' marginBottom='.25rem'>
+  const getPostItem = (post: Post, key: string) => (
+    <LinkBox key={key}>
+      <VStack alignItems='stretch'>
+        {/* 제목 */}
         <HStack justifyContent='space-between'>
-          <Heading size='sm' fontWeight='medium' width='100%'>
-            <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
-              {post.title}
-            </LinkOverlay>
-          </Heading>
-          {isShowPostState && <HStack>
-            {post.isPublish && <Badge colorScheme='blue'>발행</Badge>}
-            {post.hasTemporary && <Badge colorScheme='gray'>임시저장</Badge>}
-          </HStack>}
+          <HStack>
+            <Text>
+              <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
+                {post.title}
+              </LinkOverlay>
+            </Text>
+            {isShowPostState && (
+              <HStack>
+                {post.isPublish && <Badge colorScheme='blue'>발행</Badge>}
+                {post.hasTemporary && <Badge colorScheme='gray'>임시저장</Badge>}
+              </HStack>
+            )}
+          </HStack>
+          {isShowEditButton && (
+            <HStack>
+              <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
+                <Button size='xs' variant='outline'>수정</Button>
+              </NextLink>
+              <Button size='xs' colorScheme='red' variant='outline' onClick={() => onClickDelete(post)}>삭제</Button>
+            </HStack>
+          )}
         </HStack>
-        <HStack alignItems='center'>
-          <Badge><HStack><MdThumbUpOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.upvote}</Text></HStack></Badge>
-          <Badge><HStack><MdThumbDownOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.downvote}</Text></HStack></Badge>
-          <Badge><HStack><MdOutlineModeComment size='.8rem'/><Text fontSize='.8rem'>{post.commentCount}</Text></HStack></Badge>
+        {/* 좋아요/싫어요/댓글수 수정/삭제 */}
+        <HStack justifyContent='space-between'>
+          <HStack>
+            <Badge><HStack><MdThumbUpOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.upvote}</Text></HStack></Badge>
+            <Badge><HStack><MdThumbDownOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.downvote}</Text></HStack></Badge>
+            <Badge><HStack><MdOutlineModeComment size='.8rem'/><Text fontSize='.8rem'>{post.commentCount}</Text></HStack></Badge>
+          </HStack>
         </HStack>
+        {/* 상세 정보 */}
         <HStack>
           <Text fontSize='.8rem'>작성자: {post.account.nickname}</Text>
           <Divider orientation='vertical'/>
@@ -106,20 +123,17 @@ const PostListTable = ({
           <Divider orientation='vertical'/>
           <Text fontSize='.8rem'>조회수: {post.viewCount}</Text>
         </HStack>
-        {isShowEditButton && <HStack justifyContent='flex-end'>
-          <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}><Button size='xs'>수정</Button></NextLink>
-          <Button size='xs' colorScheme='red' variant='solid' onClick={() => onClickDelete(post)}>삭제</Button>
-        </HStack>}
       </VStack>
-    </LinkBox>;
-  };
+    </LinkBox>
+  );
 
   return (
     <>
-      <VStack alignItems='stretch' spacing='1rem'>
-        {postList.posts.map((post: Post, index: number) => getPostItem(post, index))}
+      <VStack alignItems='stretch' spacing='2rem'>
+        {postList.posts.map((post: Post, index: number) => getPostItem(post, '' + index))}
       </VStack>
       {isShowPagination && getPagination()}
+      {/* TODO 게시물 삭제 alert을 분리 */}
       <AlertDialog isOpen={showDeleteAlert} onClose={onClickDeleteAlertCancel} leastDestructiveRef={deleteAlertCancelRef} size='xs'>
         <AlertDialogOverlay>
           <AlertDialogContent>
