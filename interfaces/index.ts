@@ -96,15 +96,19 @@ export class AccountList extends ListResponse {
   public accounts: Account[];
 }
 
-export type Board = {
-  id: string,
-  title: string,
-  description: string,
-  enabled: boolean,
+export class Board {
+  public id: string;
+  public title: string;
+  public description: string;
+  public enabled: boolean;
 }
 
 export class BoardList extends ListResponse {
   public boards: Board[];
+}
+
+export class BoardAdmin extends Board {
+  public account: Account[];
 }
 
 export enum PostType {

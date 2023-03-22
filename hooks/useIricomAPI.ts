@@ -1,10 +1,11 @@
 // node
 import process from 'process';
 // etc
-import { Account, AccountList, BackendProperties, Board, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
+import BoardsPage from '../pages/boards/[boardId]';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
@@ -31,6 +32,8 @@ type IricomAPI = {
   voteComment: (boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
 
   getAccountList: (skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
+
+  getBoardAdminInfo: (boardId: string) => Promise<BoardAdmin>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -161,8 +164,10 @@ function useIricomAPI (): IricomAPI {
       };
 
       try {
-        const response: AxiosResponse<Board> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: Board = new Board();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         console.error(error);
         throw error;
@@ -176,8 +181,10 @@ function useIricomAPI (): IricomAPI {
       };
 
       try {
-        const response: AxiosResponse<Board> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: Board = new Board();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         console.error(error);
         throw error;
@@ -192,8 +199,10 @@ function useIricomAPI (): IricomAPI {
       config.data = board;
 
       try {
-        const response: AxiosResponse<Board> = await axios.request(config);
-        return response.data;
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: Board = new Board();
+        Object.assign(result, response.data);
+        return result;
       } catch (error) {
         console.error(error);
         throw error;
@@ -443,6 +452,23 @@ function useIricomAPI (): IricomAPI {
       try {
         const response: AxiosResponse<Object> = await axios.request(config);
         const result: AccountList = new AccountList();
+        Object.assign(result, response.data);
+        return result;
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    getBoardAdminInfo: async (boardId: string): Promise<BoardAdmin> => {
+      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(token);
+
+      config.url = `${backendProperties.host}/v1/auth/board/${boardId}`;
+      config.method = 'GET';
+
+      try {
+        const response: AxiosResponse<Object> = await axios.request(config);
+        const result: BoardAdmin = new BoardAdmin();
         Object.assign(result, response.data);
         return result;
       } catch (error) {

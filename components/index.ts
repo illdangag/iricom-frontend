@@ -1,3 +1,4 @@
+import AccountListTable from './AccountListTable';
 import BoardView from './BoardView';
 import BoardPostPreview from './BoardPostPreview';
 import CommentEditor from './CommentEditor';
@@ -9,4 +10,4 @@ import PostListTable from './PostListTable';
 import PostView from './PostView';
 
 export { BoardView, BoardPostPreview, CommentEditor, CommentView, LinkCard, PostEditor, PostListTable, PostView,
-  NoContent, };
+  NoContent, AccountListTable, };

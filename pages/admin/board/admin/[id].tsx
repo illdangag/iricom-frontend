@@ -1,12 +1,13 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Text, } from '@chakra-ui/react';
+import { VStack, Card, CardBody, Heading, Text, Box, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { AccountAuth, } from '../../../../interfaces';
+import { AccountListTable, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
-import { Board, AccountList, } from '../../../../interfaces';
+import { Board, AccountList, AccountAuth, Account, } from '../../../../interfaces';
+import { a } from '@chakra-ui/toast/dist/toast.provider-02a226a3';
 
 const AdminBoardAdminEditPage = () => {
   const router = useRouter();
@@ -19,20 +20,35 @@ const AdminBoardAdminEditPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      void init(id);
+      void iricomAPI.getBoard(id)
+        .then(board => {
+          setBoard(board);
+        });
+      void iricomAPI.getAccountList(0, 20, null)
+        .then(accountList => {
+          setAccountList(accountList);
+        });
     }
   }, [router.isReady,]);
 
-  const init = async (boardId: string) => {
-    const board: Board = await iricomAPI.getBoard(boardId);
-    const accountList: AccountList = await iricomAPI.getAccountList(0, 20, null);
-    setBoard(board);
-    setAccountList(accountList);
-  };
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      {board && <Text>{board.title}</Text>}
+      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
+        {board && <Card shadow='none'>
+          <CardBody>
+            <Heading size='md'>{board.title}</Heading>
+            <Text marginTop='.5rem' fontSize='sm'>{board.description}</Text>
+            <Text marginTop='1rem'>게시판 관리자 목록</Text>
+          </CardBody>
+        </Card>}
+
+        {accountList && <Card shadow='none'>
+          <CardBody>
+            <AccountListTable accountList={accountList}/>
+          </CardBody>
+        </Card>}
+      </VStack>
     </MainLayout>
   );
 };
