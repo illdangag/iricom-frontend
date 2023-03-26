@@ -1,7 +1,9 @@
 // react
 import { useRef, useState, useEffect, } from 'react';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay,
-  Button, ButtonGroup, Text, } from '@chakra-ui/react';
+import {
+  AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay,
+  Button, ButtonGroup, Text,
+} from '@chakra-ui/react';
 import { useIricomAPI, } from '../../hooks';
 // etc
 import { Board, Account, } from '../../interfaces';
@@ -20,7 +22,7 @@ enum State {
   REQUEST,
 }
 
-const BoardAdminCreateAlert = ({
+const BoardAdminDeleteAlert = ({
   isOpen = false,
   onClose = () => {},
   onConfirm = () => {},
@@ -40,13 +42,13 @@ const BoardAdminCreateAlert = ({
     }
   }, [board, account,]);
 
-  const onClickCreate = () => {
+  const onClickDelete = () => {
     if (board === null || account === null) {
       return;
     }
 
     setState(State.REQUEST);
-    void iricomAPI.createBoardAdmin(board.id, account.id)
+    void iricomAPI.deleteBoardAdmin(board.id, account.id)
       .then(() => {
         setState(State.VALID);
         onConfirm();
@@ -63,9 +65,9 @@ const BoardAdminCreateAlert = ({
   >
     <AlertDialogOverlay/>
     <AlertDialogContent>
-      <AlertDialogHeader>관리자 계정 추가</AlertDialogHeader>
+      <AlertDialogHeader>관리자 계정 삭제</AlertDialogHeader>
       <AlertDialogBody>
-        <Text>"{account && account.nickname}" 계정을 게시판 관리자로 추가합니다.</Text>
+        <Text>"{account && account.nickname}" 계정을 게시판 관리자에서 삭제합니다.</Text>
       </AlertDialogBody>
       <AlertDialogFooter>
         <ButtonGroup>
@@ -79,9 +81,9 @@ const BoardAdminCreateAlert = ({
           <Button
             isDisabled={state === State.INVALID}
             isLoading={state === State.REQUEST}
-            onClick={onClickCreate}
+            onClick={onClickDelete}
           >
-            추가
+            삭제
           </Button>
         </ButtonGroup>
       </AlertDialogFooter>
@@ -89,4 +91,4 @@ const BoardAdminCreateAlert = ({
   </AlertDialog>);
 };
 
-export default BoardAdminCreateAlert;
+export default BoardAdminDeleteAlert;

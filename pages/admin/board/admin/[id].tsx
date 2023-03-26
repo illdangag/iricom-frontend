@@ -4,7 +4,7 @@ import { useRouter, } from 'next/router';
 import { VStack, Card, CardBody, Heading, Text, UnorderedList, ListItem, Button, HStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { AccountListTable, } from '../../../../components';
-import { BoardAdminCreateAlert, } from '../../../../components/alerts';
+import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '../../../../components/alerts';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { BoardAdmin, AccountAuth, Account, } from '../../../../interfaces';
@@ -16,9 +16,9 @@ const AdminBoardAdminEditPage = () => {
   const id: string = router.query.id as string;
 
   const [boardAdmin, setBoardAdmin,] = useState<BoardAdmin | null>(null);
-
-  const [isOpenAddAdminAlert, setOpenAddAdminAlert,] = useState<boolean>(false);
   const [selectedAccount, setSelectedAccount,] = useState<Account | null>(null);
+  const [isOpenBoardAdminCreateAlert, setOpenBoardAdminCreateAlert,] = useState<boolean>(false);
+  const [isOpenBoardAdminDeleteAlert, setOpenBoardAdminDeleteAlert,] = useState<boolean>(false);
 
   useEffect(() => {
     if (router.isReady) {
@@ -34,21 +34,31 @@ const AdminBoardAdminEditPage = () => {
   };
 
   const onCloseAddAdminAlert = () => {
-    setOpenAddAdminAlert(false);
+    setOpenBoardAdminCreateAlert(false);
   };
 
   const onConfirmAddAdminAlert = () => {
-    setOpenAddAdminAlert(false);
+    setOpenBoardAdminCreateAlert(false);
     init();
   };
 
   const onClickAccount = (account: Account) => {
     setSelectedAccount(account);
-    setOpenAddAdminAlert(true);
+    setOpenBoardAdminCreateAlert(true);
   };
 
   const onClickDelete = (account: Account) => {
-    console.log(account);
+    setSelectedAccount(account);
+    setOpenBoardAdminDeleteAlert(true);
+  };
+
+  const onCloseDeleteAlert = () => {
+    setOpenBoardAdminDeleteAlert(false);
+  };
+
+  const onConfirmDeleteAlert = () => {
+    setOpenBoardAdminDeleteAlert(false);
+    init();
   };
 
   return (
@@ -59,7 +69,7 @@ const AdminBoardAdminEditPage = () => {
             <Heading size='md'>{boardAdmin.title}</Heading>
             <Text marginTop='.5rem' fontSize='sm'>{boardAdmin.description}</Text>
             <Text marginTop='1rem'>게시판 관리자 목록</Text>
-            <UnorderedList>
+            <UnorderedList spacing='.5rem' paddingTop='.5rem' paddingLeft='.5rem'>
               {boardAdmin && boardAdmin.accounts.map((account) => <ListItem key={account.id}>
                 <HStack>
                   <Text>{account.nickname}</Text>
@@ -85,11 +95,18 @@ const AdminBoardAdminEditPage = () => {
         </Card>
       </VStack>
       <BoardAdminCreateAlert
-        isOpen={isOpenAddAdminAlert}
+        isOpen={isOpenBoardAdminCreateAlert}
         board={boardAdmin}
         account={selectedAccount}
         onClose={onCloseAddAdminAlert}
         onConfirm={onConfirmAddAdminAlert}
+      />
+      <BoardAdminDeleteAlert
+        isOpen={isOpenBoardAdminDeleteAlert}
+        board={boardAdmin}
+        account={selectedAccount}
+        onClose={onCloseDeleteAlert}
+        onConfirm={onConfirmDeleteAlert}
       />
     </MainLayout>
   );

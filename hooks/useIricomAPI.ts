@@ -34,6 +34,7 @@ type IricomAPI = {
 
   createBoardAdmin: (boardId: string, accountId: string) => Promise<void>,
   getBoardAdminInfo: (boardId: string) => Promise<BoardAdmin>,
+  deleteBoardAdmin: (boardId: string, accountId: string) => Promise<void>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -482,6 +483,24 @@ function useIricomAPI (): IricomAPI {
 
       config.url = `${backendProperties.host}/v1/auth/board`;
       config.method = 'POST';
+      config.data = {
+        boardId: boardId,
+        accountId: accountId,
+      };
+
+      try {
+        await axios.request(config);
+      } catch (error) {
+        defaultErrorHandler(error);
+      }
+    },
+
+    deleteBoardAdmin: async (boardId: string, accountId: string) => {
+      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
+      const config: AxiosRequestConfig = await getRequestConfig(token);
+
+      config.url = `${backendProperties.host}/v1/auth/board`;
+      config.method = 'DELETE';
       config.data = {
         boardId: boardId,
         accountId: accountId,
