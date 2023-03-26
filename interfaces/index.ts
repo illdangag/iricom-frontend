@@ -39,7 +39,7 @@ export type IricomErrorResponse = {
   message: string,
 };
 
-class ListResponse {
+export abstract class ListResponse {
   public total: number;
   public skip: number;
   public limit: number;
@@ -108,7 +108,7 @@ export class BoardList extends ListResponse {
 }
 
 export class BoardAdmin extends Board {
-  public account: Account[];
+  public accounts: Account[];
 }
 
 export enum PostType {
