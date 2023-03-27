@@ -1,12 +1,13 @@
 // react
-import { ReactNode, useRef, useState, } from 'react';
+import { useState, } from 'react';
 import NextLink from 'next/link';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Button, ButtonGroup, Divider, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
+import { Badge, Button, Divider, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
-import { useIricomAPI, } from '../hooks';
+import Pagination from './Pagination';
 // etc
 import { Post, PostList, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
+import PostDeleteAlert from './alerts/PostDeleteAlert';
 
 type Props = {
   postList: PostList,
@@ -24,16 +25,17 @@ const PostListTable = ({
   isShowPostState = true,
   isShowPagination = true,
   isShowEditButton = false,
-  onClickPagination = () => {
-  },
-  onChangePost = () => {
-  },
+  onClickPagination = () => {},
+  onChangePost = () => {},
 }: Props) => {
-  const deleteAlertCancelRef = useRef();
-  const iricomAPI = useIricomAPI();
 
-  const [showDeleteAlert, setShowDeleteAlert,] = useState<boolean>(false);
+  const [isShowDeleteAlert, setShowDeleteAlert,] = useState<boolean>(false);
   const [deletePost, setDeletePost,] = useState<Post | null>(null);
+
+  const onClickDelete = (post: Post) => {
+    setDeletePost(post);
+    setShowDeleteAlert(true);
+  };
 
   const onClickDeleteAlertCancel = () => {
     setShowDeleteAlert(false);
@@ -41,37 +43,12 @@ const PostListTable = ({
 
   const onClickDeleteAlertConfirm = () => {
     setShowDeleteAlert(false);
-    void iricomAPI.deletePost(deletePost.boardId, deletePost.id)
-      .then(() => {
-        onChangePost();
-      });
-  };
-
-  const onClickDelete = (post: Post) => {
-    setDeletePost(post);
-    setShowDeleteAlert(true);
-  };
-
-  const getPagination = (): ReactNode => {
-    const paginationList: number[] = postList.getPaginationList(5);
-    return <HStack justifyContent='center' marginTop='0.4rem'>
-      <ButtonGroup size='xs' variant='outline' isAttached>
-        {paginationList.map((pagination, index) => <Button
-          key={index}
-          backgroundColor={pagination === page ? 'gray.100' : 'transparent'}
-          onClick={() => {
-            onClickPagination(pagination);
-          }}>
-          {pagination}
-        </Button>)}
-      </ButtonGroup>
-    </HStack>;
+    onChangePost();
   };
 
   const getPostItem = (post: Post, key: string) => (
     <LinkBox key={key}>
       <VStack alignItems='stretch'>
-        {/* 제목 */}
         <HStack justifyContent='space-between'>
           <HStack>
             <Text>
@@ -120,24 +97,13 @@ const PostListTable = ({
       <VStack alignItems='stretch' spacing='2rem'>
         {postList.posts.map((post: Post, index: number) => getPostItem(post, '' + index))}
       </VStack>
-      {isShowPagination && getPagination()}
-      {/* TODO 게시물 삭제 alert을 분리 */}
-      <AlertDialog isOpen={showDeleteAlert} onClose={onClickDeleteAlertCancel} leastDestructiveRef={deleteAlertCancelRef} size='xs'>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-              게시물 삭제
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              {deletePost && <Text>"{deletePost.title}" 게시물을 삭제합니다.</Text>}
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={deleteAlertCancelRef} onClick={onClickDeleteAlertCancel}>취소</Button>
-              <Button colorScheme='red' onClick={onClickDeleteAlertConfirm} marginLeft='1rem'>삭제</Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      {isShowPagination && <Pagination page={page} listResponse={postList} onClick={onClickPagination}/>}
+      <PostDeleteAlert
+        isOpen={isShowDeleteAlert}
+        post={deletePost}
+        onClose={onClickDeleteAlertCancel}
+        onConfirm={onClickDeleteAlertConfirm}
+      />
     </>
   );
 };

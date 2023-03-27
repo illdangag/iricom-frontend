@@ -6,6 +6,7 @@ import RequireAccountDetailAlert from './RequireAccountDetailAlert';
 import RequireLoginAlert from './RequireLoginAlert';
 import BoardAdminCreateAlert from './BoardAdminCreateAlert';
 import BoardAdminDeleteAlert from './BoardAdminDeleteAlert';
+import PostDeleteAlert from './PostDeleteAlert';
 
 export { ConfirmCancelAlert, InvalidPostAlert, NotExistBoardAlert, PostPublishAlert, RequireAccountDetailAlert, RequireLoginAlert,
-  BoardAdminCreateAlert, BoardAdminDeleteAlert, };
+  BoardAdminCreateAlert, BoardAdminDeleteAlert, PostDeleteAlert, };
