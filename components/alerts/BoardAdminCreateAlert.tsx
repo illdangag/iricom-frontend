@@ -1,10 +1,9 @@
 // react
-import { useRef, useState, useEffect, } from 'react';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay,
-  Button, ButtonGroup, Text, } from '@chakra-ui/react';
+import { useEffect, useRef, useState, } from 'react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Text, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../../hooks';
 // etc
-import { Board, Account, } from '../../interfaces';
+import { Account, Board, } from '../../interfaces';
 
 type Props = {
   isOpen?: boolean;
@@ -22,8 +21,10 @@ enum State {
 
 const BoardAdminCreateAlert = ({
   isOpen = false,
-  onClose = () => {},
-  onConfirm = () => {},
+  onClose = () => {
+  },
+  onConfirm = () => {
+  },
   board = null,
   account = null,
 }: Props) => {

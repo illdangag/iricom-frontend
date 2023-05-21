@@ -22,8 +22,10 @@ const ConfirmCancelAlert = ({
   isOpen = false,
   disabled = false,
   loading = false,
-  onConfirm = () => {},
-  onClose = () => {},
+  onConfirm = () => {
+  },
+  onClose = () => {
+  },
 }: Props) => {
   const cancelRef = useRef();
 

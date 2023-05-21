@@ -1,7 +1,6 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
-import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text,
-  VStack, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, VStack, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../hooks';
 
 import '@uiw/react-md-editor/markdown-editor.css';
@@ -112,7 +111,6 @@ const PostEditor = ({
               height={500}
               value={content}
               defaultValue={content}
-              visiableDragbar={false}
               onChange={onChangeEditor}
             />
           </Box>

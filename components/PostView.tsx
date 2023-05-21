@@ -1,21 +1,17 @@
 // react
 import { useState, } from 'react';
-import {
-  Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList,
-  Spacer, Text, VStack, useToast, Box,
-} from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
-
-import dynamic from 'next/dynamic';
-const MDPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
-  ssr: false,
-});
-
-
 // etc
 import { Post, VoteType, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
+
+import '@uiw/react-markdown-preview/markdown.css';
+import dynamic from 'next/dynamic';
+const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
+  ssr: false,
+});
 
 type Props = {
   post: Post,
@@ -29,7 +25,8 @@ enum ViewState {
 
 const PostView = ({
   post,
-  onChange = () => {},
+  onChange = () => {
+  },
 }: Props) => {
   const iricomAPI = useIricomAPI();
   const toast = useToast();
@@ -103,7 +100,10 @@ const PostView = ({
         </CardHeader>
         <CardBody>
           <Box>
-            <MDPreview source={post.content}/>
+            <MarkdownPreview
+              source={post.content}
+              data-color-mode='light'
+            />
           </Box>
         </CardBody>
         <CardFooter justifyContent='center'>

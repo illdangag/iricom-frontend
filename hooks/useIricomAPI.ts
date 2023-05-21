@@ -39,6 +39,7 @@ type IricomAPI = {
 
 function useIricomAPI (): IricomAPI {
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
+  // axios.defaults.withCredentials = true;
 
   const getRequestConfig = async (tokenInfo: TokenInfo | null): Promise<AxiosRequestConfig> => {
     if (tokenInfo === null) {

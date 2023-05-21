@@ -1,12 +1,12 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, VStack, Alert, AlertIcon, AlertTitle, } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Card, CardBody, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { CommentView, PostView, CommentEditor, } from '../../../../components';
+import { CommentEditor, CommentView, PostView, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
-import { Post, PostState, Comment, } from '../../../../interfaces';
+import { Comment, Post, PostState, } from '../../../../interfaces';
 
 const BoardsPostsPage = () => {
   const router = useRouter();
@@ -42,7 +42,7 @@ const BoardsPostsPage = () => {
       .then(commentList => {
         setCommentList(commentList.comments);
       })
-      .catch(error => {
+      .catch(() => {
         // TODO error
       });
   };
