@@ -4,7 +4,6 @@ export default () => {
   return (
     <Html data-color-mode='light'>
       <Head>
-        <meta name='referrer' content='no-referrer-when-downgrade'/>
       </Head>
       <body>
         <Main/>
