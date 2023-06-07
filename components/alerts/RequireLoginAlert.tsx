@@ -28,7 +28,7 @@ const RequireLoginAlert = ({
     motionPreset='slideInBottom'
     size='sm'
     leastDestructiveRef={closeRef}
-    onClose={onClose}
+    onClose={() => {}}
     isOpen={isOpen}
     isCentered
   >

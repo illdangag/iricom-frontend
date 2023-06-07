@@ -102,15 +102,15 @@ const CommentView = ({
           </VStack>
           <Spacer/>
           {account && account.id === comment.account.id && <ButtonGroup size='xs' variant='outline' justifyContent='flex-end'>
-            <IconButton aria-label='edit' icon={<MdEdit/>}/>
-            <IconButton aria-label='delete' icon={<MdDeleteOutline/>}/>
+            <IconButton variant='ghost' aria-label='edit' icon={<MdEdit/>}/>
+            <IconButton variant='ghost' aria-label='delete' icon={<MdDeleteOutline/>}/>
           </ButtonGroup>}
         </HStack>
         <Text fontSize='.8rem' wordBreak='break-word'>{comment.content}</Text>
         <HStack>
           {allowNestedComment && <Button size='xs' onClick={onClickReReply}>답글</Button>}
           <Spacer/>
-          <ButtonGroup size='xs' variant='outline'>
+          <ButtonGroup size='xs' variant='ghost'>
             <Button
               rightIcon={<MdThumbUpOffAlt/>}
               onClick={onClickUpvote}

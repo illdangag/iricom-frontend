@@ -96,10 +96,10 @@ const BoardsPage = () => {
         </CardBody>}
       </Card>
       {/* 게시물 목록 */}
-      <VStack alignItems='stretch' spacing='0'>
+      <VStack alignItems='stretch' spacing='0' marginLeft='auto' marginRight='auto' marginTop='1rem' paddingLeft='1rem' paddingRight='1rem' maxWidth='60rem'>
         {/* 공지 사항 목록 */}
-        {notificationList && notificationList.total > 0 && <Card shadow='none' borderRadius='0'>
-          <CardBody paddingTop='0'>
+        {notificationList && notificationList.total > 0 && <Card shadow='none'>
+          <CardBody>
             <PostListTable
               postList={notificationList}
               page={1}
@@ -110,7 +110,7 @@ const BoardsPage = () => {
         </Card>}
         {/* 게시물 목록 */}
         <Box paddingTop='1rem'>
-          <Card shadow='none' borderRadius='0'>
+          <Card shadow='none'>
             <CardBody>
               {postList && postList.total === 0 && <>
                 <NoContent message='게시물이 존재하지 않습니다.'/>

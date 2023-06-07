@@ -12,6 +12,36 @@ const theme = extendTheme({
       },
     },
   },
+  components: {
+    Button: {
+      variants: {
+        solid: {
+          backgroundColor: '#9775fa',
+          color: '#f8f9fa',
+          _hover: {
+            background: '#845ef7',
+            color: '#f8f9fa',
+            _disabled: {
+              background: '#b197fc',
+              color: '#f8f9fa',
+            },
+          },
+          _active: {
+            background: '#7950f2',
+            color: '#f8f9fa',
+          },
+          _disabled: {
+            background: '#b197fc',
+            color: '#f8f9fa',
+          },
+        },
+        outline: {
+          borderColor: '#b197fc',
+          color: '#9775fa',
+        },
+      },
+    },
+  },
 });
 
 const App = ({ Component, pageProps, }) => {

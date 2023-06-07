@@ -84,8 +84,8 @@ const PostView = ({
   };
 
   return (
-    <VStack alignItems='stretch'>
-      <Card shadow='none' borderRadius='0'>
+    <>
+      <Card shadow='none'>
         <CardHeader>
           <Flex flexDirection='column'>
             <Flex flexDirection='row' justifyContent='space-between'>
@@ -113,7 +113,7 @@ const PostView = ({
           </Flex>
         </CardHeader>
         <CardBody>
-          <Box>
+          <Box padding='0.5rem'>
             <MarkdownPreview
               source={post.content}
               data-color-mode='light'
@@ -145,7 +145,7 @@ const PostView = ({
         successURL={`/boards/${post.boardId}/posts/${post.id}`}
         onClose={onClickRequireLoginAlertClose}
       />
-    </VStack>
+    </>
   );
 };
 
