@@ -52,7 +52,7 @@ const CommentEditor = ({
       .then((comment: Comment) => {
         onChange(comment);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         if (error instanceof NotExistTokenError) {
           setShowLoginAlert(true);
         } else {
@@ -62,6 +62,10 @@ const CommentEditor = ({
       .finally(() => {
         setCommentContent('');
       });
+  };
+
+  const onClickRequireLoginAlertClose = () => {
+    setShowLoginAlert(false);
   };
 
   return (
@@ -74,6 +78,7 @@ const CommentEditor = ({
         isOpen={showLoginAlert}
         text='댓글을 쓰기 위해서는 로그인이 필요합니다.'
         successURL={`/boards/${boardId}/posts/${postId}`}
+        onClose={onClickRequireLoginAlertClose}
       />
     </Box>
   );

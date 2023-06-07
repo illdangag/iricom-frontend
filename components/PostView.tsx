@@ -3,8 +3,9 @@ import { useState, } from 'react';
 import { Box, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
+import { RequireLoginAlert, } from '../components/alerts';
 // etc
-import { Post, VoteType, } from '../interfaces';
+import { NotExistTokenError, Post, VoteType, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
 
 import '@uiw/react-markdown-preview/markdown.css';
@@ -32,6 +33,7 @@ const PostView = ({
   const toast = useToast();
 
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
+  const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
 
   const onClickUpvote = () => {
     setViewState(ViewState.REQUEST);
@@ -39,12 +41,16 @@ const PostView = ({
       .then((post) => {
         onChange(post);
       })
-      .catch(() => {
-        toast({
-          title: '이미 \'좋아요\'한 게시물입니다.',
-          status: 'warning',
-          duration: 3000,
-        });
+      .catch((error: Error) => {
+        if (error instanceof NotExistTokenError) {
+          setShowLoginAlert(true);
+        } else {
+          toast({
+            title: '이미 \'좋아요\'한 게시물입니다.',
+            status: 'warning',
+            duration: 3000,
+          });
+        }
       })
       .finally(() => {
         setViewState(ViewState.IDLE);
@@ -57,16 +63,24 @@ const PostView = ({
       .then((post) => {
         onChange(post);
       })
-      .catch(() => {
-        toast({
-          title: '이미 \'싫어요\'한 게시물입니다.',
-          status: 'warning',
-          duration: 3000,
-        });
+      .catch((error: Error) => {
+        if (error instanceof NotExistTokenError) {
+          setShowLoginAlert(true);
+        } else {
+          toast({
+            title: '이미 \'싫어요\'한 게시물입니다.',
+            status: 'warning',
+            duration: 3000,
+          });
+        }
       })
       .finally(() => {
         setViewState(ViewState.IDLE);
       });
+  };
+
+  const onClickRequireLoginAlertClose = () => {
+    setShowLoginAlert(false);
   };
 
   return (
@@ -125,6 +139,12 @@ const PostView = ({
           </ButtonGroup>
         </CardFooter>
       </Card>
+      <RequireLoginAlert
+        isOpen={showLoginAlert}
+        text='좋아요/싫어요 하기 위해서는 로그인이 필요합니다.'
+        successURL={`/boards/${post.boardId}/posts/${post.id}`}
+        onClose={onClickRequireLoginAlertClose}
+      />
     </VStack>
   );
 };

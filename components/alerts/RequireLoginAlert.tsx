@@ -26,25 +26,29 @@ const RequireLoginAlert = ({
 
   return (<AlertDialog
     motionPreset='slideInBottom'
-    size='xs'
+    size='sm'
     leastDestructiveRef={closeRef}
     onClose={onClose}
     isOpen={isOpen}
     isCentered
   >
-    <AlertDialogOverlay/>
-    <AlertDialogContent>
-      <AlertDialogHeader>저런!</AlertDialogHeader>
-      <AlertDialogBody>
-        {text && <Text>{text}</Text>}
-        <Text>로그인 페이지로 이동 하시겠습니까?</Text>
-      </AlertDialogBody>
-      <AlertDialogFooter>
-        <Button ref={closeRef} onClick={onClickLogin}>
-          로그인 페이지로 이동
-        </Button>
-      </AlertDialogFooter>
-    </AlertDialogContent>
+    <AlertDialogOverlay>
+      <AlertDialogContent>
+        <AlertDialogHeader>저런!</AlertDialogHeader>
+        <AlertDialogBody>
+          {text && <Text>{text}</Text>}
+          <Text>로그인 페이지로 이동 하시겠습니까?</Text>
+        </AlertDialogBody>
+        <AlertDialogFooter>
+          <Button variant='ghost' onClick={onClose}>
+            취소
+          </Button>
+          <Button ref={closeRef} onClick={onClickLogin} marginLeft={3}>
+            이동
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialogOverlay>
   </AlertDialog>);
 };
 
