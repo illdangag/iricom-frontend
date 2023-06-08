@@ -50,7 +50,7 @@ const LoginPage = () => {
       <Flex flexDirection='column' height='100%'>
         <Spacer/>
         <Container>
-          <Card maxWidth='32rem'>
+          <Card maxWidth='32rem' marginLeft='auto' marginRight='auto'>
             <CardHeader>
               <Flex flexDirection='column' align='center'>
                 <Image src='/static/images/login_logo.png' width='8rem' alt='login logo'/>
