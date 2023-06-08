@@ -318,7 +318,7 @@ function useIricomAPI (): IricomAPI {
           setRequirePopup({
             isShow: true,
             message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
-            successURL: `/boards/${boardId}/posts/${postId}`
+            successURL: `/boards/${boardId}/posts/${postId}`,
           });
         }
         throw error;
@@ -407,7 +407,7 @@ function useIricomAPI (): IricomAPI {
         setRequirePopup({
           isShow: true,
           message: '댓글을 쓰기 위해서는 로그인이 필요합니다.',
-          successURL: `/boards/${boardId}/posts/${postId}`
+          successURL: `/boards/${boardId}/posts/${postId}`,
         });
         throw error;
       }
@@ -439,7 +439,7 @@ function useIricomAPI (): IricomAPI {
         setRequirePopup({
           isShow: true,
           message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
-          successURL: `/boards/${boardId}/posts/${postId}`
+          successURL: `/boards/${boardId}/posts/${postId}`,
         });
         throw error;
       }

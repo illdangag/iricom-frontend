@@ -1,13 +1,13 @@
-import { selector,} from 'recoil';
+import { selector, } from 'recoil';
 import { v4, } from 'uuid';
 import requireLoginPopupAtom, { RequireLoginPopup, } from './atom';
 
 const setPopupSelector = selector<RequireLoginPopup>({
   key: 'setPopup/' + v4(),
-  get: ({get,}) => {
+  get: ({ get, }) => {
     return get(requireLoginPopupAtom);
   },
-  set: ({get, set,}, defaultValue: RequireLoginPopup) => {
+  set: ({ get, set, }, defaultValue: RequireLoginPopup) => {
     const value: RequireLoginPopup = get(requireLoginPopupAtom);
     const newValue = Object.assign({}, value);
     if (Object.hasOwn(defaultValue, 'isShow')) {
@@ -20,7 +20,7 @@ const setPopupSelector = selector<RequireLoginPopup>({
       newValue.successURL = defaultValue.successURL;
     }
     set(requireLoginPopupAtom, newValue);
-  }
+  },
 });
 
 export default setPopupSelector;

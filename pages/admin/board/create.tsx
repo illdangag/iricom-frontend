@@ -24,7 +24,7 @@ const AdminBoardCreatePage = () => {
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
   const [title, setTitle,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
-  const [enabled, setEnabled,] = useState<boolean>(true);
+  const [enabled, setEnabled,] = useState<boolean>(false);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;

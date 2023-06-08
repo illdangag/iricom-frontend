@@ -32,7 +32,7 @@ const BoardPostPreview = ({
       <LinkBox>
         <CardHeader>
           <HStack justifyContent='space-between'>
-            <Heading size='md' fontWeight='semibold'>
+            <Heading size='xs' fontWeight='semibold'>
               <LinkOverlay as={NextLink} href={`/boards/${board.id}`}>
                 {board.title}
               </LinkOverlay>
