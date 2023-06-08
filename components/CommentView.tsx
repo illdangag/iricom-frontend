@@ -3,7 +3,6 @@ import { useState, } from 'react';
 import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
-import { RequireLoginAlert, } from '../components/alerts';
 // store
 import { useRecoilValue, } from 'recoil';
 import { myAccountAtom, } from '../recoil';
@@ -38,7 +37,6 @@ const CommentView = ({
   const account: Account | null = useRecoilValue<Account | null>(myAccountAtom);
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
   const [showCommentEditor, setShowCommentEditor,] = useState<boolean>(false);
-  const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
 
   const onClickReReply = () => {
     setShowCommentEditor(!showCommentEditor);
@@ -51,9 +49,7 @@ const CommentView = ({
         onChange(comment);
       })
       .catch((error: Error) => {
-        if (error instanceof NotExistTokenError) {
-          setShowLoginAlert(true);
-        } else {
+        if (!(error instanceof NotExistTokenError)) {
           toast({
             title: '이미 \'좋아요\'한 댓글입니다.',
             status: 'warning',
@@ -73,9 +69,7 @@ const CommentView = ({
         onChange(comment);
       })
       .catch((error: Error) => {
-        if (error instanceof NotExistTokenError) {
-          setShowLoginAlert(true);
-        } else {
+        if (!(error instanceof NotExistTokenError)) {
           toast({
             title: '이미 \'싫어요\'한 댓글입니다.',
             status: 'warning',
@@ -86,10 +80,6 @@ const CommentView = ({
       .finally(() => {
         setViewState(ViewState.IDLE);
       });
-  };
-
-  const onClickRequireLoginAlertClose = () => {
-    setShowLoginAlert(false);
   };
 
   return (
@@ -138,12 +128,6 @@ const CommentView = ({
           </CardBody>
         </Card>
       ))}
-      <RequireLoginAlert
-        isOpen={showLoginAlert}
-        text='좋아요/싫어요 하기 위해서는 로그인이 필요합니다.'
-        successURL={`/boards/${boardId}/posts/${postId}`}
-        onClose={onClickRequireLoginAlertClose}
-      />
     </Box>
   );
 };

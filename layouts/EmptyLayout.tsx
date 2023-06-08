@@ -107,7 +107,7 @@ const EmptyLayout = ({
       {isValid && children}
       <RequireLoginAlert
         text={requireLoginPopup.message}
-        successURL={`/`}
+        successURL={requireLoginPopup.successURL}
         isOpen={requireLoginPopup.isShow}
         onClose={() => setRequireLoginPopup({
           isShow: false,

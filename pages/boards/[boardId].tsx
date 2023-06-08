@@ -5,8 +5,11 @@ import { Button, Card, CardBody, HStack, VStack, Box, Breadcrumb, BreadcrumbItem
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PostListTable, NoContent, } from '../../components';
-import { RequireAccountDetailAlert, RequireLoginAlert, } from '../../components/alerts';
+import { RequireAccountDetailAlert, } from '../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../hooks';
+// recoil
+import { useSetRecoilState, } from 'recoil';
+import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
 
@@ -25,8 +28,9 @@ const BoardsPage = () => {
   const [notificationList, setNotificationList,] = useState<PostList | null>(null);
 
   const [page, setPage,] = useState<number>(1);
-  const [showLoginAlert, setShowLoginAlert,] = useState<boolean>(false);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
+
+  const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
 
   useEffect(() => {
     if (router.isReady) {
@@ -56,16 +60,16 @@ const BoardsPage = () => {
 
   const onClickCreatePost = () => {
     if (loginState === LoginState.LOGOUT) {
-      setShowLoginAlert(true);
+      setRequirePopup({
+        isShow: true,
+        message: '글을 쓰기 위해서는 로그인이 필요합니다.',
+        successURL: `/boards/${boardId}/posts/create`,
+      });
     } else if (accountAuth === AccountAuth.UNREGISTERED_ACCOUNT) {
       setShowRegisteredAccountAlert(true);
     } else {
       void router.push(`/boards/${boardId}/posts/create`);
     }
-  };
-
-  const onCloseLoginAlert = () => {
-    setShowLoginAlert(false);
   };
 
   const onCloseRegisteredAccountDetailAlert = () => {
@@ -125,12 +129,6 @@ const BoardsPage = () => {
           </Card>
         </Box>
       </VStack>
-      <RequireLoginAlert
-        text='글을 쓰기 위해서는 로그인이 필요합니다.'
-        successURL={`/boards/${boardId}/posts/create`}
-        isOpen={showLoginAlert}
-        onClose={onCloseLoginAlert}
-      />
       <RequireAccountDetailAlert
         text='글을 쓰기 위해서는 계정 정보 등록이 필요합니다.'
         isOpen={showRegisteredAccountAlert}

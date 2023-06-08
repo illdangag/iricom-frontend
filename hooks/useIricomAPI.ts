@@ -400,7 +400,17 @@ function useIricomAPI (): IricomAPI {
 
     createComment: async (boardId: string, postId: string, content: string, referenceCommentId: string | null): Promise<Comment> => {
       const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
+      let config: AxiosRequestConfig;
+      try {
+        config = await getRequestConfig(token);
+      } catch (error) {
+        setRequirePopup({
+          isShow: true,
+          message: '댓글을 쓰기 위해서는 로그인이 필요합니다.',
+          successURL: `/boards/${boardId}/posts/${postId}`
+        });
+        throw error;
+      }
 
       config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`;
       config.method = 'POST';
@@ -422,7 +432,17 @@ function useIricomAPI (): IricomAPI {
 
     voteComment: async (boardId: string, postId: string, commentId: string, type: VoteType): Promise<Comment> => {
       const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
+      let config: AxiosRequestConfig;
+      try {
+        config = await getRequestConfig(token);
+      } catch (error) {
+        setRequirePopup({
+          isShow: true,
+          message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
+          successURL: `/boards/${boardId}/posts/${postId}`
+        });
+        throw error;
+      }
 
       config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments/${commentId}/vote`;
       config.method = 'PATCH';
