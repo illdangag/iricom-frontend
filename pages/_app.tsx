@@ -2,7 +2,7 @@
 import './global.scss';
 import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
 // store
-import { RecoilRoot, } from 'recoil';
+import { RecoilRoot, useRecoilValue, } from 'recoil';
 
 const theme = extendTheme({
   styles: {

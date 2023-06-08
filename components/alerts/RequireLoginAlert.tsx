@@ -2,6 +2,9 @@
 import { useRef, } from 'react';
 import { useRouter, } from 'next/router';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Text, } from '@chakra-ui/react';
+// recoil
+import { useRecoilValue, useSetRecoilState, } from 'recoil';
+import requireLoginPopupAtom, { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
 
 type Props = {
   text?: string,
@@ -19,8 +22,15 @@ const RequireLoginAlert = ({
   const closeRef = useRef();
   const router = useRouter();
 
+  const requireLoginPopup = useRecoilValue(requireLoginPopupAtom);
+  const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
+
   const onClickLogin = () => {
-    const successQueryParam: string = successURL ? '?success=' + encodeURIComponent(successURL) : '';
+    setRequireLoginPopup({
+      isShow: false,
+    });
+
+    const successQueryParam: string = requireLoginPopup.successURL ? '?success=' + encodeURIComponent(requireLoginPopup.successURL) : '';
     void router.push('/login' + successQueryParam);
   };
 

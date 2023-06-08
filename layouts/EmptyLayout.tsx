@@ -2,13 +2,15 @@
 import { ReactNode, useEffect, useState, } from 'react';
 import Head from 'next/head';
 import { useRouter, } from 'next/router';
+import { RequireLoginAlert, } from '../components/alerts';
 import { useIricomAPI, } from '../hooks';
 // etc
 import { AccountAuth, Account, TokenInfo, } from '../interfaces';
 // store
 import { BrowserStorage, } from '../utils';
-import { useSetRecoilState, } from 'recoil';
+import { useRecoilValue, useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../recoil';
+import requireLoginPopupAtom, { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../recoil/requireLoginPopup';
 
 enum LoginState {
   LOGIN = 'LOGIN',
@@ -35,6 +37,8 @@ const EmptyLayout = ({
 
   const setMyAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const [isValid, setValid,] = useState<boolean>(false);
+  const requireLoginPopup = useRecoilValue(requireLoginPopupAtom);
+  const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
 
   // 계정과 계정의 권한에 따른 페이지 접근 처리
   useEffect(() => {
@@ -101,6 +105,14 @@ const EmptyLayout = ({
         <title>{title}</title>
       </Head>
       {isValid && children}
+      <RequireLoginAlert
+        text={requireLoginPopup.message}
+        successURL={`/`}
+        isOpen={requireLoginPopup.isShow}
+        onClose={() => setRequireLoginPopup({
+          isShow: false,
+        })}
+      />
     </>
   );
 };

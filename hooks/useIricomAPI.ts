@@ -5,6 +5,9 @@ import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, 
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
 // store
 import { BrowserStorage, } from '../utils';
+// recoil
+import { useSetRecoilState, } from 'recoil';
+import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../recoil/requireLoginPopup';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
@@ -40,6 +43,8 @@ type IricomAPI = {
 function useIricomAPI (): IricomAPI {
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
   axios.defaults.withCredentials = false;
+
+  const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
 
   const getRequestConfig = async (tokenInfo: TokenInfo | null): Promise<AxiosRequestConfig> => {
     if (tokenInfo === null) {
@@ -300,12 +305,24 @@ function useIricomAPI (): IricomAPI {
 
     votePost: async (boardId: string, postId: string, type: VoteType): Promise<Post> => {
       const tokeInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokeInfo);
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/vote`;
-      config.method = 'PATCH';
-      config.data = {
-        type: type,
-      };
+      let config: AxiosRequestConfig;
+      try {
+        config = await getRequestConfig(tokeInfo);
+        config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/vote`;
+        config.method = 'PATCH';
+        config.data = {
+          type: type,
+        };
+      } catch (error) {
+        if (error instanceof NotExistTokenError) {
+          setRequirePopup({
+            isShow: true,
+            message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
+            successURL: `/boards/${boardId}/posts/${postId}`
+          });
+        }
+        throw error;
+      }
 
       try {
         const response: AxiosResponse<Post> = await axios.request(config);
