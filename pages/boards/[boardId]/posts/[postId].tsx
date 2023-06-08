@@ -1,12 +1,13 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Alert, AlertIcon, AlertTitle, Card, CardBody, VStack, } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { CommentEditor, CommentView, PostView, } from '../../../../components';
+import { MdCreate, } from 'react-icons/md';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
-import { Comment, Post, PostState, } from '../../../../interfaces';
+import { Board, Comment, Post, PostState, } from '../../../../interfaces';
 
 const BoardsPostsPage = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const BoardsPostsPage = () => {
   const postId: string = router.query.postId as string;
 
   const [post, setPost,] = useState<Post | null>(null);
+  const [board, setBoard,] = useState<Board | null>(null);
   const [commentList, setCommentList,] = useState<Comment[] | null>(null);
 
   useEffect(() => {
@@ -33,7 +35,15 @@ const BoardsPostsPage = () => {
         }
       })
       .catch(() => {
-        // TODO
+        // TODO error
+      });
+
+    void iricomAPI.getBoard(boardId)
+      .then(board => {
+        setBoard(board);
+      })
+      .catch(() => {
+        // TODO error
       });
   };
 
@@ -74,7 +84,21 @@ const BoardsPostsPage = () => {
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-      <VStack alignItems='stretch' spacing='1rem' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' maxWidth='60rem'>
+      <Card shadow='none' borderRadius='0'>
+        {boardId && <CardBody paddingTop='.6rem' paddingBottom='.6rem'>
+          <HStack justifyContent='space-between'>
+            <Breadcrumb>
+              <BreadcrumbItem>
+                <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                {board && <BreadcrumbLink href={`/boards/${board.id}`}>{board.title}</BreadcrumbLink>}
+              </BreadcrumbItem>
+            </Breadcrumb>
+          </HStack>
+        </CardBody>}
+      </Card>
+      <VStack alignItems='stretch' spacing='1rem' marginTop='1rem' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' maxWidth='60rem'>
         {post && <PostView post={post} onChange={onChangePostView}/>}
         {commentList && commentList.map((comment, index) =>
           <Card shadow='none' key={index}>
