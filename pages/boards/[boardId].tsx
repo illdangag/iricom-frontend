@@ -1,9 +1,10 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, HStack, VStack, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+import { Text, Button, Card, CardBody, HStack, VStack, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Link, useMediaQuery, Heading, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
+import { PageBody, } from '../../layouts';
 import { PostListTable, NoContent, } from '../../components';
 import { RequireAccountDetailAlert, } from '../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../hooks';
@@ -12,6 +13,8 @@ import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
+import { MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../../constants/style';
+import NextLink from 'next/link';
 
 const BoardsPage = () => {
   const router = useRouter();
@@ -23,6 +26,10 @@ const BoardsPage = () => {
 
   const PAGE_LIMIT: number = 10;
 
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
+    ssr: true,
+    fallback: false,
+  });
   const [board, setBoard,] = useState<Board | null>(null);
   const [postList, setPostList,] = useState<PostList | null>(null);
   const [notificationList, setNotificationList,] = useState<PostList | null>(null);
@@ -84,21 +91,22 @@ const BoardsPage = () => {
   return (
     <MainLayout loginState={LoginState.ANY}>
       {/* 게시판 헤더 */}
-      <Card shadow='none' borderRadius='0'>
-        {board && <CardBody paddingTop='.6rem' paddingBottom='.6rem'>
-          <HStack justifyContent='space-between'>
-            <Breadcrumb>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href='#'>{board.title}</BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-            <Button size='xs' variant='outline' backgroundColor='gray.50' leftIcon={<MdCreate/>} onClick={onClickCreatePost}>글 쓰기</Button>
-          </HStack>
-        </CardBody>}
-      </Card>
+      <PageBody>
+        <HStack justifyContent='space-between'>
+          {board && <Heading size='md' fontWeight='semibold'>{board.title}</Heading>}
+          <Link as={NextLink} href={`/boards/${boardId}/posts/create`}>
+            <Button
+              size='xs'
+              variant='outline'
+              backgroundColor='white'
+              leftIcon={<MdCreate/>}
+              marginRight={isMobile ? '1rem' : '0'}
+            >
+              글 쓰기
+            </Button>
+          </Link>
+        </HStack>
+      </PageBody>
       {/* 게시물 목록 */}
       <VStack alignItems='stretch' spacing='0' marginLeft='auto' marginRight='auto' marginTop='1rem' paddingLeft='1rem' paddingRight='1rem' maxWidth='60rem'>
         {/* 공지 사항 목록 */}

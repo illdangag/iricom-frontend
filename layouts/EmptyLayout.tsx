@@ -27,7 +27,8 @@ type Props = {
 };
 
 const EmptyLayout = ({
-  children, title = 'Welcome | iricom',
+  children,
+  title = 'Welcome | iricom',
   loginState = LoginState.ANY,
   auth = AccountAuth.NONE,
   onMount = () => {},
