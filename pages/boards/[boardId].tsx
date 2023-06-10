@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Text, Button, Card, CardBody, HStack, VStack, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Link, useMediaQuery, Heading, } from '@chakra-ui/react';
+import { Text, Button, Card, CardBody, HStack, VStack, Box, Badge, BreadcrumbItem, BreadcrumbLink, Link, useMediaQuery, Heading, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PageBody, } from '../../layouts';
@@ -13,7 +13,7 @@ import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
-import { MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../../constants/style';
+import { BORDER_RADIUS, MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../../constants/style';
 import NextLink from 'next/link';
 
 const BoardsPage = () => {
@@ -90,53 +90,65 @@ const BoardsPage = () => {
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-      {/* 게시판 헤더 */}
       <PageBody>
-        <HStack justifyContent='space-between'>
-          {board && <Heading size='md' fontWeight='semibold'>{board.title}</Heading>}
-          <Link as={NextLink} href={`/boards/${boardId}/posts/create`}>
-            <Button
-              size='xs'
-              variant='outline'
-              backgroundColor='white'
-              leftIcon={<MdCreate/>}
-              marginRight={isMobile ? '1rem' : '0'}
+        {/* 게시판 헤더 */}
+        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
+          {board && <>
+            <Box
+              marginLeft={isMobile ? '1rem' : '0'}
             >
-              글 쓰기
-            </Button>
-          </Link>
+              <Heading size='md' fontWeight='semibold'>{board.title}</Heading>
+              <Text fontSize='xs'>{board.description}</Text>
+            </Box>
+            <Link as={NextLink} href={`/boards/${boardId}/posts/create`}>
+              <Button
+                size='xs'
+                variant='outline'
+                backgroundColor='white'
+                leftIcon={<MdCreate/>}
+                marginRight={isMobile ? '1rem' : '0'}
+              >
+                글 쓰기
+              </Button>
+            </Link>
+          </>}
         </HStack>
-      </PageBody>
-      {/* 게시물 목록 */}
-      <VStack alignItems='stretch' spacing='0' marginLeft='auto' marginRight='auto' marginTop='1rem' paddingLeft='1rem' paddingRight='1rem' maxWidth='60rem'>
-        {/* 공지 사항 목록 */}
-        {notificationList && notificationList.total > 0 && <Card shadow='none'>
-          <CardBody>
-            <PostListTable
-              postList={notificationList}
-              page={1}
-              isShowPagination={false}
-              isShowPostState={false}
-            />
-          </CardBody>
-        </Card>}
         {/* 게시물 목록 */}
-        <Box paddingTop='1rem'>
-          <Card shadow='none'>
+        <VStack alignItems='stretch'>
+          {/* 공지 사항 목록 */}
+          {notificationList && notificationList.total > 0 && <Card
+            shadow={isMobile ? 'none' : 'sm'}
+            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          >
             <CardBody>
-              {postList && postList.total === 0 && <>
-                <NoContent message='게시물이 존재하지 않습니다.'/>
-              </>}
-              {postList && postList.total > 0 && <PostListTable
+              <Badge fontSize='1rem' colorScheme='purple' marginBottom='0.5rem'>공지사항</Badge>
+              <PostListTable
+                postList={notificationList}
+                page={1}
+                isShowPagination={false}
+                isShowPostState={false}
+              />
+            </CardBody>
+          </Card>}
+          {/* 게시물 목록 */}
+          {postList && postList.total > 0 && <Card
+            shadow={isMobile ? 'none' : 'sm'}
+            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          >
+            <CardBody>
+              <PostListTable
                 postList={postList}
                 page={page}
                 isShowPostState={false}
                 onClickPagination={onClickPagination}
-              />}
+              />
             </CardBody>
-          </Card>
-        </Box>
-      </VStack>
+          </Card>}
+          {postList && postList.total === 0 && <>
+            <NoContent message='게시물이 존재하지 않습니다.'/>
+          </>}
+        </VStack>
+      </PageBody>
       <RequireAccountDetailAlert
         text='글을 쓰기 위해서는 계정 정보 등록이 필요합니다.'
         isOpen={showRegisteredAccountAlert}

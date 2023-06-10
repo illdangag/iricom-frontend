@@ -34,7 +34,11 @@ const IndexPage = () => {
           maxWidth={MAX_WIDTH}
         >
           {boardList && boardList.map((board, index) =>
-            <Card width='100%' shadow={isMobile ? 'none' : 'sm'} borderRadius={isMobile ? '0' : BORDER_RADIUS}>
+            <Card
+              width='100%'
+              shadow={isMobile ? 'none' : 'sm'}
+              borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            >
               <CardBody>
                 <BoardPostPreview board={board} key={index}/>
               </CardBody>
