@@ -1,11 +1,12 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { Card, CardBody, CardHeader, Heading, HStack, LinkBox, LinkOverlay, Alert, Text, } from '@chakra-ui/react';
+import { Heading, LinkBox, LinkOverlay, Alert, Text, Flex, VStack, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../hooks';
 // etc
 import { Board, PostList, PostType, } from '../interfaces';
 import PostListTable from './PostListTable';
+import { BORDER_RADIUS, } from '../constants/style';
 
 type Props = {
   board: Board,
@@ -14,7 +15,7 @@ type Props = {
 
 const BoardPostPreview = ({
   board,
-  postMaxLength = 5,
+  postMaxLength = 5, // 기본적으로 게시판 미리보기에서는 최대 5개의 게시물을 표현
 }: Props) => {
   const iricomAPI = useIricomAPI();
 
@@ -28,30 +29,26 @@ const BoardPostPreview = ({
   }, []);
 
   return (
-    <Card shadow='none'>
+    <VStack alignItems='start'>
       <LinkBox>
-        <CardHeader>
-          <HStack justifyContent='space-between'>
-            <Heading size='xs' fontWeight='semibold'>
-              <LinkOverlay as={NextLink} href={`/boards/${board.id}`}>
-                {board.title}
-              </LinkOverlay>
-            </Heading>
-          </HStack>
-        </CardHeader>
+        <Flex>
+          <Heading size='sm' fontWeight='semibold'>
+            <LinkOverlay as={NextLink} href={`/boards/${board.id}`}>
+              {board.title}
+            </LinkOverlay>
+          </Heading>
+        </Flex>
       </LinkBox>
-      <CardBody paddingTop='0'>
-        {postList !== null && postList.posts.length === 0 && <Alert status='info' borderRadius='.375rem'>
-          <Text>게시판에 게시물이 없습니다.</Text>
-        </Alert>}
-        {postList !== null && postList.posts.length > 0 && <PostListTable
-          postList={postList}
-          isShowPagination={false}
-          isShowPostState={false}
-          page={0}
-        />}
-      </CardBody>
-    </Card>
+      {postList !== null && postList.posts.length === 0 && <Alert status='info' borderRadius={BORDER_RADIUS}>
+        <Text>게시판에 게시물이 없습니다.</Text>
+      </Alert>}
+      {postList !== null && postList.posts.length > 0 && <PostListTable
+        postList={postList}
+        isShowPagination={false}
+        isShowPostState={false}
+        page={0}
+      />}
+    </VStack>
   );
 };
 

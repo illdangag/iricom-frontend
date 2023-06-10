@@ -1,10 +1,9 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Alert, AlertIcon, AlertTitle, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { CommentEditor, CommentView, PostView, } from '../../../../components';
-import { MdCreate, } from 'react-icons/md';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { Board, Comment, Post, PostState, } from '../../../../interfaces';

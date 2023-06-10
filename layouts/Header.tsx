@@ -1,11 +1,11 @@
 // react
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Card, CardBody, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, useMediaQuery, Button, Link, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Button, Link, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 // etc
 import { Account, AccountAuth, TokenInfo, } from '../interfaces';
-import { MOBILE_MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../constants/style';
+import { MAX_WIDTH, } from '../constants/style';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
@@ -19,23 +19,15 @@ type Props = {
 const Header = ({
   title = '이리콤',
 }: Props) => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
-
   const router = useRouter();
   const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
-  const [tokenInfo, setTokenInfo,] = useState<TokenInfo | null>(null);
 
   useEffect(() => {
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-    setTokenInfo(storageTokenInfo);
   }, []);
 
   const onClickSignOut = () => {
     BrowserStorage.clear();
-    setTokenInfo(null);
     setMyAccount(null);
     void router.push('/');
   };
@@ -97,7 +89,7 @@ const Header = ({
 
   return (
     <Box backgroundColor='white'>
-      <Card shadow='none' borderRadius='0' maxWidth={MOBILE_MAX_WIDTH} marginLeft='auto' marginRight='auto'>
+      <Card shadow='none' borderRadius='0' maxWidth={MAX_WIDTH} marginLeft='auto' marginRight='auto'>
         <CardBody paddingTop='0.8rem' paddingBottom='0.8rem'>
           <Flex flexDirection='row' alignItems='center' height='2rem'>
             <Link marginRight='auto' href='/'>
