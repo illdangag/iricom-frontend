@@ -35,6 +35,7 @@ const IndexPage = () => {
         >
           {boardList && boardList.map((board, index) =>
             <Card
+              key={index}
               width='100%'
               shadow={isMobile ? 'none' : 'sm'}
               borderRadius={isMobile ? '0' : BORDER_RADIUS}

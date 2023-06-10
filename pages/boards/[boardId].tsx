@@ -1,8 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Text, Button, Card, CardBody, HStack, VStack, Box, Badge, Link, useMediaQuery, Heading, } from '@chakra-ui/react';
-import { MdCreate, } from 'react-icons/md';
+import { Card, CardBody, VStack, Badge, useMediaQuery, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PageBody, } from '../../layouts';
 import { PostListTable, NoContent, } from '../../components';
@@ -14,7 +13,7 @@ import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } 
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
-import NextLink from 'next/link';
+import BoarderHeader from '../../components/BoardHeader';
 
 const BoardsPage = () => {
   const router = useRouter();
@@ -92,27 +91,7 @@ const BoardsPage = () => {
     <MainLayout loginState={LoginState.ANY}>
       <PageBody>
         {/* 게시판 헤더 */}
-        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-          {board && <>
-            <Box
-              marginLeft={isMobile ? '1rem' : '0'}
-            >
-              <Heading size='md' fontWeight='semibold'>{board.title}</Heading>
-              <Text fontSize='xs'>{board.description}</Text>
-            </Box>
-            <Link as={NextLink} href={`/boards/${boardId}/posts/create`}>
-              <Button
-                size='xs'
-                variant='outline'
-                backgroundColor='white'
-                leftIcon={<MdCreate/>}
-                marginRight={isMobile ? '1rem' : '0'}
-              >
-                글 쓰기
-              </Button>
-            </Link>
-          </>}
-        </HStack>
+        {board && <BoarderHeader board={board} isShowCreateButton={true}/>}
         {/* 게시물 목록 */}
         <VStack alignItems='stretch'>
           {/* 공지 사항 목록 */}

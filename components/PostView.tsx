@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
@@ -75,60 +75,59 @@ const PostView = ({
 
   return (
     <>
-      <Card shadow='none'>
-        <CardHeader>
-          <Flex flexDirection='column'>
-            <Flex flexDirection='row' justifyContent='space-between'>
-              <Heading size='md' fontWeight='medium'>{post.title}</Heading>
-              <Menu>
-                <MenuButton as={IconButton} icon={<MdMoreHoriz/>} variant='ghost' size='sm'/>
-                <MenuList>
-                  <MenuItem icon={<MdShare/>}>
-                    공유
-                  </MenuItem>
-                  <MenuItem icon={<MdOutlineReport/>}>
-                    신고
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Flex>
-            <Flex marginTop='0.4rem'>
-              <Text fontSize='0.8rem'>{post.account.nickname}</Text>
-              <Spacer/>
-              <VStack alignItems='flex-end' spacing='0.2rem'>
-                <Text fontSize='0.8rem'>{getFormattedDateTime(post.createDate)}</Text>
-                <Text fontSize='0.8rem'>조회수: {post.viewCount}</Text>
-              </VStack>
-            </Flex>
+      <Box>
+        <Flex flexDirection='column'>
+          <Flex flexDirection='row' justifyContent='space-between'>
+            <Heading size='md' fontWeight='medium'>{post.title}</Heading>
+            <Menu>
+              <MenuButton as={IconButton} icon={<MdMoreHoriz/>} variant='ghost' size='sm'/>
+              <MenuList>
+                <MenuItem icon={<MdShare/>}>
+                  공유
+                </MenuItem>
+                <MenuItem icon={<MdOutlineReport/>}>
+                  신고
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </Flex>
-        </CardHeader>
-        <CardBody>
-          <Box padding='0.5rem'>
-            <MarkdownPreview
-              source={post.content}
-              data-color-mode='light'
-            />
-          </Box>
-        </CardBody>
-        <CardFooter justifyContent='center'>
-          <ButtonGroup>
-            <Button
-              rightIcon={<MdThumbUpOffAlt/>}
-              onClick={onClickUpvote}
-              isDisabled={viewState === ViewState.REQUEST}
-            >
-              {post.upvote}
-            </Button>
-            <Button
-              rightIcon={<MdThumbDownOffAlt/>}
-              onClick={onClickDownvote}
-              isDisabled={viewState === ViewState.REQUEST}
-            >
-              {post.downvote}
-            </Button>
-          </ButtonGroup>
-        </CardFooter>
-      </Card>
+          <Flex marginTop='0.4rem'>
+            <Text fontSize='0.8rem'>{post.account.nickname}</Text>
+            <Spacer/>
+            <VStack alignItems='flex-end' spacing='0.2rem'>
+              <Text fontSize='0.8rem'>{getFormattedDateTime(post.createDate)}</Text>
+              <Text fontSize='0.8rem'>조회수: {post.viewCount}</Text>
+            </VStack>
+          </Flex>
+        </Flex>
+        <Box padding='0.5rem'>
+          <MarkdownPreview
+            source={post.content}
+            data-color-mode='light'
+            style={{ backgroundColor: '#ffffff00', }}
+          />
+        </Box>
+      </Box>
+      <Flex justifyContent='center'>
+        <ButtonGroup>
+          <Button
+            rightIcon={<MdThumbUpOffAlt/>}
+            onClick={onClickUpvote}
+            isDisabled={viewState === ViewState.REQUEST}
+            size='sm'
+          >
+            {post.upvote}
+          </Button>
+          <Button
+            rightIcon={<MdThumbDownOffAlt/>}
+            onClick={onClickDownvote}
+            isDisabled={viewState === ViewState.REQUEST}
+            size='sm'
+          >
+            {post.downvote}
+          </Button>
+        </ButtonGroup>
+      </Flex>
     </>
   );
 };

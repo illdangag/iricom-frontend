@@ -1,16 +1,22 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Alert, AlertIcon, AlertTitle, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { CommentEditor, CommentView, PostView, } from '../../../../components';
+import { CommentEditor, CommentView, PostView, BoardHeader, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { Board, Comment, Post, PostState, } from '../../../../interfaces';
+import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
 
 const BoardsPostsPage = () => {
   const router = useRouter();
   const iricomAPI = useIricomAPI();
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
+    ssr: true,
+    fallback: false,
+  });
 
   const boardId: string = router.query.boardId as string;
   const postId: string = router.query.postId as string;
@@ -83,34 +89,55 @@ const BoardsPostsPage = () => {
 
   return (
     <MainLayout loginState={LoginState.ANY}>
-      <Card shadow='none' borderRadius='0'>
-        {boardId && <CardBody paddingTop='.6rem' paddingBottom='.6rem'>
-          <HStack justifyContent='space-between'>
-            <Breadcrumb>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem>
-                {board && <BreadcrumbLink href={`/boards/${board.id}`}>{board.title}</BreadcrumbLink>}
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </HStack>
-        </CardBody>}
-      </Card>
-      <VStack alignItems='stretch' spacing='1rem' marginTop='1rem' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' maxWidth='60rem'>
-        {post && <PostView post={post} onChange={onChangePostView}/>}
-        {commentList && commentList.map((comment, index) =>
-          <Card shadow='none' key={index}>
-            <CardBody>
-              <CommentView boardId={boardId} postId={postId} comment={comment} allowNestedComment={true} onChange={onChangeCommentView}/>
-            </CardBody>
-          </Card>)}
-        {post && post.isAllowComment && <Card shadow='none'>
+      <PageBody>
+        {board && <BoardHeader board={board}/>}
+        {post && <Card
+          width='100%'
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
+          <CardBody>
+            <PostView post={post} onChange={onChangePostView}/>
+          </CardBody>
+        </Card>}
+        {commentList && <Card
+          marginTop='1rem'
+          width='100%'
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
+          <CardBody>
+            <VStack align='stretch' spacing='1rem'>
+              {commentList.map((comment, index) => (
+                <CommentView
+                  key={index}
+                  boardId={boardId}
+                  postId={postId}
+                  comment={comment}
+                  allowNestedComment={true}
+                  onChange={onChangeCommentView}
+                />
+              ))}
+            </VStack>
+
+          </CardBody>
+        </Card>}
+        {post && post.isAllowComment && <Card
+          marginTop='1rem'
+          width='100%'
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
           <CardBody>
             <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
           </CardBody>
         </Card>}
-        {post && !post.isAllowComment && <Card shadow='none'>
+        {post && !post.isAllowComment && <Card
+          marginTop='1rem'
+          width='100%'
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
           <CardBody>
             <Alert status='warning' borderRadius='.5rem'>
               <AlertIcon/>
@@ -118,7 +145,7 @@ const BoardsPostsPage = () => {
             </Alert>
           </CardBody>
         </Card>}
-      </VStack>
+      </PageBody>
     </MainLayout>
   );
 };

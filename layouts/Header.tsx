@@ -87,9 +87,7 @@ const Header = ({
       <Card shadow='none' borderRadius='0' maxWidth={MAX_WIDTH} marginLeft='auto' marginRight='auto'>
         <CardBody paddingLeft='1rem' paddingRight='1rem' paddingTop='0.8rem' paddingBottom='0.8rem'>
           <Flex flexDirection='row' alignItems='center' height='2rem'>
-            <Link as={NextLink} marginRight='auto' href='/' _hover={{
-              textDecoration: 'none',
-            }}>
+            <Link as={NextLink} marginRight='auto' href='/' _hover={{ textDecoration: 'none', }}>
               <Heading color='gray.700' size='md'>{title}</Heading>
             </Link>
             {getTest()}
