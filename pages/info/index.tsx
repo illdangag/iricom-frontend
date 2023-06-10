@@ -52,10 +52,10 @@ const InfoPage = () => {
         <CardBody>
           <Breadcrumb>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+              <BreadcrumbLink as={NextLink} href='/'>이리콤</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/info' isCurrentPage>내 정보</BreadcrumbLink>
+              <BreadcrumbLink as={NextLink} href='/info' isCurrentPage>내 정보</BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
         </CardBody>

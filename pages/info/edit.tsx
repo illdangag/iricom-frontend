@@ -10,6 +10,7 @@ import { useRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../../recoil';
 // etc
 import { Account, AccountAuth, } from '../../interfaces';
+import NextLink from 'next/link';
 
 enum PageState {
   INVALID,
@@ -73,13 +74,13 @@ const InfoEditPage = () => {
         <CardBody>
           <Breadcrumb>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
+              <BreadcrumbLink as={NextLink} href='/'>이리콤</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/info'>내 정보</BreadcrumbLink>
+              <BreadcrumbLink as={NextLink} href='/info'>내 정보</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/info/edit' isCurrentPage>수정</BreadcrumbLink>
+              <BreadcrumbLink as={NextLink} href='/info/edit' isCurrentPage>수정</BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
         </CardBody>
