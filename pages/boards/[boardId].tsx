@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Text, Button, Card, CardBody, HStack, VStack, Box, Badge, BreadcrumbItem, BreadcrumbLink, Link, useMediaQuery, Heading, } from '@chakra-ui/react';
+import { Text, Button, Card, CardBody, HStack, VStack, Box, Badge, Link, useMediaQuery, Heading, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PageBody, } from '../../layouts';
@@ -13,7 +13,7 @@ import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
-import { BORDER_RADIUS, MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../../constants/style';
+import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
 import NextLink from 'next/link';
 
 const BoardsPage = () => {
