@@ -1,10 +1,11 @@
 // react
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Card, CardBody, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Flex, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, useMediaQuery, Button, Link, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 // etc
-import { AccountAuth, Account, TokenInfo, } from '../interfaces';
+import { Account, AccountAuth, TokenInfo, } from '../interfaces';
+import { MOBILE_MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../constants/style';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
@@ -18,6 +19,11 @@ type Props = {
 const Header = ({
   title = '이리콤',
 }: Props) => {
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
+    ssr: true,
+    fallback: false,
+  });
+
   const router = useRouter();
   const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [tokenInfo, setTokenInfo,] = useState<TokenInfo | null>(null);
@@ -34,80 +40,70 @@ const Header = ({
     void router.push('/');
   };
 
-  const getLogoutMenu = <>
-    <NextLink href='/login'>
-      <MenuItem fontSize='1rem'>
-        로그인
+  const systemAdminMenu = <Menu>
+    <MenuButton
+      as={IconButton}
+      icon={<MdMenu/>}
+      variant='ghost'
+      size='sm'
+    />
+    <MenuList>
+      <NextLink href='/admin/board'>
+        <MenuItem fontSize='1rem'>
+          관리자 페이지
+        </MenuItem>
+      </NextLink>
+      <NextLink href='/info'>
+        <MenuItem>
+          내 정보
+        </MenuItem>
+      </NextLink>
+      <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+        로그아웃
       </MenuItem>
-    </NextLink>
-  </>;
+    </MenuList>
+  </Menu>;
 
-  const getLoginMenu = <>
-    <MenuItem fontSize='1rem' onClick={onClickSignOut}>
-      로그아웃
-    </MenuItem>
-  </>;
-
-  const getAccountMenu = <>
-    <NextLink href='/info'>
-      <MenuItem>
-        내 정보
+  const accountMenu = <Menu>
+    <MenuButton
+      as={IconButton}
+      icon={<MdMenu/>}
+      variant='ghost'
+      size='sm'
+    />
+    <MenuList>
+      <NextLink href='/info'>
+        <MenuItem>
+          내 정보
+        </MenuItem>
+      </NextLink>
+      <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+        로그아웃
       </MenuItem>
-    </NextLink>
-    <MenuItem fontSize='1rem' onClick={onClickSignOut}>
-      로그아웃
-    </MenuItem>
-  </>;
+    </MenuList>
+  </Menu>;
 
-  const getSystemAdminMenu = <>
-    <NextLink href='/admin/board'>
-      <MenuItem fontSize='1rem'>
-        관리자 페이지
-      </MenuItem>
-    </NextLink>
-    <NextLink href='/info'>
-      <MenuItem>
-        내 정보
-      </MenuItem>
-    </NextLink>
-    <MenuItem fontSize='1rem' onClick={onClickSignOut}>
-      로그아웃
-    </MenuItem>
-  </>;
-
-  const getMenu = () => {
-    if (tokenInfo === null) {
-      return getLogoutMenu;
-    }
-
-    if (myAccount === null) {
-      return getLoginMenu;
-    } else if (myAccount.auth === AccountAuth.SYSTEM_ADMIN) {
-      return getSystemAdminMenu;
-    } else {
-      return getAccountMenu;
+  const getTest = (): JSX.Element => {
+    if (myAccount === null) { // 로그아웃 상태
+      return <Link href='/login'>
+        <Button size='sm' variant='outline'>로그인</Button>
+      </Link>;
+    } else if (myAccount.auth === AccountAuth.SYSTEM_ADMIN) { // 시스템 관리자
+      return systemAdminMenu;
+    } else { // 일반 사용자 또는 게시판 관리자
+      return accountMenu;
     }
   };
 
   return (
-    <Box>
-      <Card shadow='none' borderRadius='0'>
-        <CardBody paddingTop='0.4rem' paddingBottom='0.4rem'>
-          <Flex justifyContent='space-between' alignItems='center'>
-            <NextLink href='/'>
+    <Box backgroundColor='white'>
+      <Card shadow='none' borderRadius='0' maxWidth={MOBILE_MAX_WIDTH} marginLeft='auto' marginRight='auto'>
+        <CardBody paddingTop='0.8rem' paddingBottom='0.8rem'>
+          <Flex flexDirection='row' alignItems='center' height='2rem'>
+            <Link marginRight='auto' href='/'>
               <Heading color='gray.700' size='md'>{title}</Heading>
-            </NextLink>
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                icon={<MdMenu/>}
-                variant='ghost'
-              >
-              </MenuButton>
-              <MenuList>
-                {getMenu()}
-              </MenuList>
-            </Menu>
+            </Link>
+            {getTest()}
           </Flex>
         </CardBody>
       </Card>
