@@ -1,16 +1,24 @@
 // react
-import { useEffect, useState, } from 'react';
+import { useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { Alert, AlertIcon, AlertTitle, Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { CommentEditor, CommentView, PostView, BoardHeader, } from '../../../../components';
+import { BoardHeader, CommentEditor, CommentView, PostView, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
-import { Board, Comment, Post, PostState, } from '../../../../interfaces';
+import { Board, Comment, CommentList, Post, PostState, } from '../../../../interfaces';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
+import { GetServerSideProps, } from 'next/types';
+import iricomAPI from '../../../../utils/iricomAPI';
 
-const BoardsPostsPage = () => {
+type Props = {
+  board: Board,
+  post: Post,
+  commentList: CommentList,
+};
+
+const BoardsPostsPage = (props: Props) => {
   const router = useRouter();
   const iricomAPI = useIricomAPI();
   const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
@@ -21,36 +29,9 @@ const BoardsPostsPage = () => {
   const boardId: string = router.query.boardId as string;
   const postId: string = router.query.postId as string;
 
-  const [post, setPost,] = useState<Post | null>(null);
-  const [board, setBoard,] = useState<Board | null>(null);
-  const [commentList, setCommentList,] = useState<Comment[] | null>(null);
-
-  useEffect(() => {
-    if (boardId && postId) {
-      initPost(boardId, postId);
-    }
-  }, [boardId, postId,]);
-
-  const initPost = (boardId: string, postId: string) => {
-    void iricomAPI.getPost(boardId, postId, PostState.PUBLISH)
-      .then(post => {
-        setPost(post);
-        if (post.isAllowComment) {
-          initCommentList(boardId, postId);
-        }
-      })
-      .catch(() => {
-        // TODO error
-      });
-
-    void iricomAPI.getBoard(boardId)
-      .then(board => {
-        setBoard(board);
-      })
-      .catch(() => {
-        // TODO error
-      });
-  };
+  const board: Board = Object.assign(new Board(), props.board);
+  const [post, setPost,] = useState<Post | null>(props.post);
+  const [commentList, setCommentList,] = useState<Comment[] | null>(Object.assign(new CommentList(), props.commentList).comments);
 
   const initCommentList = (boardId: string, postId: string) => {
     void iricomAPI.getCommentList(boardId, postId)
@@ -100,7 +81,7 @@ const BoardsPostsPage = () => {
             <PostView post={post} onChange={onChangePostView}/>
           </CardBody>
         </Card>}
-        {commentList && <Card
+        {commentList && commentList.length > 0 && <Card
           marginTop='1rem'
           width='100%'
           shadow={isMobile ? 'none' : 'sm'}
@@ -119,7 +100,6 @@ const BoardsPostsPage = () => {
                 />
               ))}
             </VStack>
-
           </CardBody>
         </Card>}
         {post && post.isAllowComment && <Card
@@ -148,6 +128,23 @@ const BoardsPostsPage = () => {
       </PageBody>
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const boardId: string = context.query.boardId as string;
+  const postId: string = context.query.postId as string;
+
+  const board: Board = await iricomAPI.getBoard(boardId);
+  const post: Post = await iricomAPI.getPost(boardId, postId, PostState.PUBLISH, null);
+  const commentList: CommentList = await iricomAPI.getCommentList(boardId, postId);
+
+  return {
+    props: {
+      board: JSON.parse(JSON.stringify(board)),
+      post: JSON.parse(JSON.stringify(post)),
+      commentList: JSON.parse(JSON.stringify(commentList)),
+    },
+  };
 };
 
 export default BoardsPostsPage;

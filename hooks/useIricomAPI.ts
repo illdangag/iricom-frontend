@@ -66,6 +66,16 @@ function useIricomAPI (): IricomAPI {
     } as AxiosRequestConfig;
   };
 
+  const getToken = async (tokenInfo: TokenInfo): Promise<string> => {
+    let token: string = tokenInfo.token;
+    if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
+      const newTokenInfo: TokenInfo = await refreshToken(tokenInfo);
+      token = newTokenInfo.token;
+      BrowserStorage.setTokenInfo(newTokenInfo);
+    }
+    return token;
+  };
+
   const refreshToken = async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
     const config: AxiosRequestConfig = {
       url: 'https://securetoken.googleapis.com/v1/token',
@@ -300,48 +310,20 @@ function useIricomAPI (): IricomAPI {
     },
 
     getPost: async (boardId: string, postId: string, postState: PostState | null): Promise<Post> => {
-      let config: AxiosRequestConfig;
+      let token: string;
       if (postState === PostState.TEMPORARY) {
-        // 임시 저장한 문서는 token이 필요함
-        const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-        config = await getRequestConfig(token);
-      } else {
-        config = {};
+        const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+        if (tokenInfo === null) {
+          throw new Error(); // TODO
+        }
+        token = await getToken(tokenInfo);
       }
 
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
-      config.method = 'GET';
-      if (postState !== null) {
-        config.params = {
-          state: postState,
-        };
-      }
-
-      try {
-        const response: AxiosResponse<Post> = await axios.request(config);
-        return response.data;
-      } catch (error) {
-        defaultErrorHandler(error);
-      }
+      return await iricomAPI.getPost(boardId, postId, postState, token);
     },
 
     getCommentList: async (boardId: string, postId: string): Promise<CommentList> => {
-      const config: AxiosRequestConfig = {
-        url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`,
-        method: 'GET',
-        params: {
-          includeComment: true,
-          includeCommentLimit: 20,
-        },
-      };
-      try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: CommentList = new CommentList();
-        Object.assign(result, response.data);
-        return result;
-      } catch (error) {
-        defaultErrorHandler(error);
-      }
+      return await iricomAPI.getCommentList(boardId, postId);
     },
 
     createComment: async (boardId: string, postId: string, content: string, referenceCommentId: string | null): Promise<Comment> => {

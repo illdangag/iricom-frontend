@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
-import { BackendProperties, Board, BoardList, PostList, PostType, } from '../interfaces';
+import { BackendProperties, Board, BoardList, CommentList, Post, PostList, PostState, PostType, } from '../interfaces';
 import process from 'process';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
@@ -9,6 +9,9 @@ type IricomAPIList = {
   getBoard: (id: string) => Promise<Board>,
 
   getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
+  getPost: (boardId: string, postId: string, postState: PostState | null, token: string | null) => Promise<Post>,
+
+  getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
 }
 
 const IricomAPI: IricomAPIList = {
@@ -71,6 +74,53 @@ const IricomAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Object> = await axios.request(config);
       const result: PostList = new PostList();
+      Object.assign(result, response.data);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  getPost: async (boardId: string, postId: string, postState: PostState | null, token: string | null): Promise<Post> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`,
+      method: 'GET',
+    };
+
+    if (postState !== null) {
+      config.params = {
+        state: postState,
+      };
+    }
+
+    if (postState === PostState.TEMPORARY) {
+      config.headers = {
+        Authorization: 'Bearer ' + token,
+      };
+    }
+
+    try {
+      const response: AxiosResponse<Post> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  getCommentList: async (boardId: string, postId: string): Promise<CommentList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`,
+      method: 'GET',
+      params: {
+        includeComment: true,
+        includeCommentLimit: 20,
+      },
+    };
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: CommentList = new CommentList();
       Object.assign(result, response.data);
       return result;
     } catch (error) {
