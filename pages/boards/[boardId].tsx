@@ -1,12 +1,12 @@
 // react
-import { useEffect, useState, } from 'react';
+import { useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, VStack, Badge, useMediaQuery, } from '@chakra-ui/react';
+import { Badge, Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PageBody, } from '../../layouts';
-import { PostListTable, NoContent, } from '../../components';
+import { NoContent, PostListTable, } from '../../components';
 import { RequireAccountDetailAlert, } from '../../components/alerts';
-import { useAccountState, useIricomAPI, } from '../../hooks';
+import { useAccountState, } from '../../hooks';
 // recoil
 import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
@@ -14,55 +14,34 @@ import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } 
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
 import BoarderHeader from '../../components/BoardHeader';
+import { GetServerSideProps, } from 'next/types';
+import iricomAPI from '../../utils/iricomAPI';
 
-const BoardsPage = () => {
+const PAGE_LIMIT: number = 10;
+const NOTIFICATION_PAGE_LIMIT: number = 5;
+
+type Props = {
+  board: Board,
+  postList: PostList,
+  notificationList: PostList,
+};
+
+const BoardsPage = (props: Props) => {
   const router = useRouter();
-  const iricomAPI = useIricomAPI();
   const [loginState, accountAuth,] = useAccountState();
 
   const boardId: string = router.query.boardId as string;
-  const pageQuery: string = router.query.page as string;
 
-  const PAGE_LIMIT: number = 10;
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
 
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
-  const [board, setBoard,] = useState<Board | null>(null);
-  const [postList, setPostList,] = useState<PostList | null>(null);
-  const [notificationList, setNotificationList,] = useState<PostList | null>(null);
+  const board = Object.assign(new Board(), props.board as Board);
+  const postList = Object.assign(new PostList(), props.postList as PostList);
+  const notificationList = Object.assign(new PostList(), props.notificationList as PostList);
 
   const [page, setPage,] = useState<number>(1);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
   const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
-
-  useEffect(() => {
-    if (router.isReady) {
-      const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
-      setPage(page);
-
-      void initBoard(boardId);
-      void initPostList(boardId, page);
-      void initNotificationList(boardId);
-    }
-  }, [router.isReady, pageQuery,]);
-
-  const initBoard = async (boardId: string) => {
-    const board: Board = await iricomAPI.getBoard(boardId);
-    setBoard(board);
-  };
-
-  const initPostList = async (boardId: string, page: number) => {
-    const postList: PostList = await iricomAPI.getPostList(boardId, PAGE_LIMIT * (page - 1), PAGE_LIMIT, PostType.POST);
-    setPostList(postList);
-  };
-
-  const initNotificationList = async (boardId: string) => {
-    const notificationList: PostList = await iricomAPI.getPostList(boardId, 0, 5, PostType.NOTIFICATION);
-    setNotificationList(notificationList);
-  };
 
   const onClickCreatePost = () => {
     if (loginState === LoginState.LOGOUT) {
@@ -136,5 +115,26 @@ const BoardsPage = () => {
     </MainLayout>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const boardId: string = context.query.boardId as string;
+  const pageQuery: string | undefined = context.query.page as string;
+  const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
+  const skip: number = PAGE_LIMIT * (page - 1);
+  const limit: number = PAGE_LIMIT;
+
+  const board: Board = await iricomAPI.getBoard(boardId);
+  const postList: PostList = await iricomAPI.getPostList(boardId, skip, limit, PostType.POST);
+  const notificationList: PostList = await iricomAPI.getPostList(boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION);
+
+  return {
+    props: {
+      board: JSON.parse(JSON.stringify(board)),
+      postList: JSON.parse(JSON.stringify(postList)),
+      notificationList: JSON.parse(JSON.stringify(notificationList)),
+    },
+  };
+};
+
 
 export default BoardsPage;

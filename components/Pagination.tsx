@@ -16,7 +16,6 @@ const Pagination = ({
   listResponse,
   onClick = () => {},
 }: Props) => {
-
   return (<HStack justifyContent='center' marginTop='0.4rem'>
     <ButtonGroup size='xs' variant='outline' isAttached>
       {listResponse.getPaginationList(pageMaxLength).map((pagination, index) => <Button key={index}

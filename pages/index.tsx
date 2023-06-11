@@ -29,8 +29,8 @@ const IndexPage = (props: Props) => {
           spacing='1rem'
           maxWidth={MAX_WIDTH}
         >
-          {boardPostListList && boardPostListList.map((boardPostList, index) =>
-            <Card
+          {boardPostListList && boardPostListList.map((boardPostList, index) => {
+            return <Card
               key={index}
               width='100%'
               shadow={isMobile ? 'none' : 'sm'}
@@ -39,7 +39,8 @@ const IndexPage = (props: Props) => {
               <CardBody>
                 <BoardPostPreview board={boardPostList.board} postList={boardPostList.postList} key={index}/>
               </CardBody>
-            </Card>)}
+            </Card>;
+          })}
         </VStack>
       </PageBody>
     </MainLayout>

@@ -1,11 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
-import { BackendProperties, BoardList, PostList, PostType, } from '../interfaces';
+import { BackendProperties, Board, BoardList, PostList, PostType, } from '../interfaces';
 import process from 'process';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
 type IricomAPIList = {
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
+  getBoard: (id: string) => Promise<Board>,
 
   getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
 }
@@ -28,6 +29,23 @@ const IricomAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Object> = await axios.request(config);
       const result: BoardList = new BoardList();
+      Object.assign(result, response.data);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  getBoard: async (id: string) => {
+    const config: AxiosRequestConfig = {
+      url: backendProperties.host + '/v1/boards/' + id,
+      method: 'GET',
+    };
+
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: Board = new Board();
       Object.assign(result, response.data);
       return result;
     } catch (error) {

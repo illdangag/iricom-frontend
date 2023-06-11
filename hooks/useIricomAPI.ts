@@ -162,20 +162,7 @@ function useIricomAPI (): IricomAPI {
     },
 
     getBoard: async (id: string) => {
-      const config: AxiosRequestConfig = {
-        url: backendProperties.host + '/v1/boards/' + id,
-        method: 'GET',
-      };
-
-      try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: Board = new Board();
-        Object.assign(result, response.data);
-        return result;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
+      return await iricomAPI.getBoard(id);
     },
 
     updateBoard: async (board: Board): Promise<Board> => {
