@@ -3,6 +3,7 @@ import process from 'process';
 // etc
 import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
+import iricomAPI from '../utils/iricomAPI';
 // store
 import { BrowserStorage, } from '../utils';
 // recoil
@@ -135,28 +136,7 @@ function useIricomAPI (): IricomAPI {
     },
 
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null): Promise<BoardList> => {
-      const config: AxiosRequestConfig = {
-        url: backendProperties.host + '/v1/boards',
-        method: 'GET',
-        params: {
-          skip: skip,
-          limit: limit,
-        },
-      };
-
-      if (enabled !== null) {
-        config.params.enabled = enabled;
-      }
-
-      try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: BoardList = new BoardList();
-        Object.assign(result, response.data);
-        return result;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
+      return await iricomAPI.getBoardList(skip, limit, enabled);
     },
 
     createBoard: async (title: string, description: string, enabled: boolean): Promise<Board> => {
@@ -217,28 +197,7 @@ function useIricomAPI (): IricomAPI {
     },
 
     getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null): Promise<PostList> => {
-      const config: AxiosRequestConfig = {
-        url:  `${backendProperties.host}/v1/boards/${boardId}/posts`,
-        method: 'GET',
-        params: {
-          skip: skip,
-          limit: limit,
-        },
-      };
-
-      if (type !== null) {
-        config.params.type = type;
-      }
-
-      try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: PostList = new PostList();
-        Object.assign(result, response.data);
-        return result;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
+      return await iricomAPI.getPostList(boardId, skip, limit, type);
     },
 
     createPost: async (boardId: string, title: string, content: string, postType: PostType, isAllowComment: boolean): Promise<Post> => {

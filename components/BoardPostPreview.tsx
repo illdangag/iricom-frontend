@@ -1,33 +1,21 @@
 // react
-import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
 import { Heading, LinkBox, LinkOverlay, Alert, Text, Flex, VStack, } from '@chakra-ui/react';
-import { useIricomAPI, } from '../hooks';
 // etc
-import { Board, PostList, PostType, } from '../interfaces';
+import { Board, PostList, } from '../interfaces';
 import PostListTable from './PostListTable';
 import { BORDER_RADIUS, } from '../constants/style';
 
 type Props = {
   board: Board,
+  postList: PostList,
   postMaxLength?: number,
 }
 
 const BoardPostPreview = ({
   board,
-  postMaxLength = 5, // 기본적으로 게시판 미리보기에서는 최대 5개의 게시물을 표현
+  postList,
 }: Props) => {
-  const iricomAPI = useIricomAPI();
-
-  const [postList, setPostList,] = useState<PostList | null>(null);
-
-  useEffect(() => {
-    void iricomAPI.getPostList(board.id, 0, postMaxLength, PostType.POST)
-      .then(postList => {
-        setPostList(postList);
-      });
-  }, []);
-
   return (
     <VStack alignItems='start'>
       <LinkBox>

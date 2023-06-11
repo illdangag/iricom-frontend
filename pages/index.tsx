@@ -1,29 +1,25 @@
 // react
-import { useEffect, useState, } from 'react';
+import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '../layouts';
-import { useIricomAPI, } from '../hooks';
 // etc
-import { Board, } from '../interfaces';
+import { Board, PostList, PostType, } from '../interfaces';
 import BoardPostPreview from '../components/BoardPostPreview';
-import { MOBILE_MEDIA_QUERY, MAX_WIDTH, BORDER_RADIUS, } from '../constants/style';
+import { BORDER_RADIUS, MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../constants/style';
+import iricomAPI from '../utils/iricomAPI';
 
-const IndexPage = () => {
-  const iricomAPI = useIricomAPI();
+type BoardPostList = {
+  board: Board,
+  postList: PostList,
+}
 
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
+type Props = {
+  boardPostListList: BoardPostList[],
+}
 
-  const [boardList, setBoardList,] = useState<Board[] | null>(null);
-
-  useEffect(() => {
-    void iricomAPI.getBoardList(0, 20, true)
-      .then(boardList => {
-        setBoardList(boardList.boards);
-      });
-  }, []);
+const IndexPage = (props: Props) => {
+  const boardPostListList: BoardPostList[] = props.boardPostListList;
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
 
   return (
     <MainLayout>
@@ -33,7 +29,7 @@ const IndexPage = () => {
           spacing='1rem'
           maxWidth={MAX_WIDTH}
         >
-          {boardList && boardList.map((board, index) =>
+          {boardPostListList && boardPostListList.map((boardPostList, index) =>
             <Card
               key={index}
               width='100%'
@@ -41,13 +37,31 @@ const IndexPage = () => {
               borderRadius={isMobile ? '0' : BORDER_RADIUS}
             >
               <CardBody>
-                <BoardPostPreview board={board} key={index}/>
+                <BoardPostPreview board={boardPostList.board} postList={boardPostList.postList} key={index}/>
               </CardBody>
             </Card>)}
         </VStack>
       </PageBody>
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (_context) => {
+  const boardList: Board[] = (await iricomAPI.getBoardList(0, 20, true)).boards;
+  const boardPostListList: BoardPostList[] = [];
+  for (const board of boardList) {
+    const postList: PostList = await iricomAPI.getPostList(board.id, 0, 5, PostType.POST);
+    boardPostListList.push({
+      board: board,
+      postList: postList,
+    } as BoardPostList);
+  }
+
+  return {
+    props: {
+      boardPostListList: JSON.parse(JSON.stringify(boardPostListList)),
+    },
+  };
 };
 
 export default IndexPage;
