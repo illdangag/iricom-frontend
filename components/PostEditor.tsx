@@ -13,7 +13,6 @@ const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
 // etc
 import { AccountAuth, Post, PostState, PostType, } from '../interfaces';
 
-
 type Props = {
   defaultValue?: Post,
   disabled?: boolean,

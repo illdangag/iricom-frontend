@@ -1,10 +1,11 @@
 // react
+import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Card, CardBody, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Button, Link, } from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, Flex, Heading, IconButton, Link, Menu, MenuButton, MenuItem, MenuList, } from '@chakra-ui/react';
 import { MdMenu, } from 'react-icons/md';
 // etc
-import { Account, AccountAuth, } from '../interfaces';
+import { Account, AccountAuth, TokenInfo, } from '../interfaces';
 import { MAX_WIDTH, } from '../constants/style';
 // store
 import { BrowserStorage, } from '../utils';
@@ -15,11 +16,33 @@ type Props = {
   title?: string,
 };
 
+enum HeaderState {
+  NONE,
+  NOT_LOGIN,
+  ACCOUNT,
+  BOARD_ADMIN,
+  SYSTEM_ADMIN,
+}
+
 const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
   const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
+  const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
+
+  useEffect(() => {
+    const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+    if (storageTokenInfo === null) {
+      setState(HeaderState.NOT_LOGIN);
+    } else if (myAccount === null || myAccount.auth === AccountAuth.ACCOUNT) {
+      setState(HeaderState.ACCOUNT);
+    } else if (myAccount.auth === AccountAuth.BOARD_ADMIN) {
+      setState(HeaderState.BOARD_ADMIN);
+    } else if (myAccount.auth === AccountAuth.SYSTEM_ADMIN) {
+      setState(HeaderState.SYSTEM_ADMIN);
+    }
+  }, [myAccount,]);
 
   const onClickSignOut = () => {
     BrowserStorage.clear();
@@ -70,15 +93,17 @@ const Header = ({
     </MenuList>
   </Menu>;
 
-  const getTest = (): JSX.Element => {
-    if (myAccount === null) { // 로그아웃 상태
+  const getRightElement = (): JSX.Element => {
+    if (state === HeaderState.NOT_LOGIN) {
       return <Link as={NextLink} href='/login'>
         <Button size='sm' variant='outline'>로그인</Button>
       </Link>;
-    } else if (myAccount.auth === AccountAuth.SYSTEM_ADMIN) { // 시스템 관리자
-      return systemAdminMenu;
-    } else { // 일반 사용자 또는 게시판 관리자
+    } else if (state === HeaderState.ACCOUNT || state === HeaderState.BOARD_ADMIN) {
       return accountMenu;
+    } else if (state === HeaderState.SYSTEM_ADMIN) {
+      return systemAdminMenu;
+    } else {
+      return <></>;
     }
   };
 
@@ -90,7 +115,7 @@ const Header = ({
             <Link as={NextLink} marginRight='auto' href='/' _hover={{ textDecoration: 'none', }}>
               <Heading color='gray.700' size='md'>{title}</Heading>
             </Link>
-            {getTest()}
+            {getRightElement()}
           </Flex>
         </CardBody>
       </Card>
