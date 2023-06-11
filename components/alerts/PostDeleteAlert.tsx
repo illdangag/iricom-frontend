@@ -62,6 +62,7 @@ const PostDeleteAlert = ({
       <AlertDialogFooter>
         <ButtonGroup>
           <Button
+            variant='ghost'
             ref={closeRef}
             isDisabled={state === State.INVALID || state === State.REQUEST}
             onClick={onClose}
