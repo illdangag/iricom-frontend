@@ -1,5 +1,5 @@
 // react
-import { ReactElement, useState, } from 'react';
+import { useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, useMediaQuery, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';

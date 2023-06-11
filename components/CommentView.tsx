@@ -10,8 +10,6 @@ import { myAccountAtom, } from '../recoil';
 import { Account, Comment, NotExistTokenError, VoteType, } from '../interfaces';
 import CommentEditor from './CommentEditor';
 import { getFormattedDateTime, } from '../utils';
-import { errors } from 'rehype-parse/lib/errors';
-import nestedComment = errors.nestedComment;
 
 type Props = {
   boardId: string,

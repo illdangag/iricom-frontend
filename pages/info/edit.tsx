@@ -1,16 +1,17 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, FormControl, FormLabel, Heading, HStack, Input, VStack,
-  useToast, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+  useToast, useMediaQuery, Box, Text, } from '@chakra-ui/react';
+import { PageBody, } from '../../layouts';
+import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { useIricomAPI, } from '../../hooks';
 // store
 import { useRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../../recoil';
 // etc
 import { Account, AccountAuth, } from '../../interfaces';
-import NextLink from 'next/link';
+import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
 
 enum PageState {
   INVALID,
@@ -25,6 +26,7 @@ const InfoEditPage = () => {
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [nickname, setNickname,] = useState<string>('');
@@ -70,23 +72,17 @@ const InfoEditPage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
-      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
-        <CardBody>
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <BreadcrumbLink as={NextLink} href='/'>이리콤</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink as={NextLink} href='/info'>내 정보</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink as={NextLink} href='/info/edit' isCurrentPage>수정</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </CardBody>
-      </Card>
-      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
-        <Card shadow='none'>
+      <PageBody>
+        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
+          <Box marginLeft={isMobile ? '1rem' : '0'}>
+            <Heading size='md' fontWeight='semibold'>내 정보 수정</Heading>
+            <Text fontSize='xs'>닉네임 및 설명을 수정합니다</Text>
+          </Box>
+        </HStack>
+        <Card
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
           <CardHeader padding='0.8rem'>
             <HStack>
               <Heading size='sm' color='gray.600'>{myAccount ? myAccount.email : ''}</Heading>
@@ -112,7 +108,7 @@ const InfoEditPage = () => {
             </ButtonGroup>
           </CardFooter>
         </Card>
-      </VStack>
+      </PageBody>
     </MainLayout>
   );
 };
