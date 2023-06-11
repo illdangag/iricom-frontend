@@ -15,16 +15,11 @@ const BoarderHeader = ({
   board,
   isShowCreateButton = false,
 }: Props) => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
 
   return (
     <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-      <Box
-        marginLeft={isMobile ? '1rem' : '0'}
-      >
+      <Box marginLeft={isMobile ? '1rem' : '0'}>
         <Link as={NextLink} href={`/boards/${board.id}`} _hover={{ textDecoration: 'none', }}>
           <Heading size='md' fontWeight='semibold'>{board.title}</Heading>
         </Link>

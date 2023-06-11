@@ -2,11 +2,13 @@
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { VStack, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
-  Button, useToast, BreadcrumbItem, BreadcrumbLink, Breadcrumb, } from '@chakra-ui/react';
+  Button, useToast, Text, HStack, Box, useMediaQuery, Heading, } from '@chakra-ui/react';
+import { PageBody, } from '../../../layouts';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';
 // etc
 import { AccountAuth, } from '../../../interfaces';
+import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../constants/style';
 
 enum PageState {
   READY,
@@ -21,6 +23,7 @@ const AdminBoardCreatePage = () => {
   const toast = useToast();
   const iricomAPI = useIricomAPI();
 
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
   const [title, setTitle,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
@@ -68,23 +71,17 @@ const AdminBoardCreatePage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
-        <CardBody>
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href='/admin/board/create'>생성</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </CardBody>
-      </Card>
-      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
-        <Card shadow='none'>
+      <PageBody>
+        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
+          <Box marginLeft={isMobile ? '1rem' : '0'}>
+            <Heading size='md' fontWeight='semibold'>게시판 생성</Heading>
+            <Text fontSize='xs'>새로운 게시판을 생성합니다.</Text>
+          </Box>
+        </HStack>
+        <Card
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
           <CardBody>
             <VStack spacing='1rem'>
               <FormControl isRequired>
@@ -111,7 +108,7 @@ const AdminBoardCreatePage = () => {
             </Button>
           </CardFooter>
         </Card>
-      </VStack>
+      </PageBody>
     </MainLayout>
   );
 };

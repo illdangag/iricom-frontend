@@ -2,12 +2,14 @@
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, VStack,
-  useToast, CardBody, CardFooter, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from '@chakra-ui/react';
+  useToast, CardBody, CardFooter, useMediaQuery, Box, Heading, Text, HStack, } from '@chakra-ui/react';
+import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, } from '../../../../interfaces';
+import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
 
 enum PageState {
   INVALID,
@@ -23,7 +25,7 @@ const AdminBoardEditIdPage = () => {
   const iriconAPI = useIricomAPI();
 
   const id = router.query.id as string;
-
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [board, setBoard,] = useState<Board | null>(null);
   const [title, setTitle,] = useState<string>('');
@@ -105,26 +107,17 @@ const AdminBoardEditIdPage = () => {
 
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
-        <CardBody>
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/admin/board/edit'>수정</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem isCurrentPage>
-              {board && <BreadcrumbLink href={`/admin/board/edit/${id}`}>{board.title}</BreadcrumbLink>}
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </CardBody>
-      </Card>
-      <VStack alignItems='stretch' marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
-        <Card shadow='none'>
+      <PageBody>
+        {board && <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
+          <Box marginLeft={isMobile ? '1rem' : '0'}>
+            <Heading size='md' fontWeight='semibold'>{board.title}</Heading>
+            <Text fontSize='xs'>{board.description}</Text>
+          </Box>
+        </HStack>}
+        <Card
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
           <CardBody>
             <VStack spacing='1.8rem'>
               <FormControl isRequired>
@@ -146,7 +139,7 @@ const AdminBoardEditIdPage = () => {
             <Button isDisabled={pageState !== PageState.VALID} onClick={onClickEdit}>수정</Button>
           </CardFooter>
         </Card>
-      </VStack>
+      </PageBody>
       {<NotExistBoardAlert isOpen={showAlert} onClose={onCloseAlert}/>}
     </MainLayout>
   );
