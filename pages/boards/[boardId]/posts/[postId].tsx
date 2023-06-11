@@ -104,6 +104,7 @@ const BoardsPostsPage = (props: Props) => {
         </Card>}
         {post && post.isAllowComment && <Card
           marginTop='1rem'
+          marginBottom='1rem'
           width='100%'
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}
@@ -114,6 +115,7 @@ const BoardsPostsPage = (props: Props) => {
         </Card>}
         {post && !post.isAllowComment && <Card
           marginTop='1rem'
+          marginBottom='1rem'
           width='100%'
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}
