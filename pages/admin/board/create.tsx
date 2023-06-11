@@ -2,13 +2,14 @@
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { VStack, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
-  Button, useToast, Text, HStack, Box, useMediaQuery, Heading, } from '@chakra-ui/react';
+  Button, useToast, useMediaQuery, } from '@chakra-ui/react';
 import { PageBody, } from '../../../layouts';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';
 // etc
 import { AccountAuth, } from '../../../interfaces';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../constants/style';
+import { PageTitle, } from '../../../components';
 
 enum PageState {
   READY,
@@ -72,12 +73,10 @@ const AdminBoardCreatePage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
       <PageBody>
-        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-          <Box marginLeft={isMobile ? '1rem' : '0'}>
-            <Heading size='md' fontWeight='semibold'>게시판 생성</Heading>
-            <Text fontSize='xs'>새로운 게시판을 생성합니다.</Text>
-          </Box>
-        </HStack>
+        <PageTitle
+          title='게시판 생성'
+          descriptions={['새로운 게시판을 생성합니다.',]}
+        />
         <Card
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}

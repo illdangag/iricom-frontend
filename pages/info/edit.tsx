@@ -2,9 +2,10 @@
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, FormControl, FormLabel, Heading, HStack, Input, VStack,
-  useToast, useMediaQuery, Box, Text, } from '@chakra-ui/react';
+  useToast, useMediaQuery, } from '@chakra-ui/react';
 import { PageBody, } from '../../layouts';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
+import { PageTitle, } from '../../components';
 import { useIricomAPI, } from '../../hooks';
 // store
 import { useRecoilState, } from 'recoil';
@@ -73,12 +74,10 @@ const InfoEditPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
       <PageBody>
-        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-          <Box marginLeft={isMobile ? '1rem' : '0'}>
-            <Heading size='md' fontWeight='semibold'>내 정보 수정</Heading>
-            <Text fontSize='xs'>닉네임 및 설명을 수정합니다</Text>
-          </Box>
-        </HStack>
+        <PageTitle
+          title='내 정보 수정'
+          descriptions={['닉네임 및 설명을 수정합니다',]}
+        />
         <Card
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}

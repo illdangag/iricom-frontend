@@ -2,10 +2,11 @@
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, VStack,
-  useToast, CardBody, CardFooter, useMediaQuery, Box, Heading, Text, HStack, } from '@chakra-ui/react';
+  useToast, CardBody, CardFooter, useMediaQuery, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
+import { PageTitle, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, } from '../../../../interfaces';
@@ -108,12 +109,10 @@ const AdminBoardEditIdPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
       <PageBody>
-        {board && <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-          <Box marginLeft={isMobile ? '1rem' : '0'}>
-            <Heading size='md' fontWeight='semibold'>{board.title}</Heading>
-            <Text fontSize='xs'>{board.description}</Text>
-          </Box>
-        </HStack>}
+        {board && <PageTitle
+          title={board.title}
+          descriptions={[board.description,]}
+        />}
         <Card
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}

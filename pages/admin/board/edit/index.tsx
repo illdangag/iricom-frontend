@@ -1,8 +1,8 @@
 // react
 import { useState, } from 'react';
 import NextLink from 'next/link';
-import { VStack, Card, CardBody, HStack, Box, Heading, Text, useMediaQuery, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
-import { BoardView, NoContent, } from '../../../../components';
+import { VStack, Card, CardBody, useMediaQuery, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
+import { BoardView, NoContent, PageTitle, } from '../../../../components';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../../hooks';
@@ -40,12 +40,10 @@ const AdminBoardEditPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN} onMount={onMount}>
       <PageBody>
-        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-          <Box marginLeft={isMobile ? '1rem' : '0'}>
-            <Heading size='md' fontWeight='semibold'>게시판 수정</Heading>
-            <Text fontSize='xs'>게시판 정보를 수정합니다.</Text>
-          </Box>
-        </HStack>
+        <PageTitle
+          title='게시판 수정'
+          descriptions={['게시판 정보를 수정합니다',]}
+        />
         <Card
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}

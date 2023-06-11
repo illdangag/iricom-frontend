@@ -1,11 +1,12 @@
 // react
+import React from 'react';
+import NextLink from 'next/link';
 import { Text, Card, CardBody, Heading, LinkBox, LinkOverlay, VStack, CardHeader, useMediaQuery, Divider, } from '@chakra-ui/react';
 import { PageBody, } from '../../../layouts';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
+import { PageTitle, } from '../../../components';
 // etc
 import { AccountAuth, } from '../../../interfaces';
-import React from 'react';
-import NextLink from 'next/link';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../constants/style';
 
 const AdminBoardPage = () => {
@@ -13,6 +14,10 @@ const AdminBoardPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
       <PageBody>
+        <PageTitle
+          title='관리자 페이지'
+          descriptions={['게시판 생성 및 수정, 게시판의 관리자를 관리합니다',]}
+        />
         <Card
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}

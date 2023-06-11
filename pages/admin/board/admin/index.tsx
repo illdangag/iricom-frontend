@@ -1,11 +1,11 @@
 // react
-import { useState, useEffect, } from 'react';
+import React, { useState, useEffect, } from 'react';
 import NextLink from 'next/link';
 import { useRouter, } from 'next/router';
-import { Box, Card, CardBody, Divider, Heading, HStack, LinkBox, LinkOverlay, Text, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { Card, CardBody, Divider, LinkBox, LinkOverlay, useMediaQuery, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { BoardView, NoContent, } from '../../../../components';
+import { BoardView, NoContent, PageTitle, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, BoardList, } from '../../../../interfaces';
@@ -46,13 +46,10 @@ const AdminBoardAdminPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
       <PageBody>
-        <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-          <Box marginLeft={isMobile ? '1rem' : '0'}>
-            <Heading size='md' fontWeight='semibold'>게시판 관리자 설정</Heading>
-            <Text fontSize='xs'>게시판에 관리자를 설정합니다.</Text>
-            <Text fontSize='xs'>게시판 관리자는 해당 게시판에 공지사항을 작성 할 수 있으며, 게시물을 차단 할 수 있습니다.</Text>
-          </Box>
-        </HStack>
+        <PageTitle
+          title='게시판 관리자 설정'
+          descriptions={['게시판에 관리자를 설정합니다.', '게시판 관리자는 해당 게시판에 공지사항을 작성 할 수 있으며, 게시물을 차단 할 수 있습니다.',]}
+        />
         <Card
           shadow={isMobile ? 'none' : 'sm'}
           borderRadius={isMobile ? '0' : BORDER_RADIUS}

@@ -7,7 +7,7 @@ import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabe
   VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../layouts';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
-import { PostListTable, } from '../../components';
+import { PageTitle, PostListTable, } from '../../components';
 import { useIricomAPI, } from '../../hooks';
 // store
 import { useRecoilValue, } from 'recoil';
@@ -53,6 +53,9 @@ const InfoPage = () => {
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.UNREGISTERED_ACCOUNT}>
       <PageBody>
+        <PageTitle
+          title='내 정보'
+        />
         <VStack spacing='1rem' align='stretch'>
           <Card
             shadow={isMobile ? 'none' : 'sm'}

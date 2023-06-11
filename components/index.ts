@@ -9,6 +9,7 @@ import Pagination from './Pagination';
 import PostEditor from './PostEditor';
 import PostListTable from './PostListTable';
 import PostView from './PostView';
+import PageTitle from './PageTitle';
 
 export { BoardHeader, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
-  NoContent, AccountListTable, Pagination, };
+  NoContent, AccountListTable, Pagination, PageTitle, };
