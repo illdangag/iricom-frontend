@@ -1,7 +1,7 @@
 // react
-import { useState, } from 'react';
+import { ReactElement, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Alert, AlertIcon, AlertTitle, Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, useMediaQuery, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { BoardHeader, CommentEditor, CommentView, PostView, } from '../../../../components';
@@ -68,6 +68,25 @@ const BoardsPostsPage = (props: Props) => {
     return commentList;
   };
 
+  const getCommentListElement = (commentList: Comment[]) => {
+    const elementList: JSX.Element[] = [];
+    for (let index = 0; index < commentList.length; index++) {
+      const comment: Comment = commentList[index];
+      elementList.push(<CommentView
+        key={index}
+        boardId={boardId}
+        postId={postId}
+        comment={comment}
+        allowNestedComment={true}
+        onChange={onChangeCommentView}
+      />);
+      if (index < commentList.length - 1) {
+        elementList.push(<Divider key={`divider-${index}`}/>);
+      }
+    }
+    return elementList;
+  };
+
   return (
     <MainLayout loginState={LoginState.ANY}>
       <PageBody>
@@ -89,16 +108,7 @@ const BoardsPostsPage = (props: Props) => {
         >
           <CardBody>
             <VStack align='stretch' spacing='1rem'>
-              {commentList.map((comment, index) => (
-                <CommentView
-                  key={index}
-                  boardId={boardId}
-                  postId={postId}
-                  comment={comment}
-                  allowNestedComment={true}
-                  onChange={onChangeCommentView}
-                />
-              ))}
+              {getCommentListElement(commentList)}
             </VStack>
           </CardBody>
         </Card>}

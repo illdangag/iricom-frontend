@@ -1,47 +1,52 @@
 // react
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Card, CardBody, VStack, } from '@chakra-ui/react';
+import { Text, Card, CardBody, Heading, LinkBox, LinkOverlay, VStack, CardHeader, useMediaQuery, Divider, } from '@chakra-ui/react';
+import { PageBody, } from '../../../layouts';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
-import { LinkCard, } from '../../../components';
 // etc
 import { AccountAuth, } from '../../../interfaces';
+import React from 'react';
+import NextLink from 'next/link';
+import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../constants/style';
 
 const AdminBoardPage = () => {
+  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
-      <Card shadow='none' borderRadius='0' marginBottom='1rem'>
-        <CardBody>
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/'>이리콤</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href='/admin/board'>게시판 설정</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </CardBody>
-      </Card>
-      <VStack marginLeft='auto' marginRight='auto' paddingLeft='1rem' paddingRight='1rem' spacing='1rem' maxWidth='60rem'>
-        <LinkCard
-          title='게시판 생성'
-          description={['새로운 게시판을 생성합니다.',]}
-          href='/admin/board/create'
-        />
-        <LinkCard
-          title='게시판 수정'
-          description={[
-            '게시판 정보를 수정합니다.',
-          ]}
-          href='/admin/board/edit'
-        />
-        <LinkCard
-          title='게시판 관리자 설정'
-          description={[
-            '게시판에 관리자를 설정합니다.',
-            '게시판 관리자는 해당 게시판에 공지사항을 작성 할 수 있으며, 게시물을 차단 할 수 있습니다.',
-          ]}
-          href='/admin/board/admin'
-        />
-      </VStack>
+      <PageBody>
+        <Card
+          shadow={isMobile ? 'none' : 'sm'}
+          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+        >
+          <CardHeader paddingBottom='0'>
+            <Heading size='md'>게시판</Heading>
+          </CardHeader>
+          <CardBody>
+            <VStack spacing='1rem'>
+              <LinkBox width='100%'>
+                <Heading size='sm'>
+                  <LinkOverlay as={NextLink} href='/admin/board/create'>게시판 생성</LinkOverlay>
+                  <Text fontSize='sm' fontWeight='normal'>새로운 게시판을 생성합니다.</Text>
+                </Heading>
+              </LinkBox>
+              <Divider/>
+              <LinkBox width='100%'>
+                <Heading size='sm'>
+                  <LinkOverlay as={NextLink} href='/admin/board/edit'>게시판 수정</LinkOverlay>
+                  <Text fontSize='sm' fontWeight='normal'>게시판 정보를 수정합니다.</Text>
+                </Heading>
+              </LinkBox>
+              <Divider/>
+              <LinkBox width='100%'>
+                <Heading size='sm'>
+                  <LinkOverlay as={NextLink} href='/admin/board/admin'>게시판 관리자 설정</LinkOverlay>
+                  <Text fontSize='sm' fontWeight='normal'>게시판에 관리자를 설정합니다.</Text>
+                  <Text fontSize='sm' fontWeight='normal'>게시판 관리자는 해당 게시판에 공지사항을 작성 할 수 있으며, 게시물을 차단 할 수 있습니다.</Text>
+                </Heading>
+              </LinkBox>
+            </VStack>
+          </CardBody>
+        </Card>
+      </PageBody>
     </MainLayout>
   );
 };

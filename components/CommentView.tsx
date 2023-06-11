@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, Divider, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // store
@@ -10,6 +10,8 @@ import { myAccountAtom, } from '../recoil';
 import { Account, Comment, NotExistTokenError, VoteType, } from '../interfaces';
 import CommentEditor from './CommentEditor';
 import { getFormattedDateTime, } from '../utils';
+import { errors } from 'rehype-parse/lib/errors';
+import nestedComment = errors.nestedComment;
 
 type Props = {
   boardId: string,
@@ -82,6 +84,18 @@ const CommentView = ({
       });
   };
 
+  const getNestedCommentListElement = (commentList: Comment[]) => {
+    const elementList: JSX.Element[] = [];
+    for (let index = 0; index < commentList.length; index++) {
+      const comment: Comment = commentList[index];
+      elementList.push(<CommentView key={index} boardId={boardId} postId={postId} comment={comment} onChange={onChange}/>);
+      if (index < commentList.length - 1) {
+        elementList.push(<Divider key={`divider-${index}`}/>);
+      }
+    }
+    return elementList;
+  };
+
   return (
     <Box>
       <VStack alignItems='stretch'>
@@ -121,13 +135,13 @@ const CommentView = ({
       {showCommentEditor && <Box marginTop='0.8rem'>
         <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id} onChange={onChange} autoFocus/>
       </Box>}
-      {comment.nestedComments && comment.nestedComments.map((nestedComment, index) => (
-        <Card shadow='none' backgroundColor='gray.50' marginTop='.5rem' key={index}>
-          <CardBody padding='.5rem'>
-            <CommentView boardId={boardId} postId={postId} comment={nestedComment} onChange={onChange}/>
-          </CardBody>
-        </Card>
-      ))}
+      {comment.nestedComments && <Card shadow='none' backgroundColor='gray.50' marginTop='.5rem'>
+        <CardBody>
+          <VStack align='stretch' spacing='1rem'>
+            {getNestedCommentListElement(comment.nestedComments)}
+          </VStack>
+        </CardBody>
+      </Card>}
     </Box>
   );
 };
