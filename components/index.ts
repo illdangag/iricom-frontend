@@ -1,5 +1,5 @@
 import AccountListTable from './AccountListTable';
-import BoardHeader from './BoardHeader';
+import BoardHeader from './BoardTitle';
 import BoardView from './BoardView';
 import BoardPostPreview from './BoardPostPreview';
 import CommentEditor from './CommentEditor';

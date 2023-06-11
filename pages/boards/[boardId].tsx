@@ -13,7 +13,7 @@ import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } 
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
-import BoarderHeader from '../../components/BoardHeader';
+import BoarderHeader from '../../components/BoardTitle';
 import { GetServerSideProps, } from 'next/types';
 import iricomAPI from '../../utils/iricomAPI';
 

@@ -9,7 +9,7 @@ import { InvalidPostAlert, PostPublishAlert, } from '../../../../../components/a
 import { useAccountState, useIricomAPI, } from '../../../../../hooks';
 // etc
 import { AccountAuth, Board, Post, PostState, } from '../../../../../interfaces';
-import BoarderHeader from '../../../../../components/BoardHeader';
+import BoarderHeader from '../../../../../components/BoardTitle';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../../constants/style';
 
 const BoardsPostsEditPage = () => {

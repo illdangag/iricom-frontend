@@ -10,7 +10,7 @@ import { useAccountState, useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, Post, PostState, } from '../../../../interfaces';
 import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
-import BoarderHeader from '../../../../components/BoardHeader';
+import BoarderHeader from '../../../../components/BoardTitle';
 
 enum PageState {
   INVALID,
