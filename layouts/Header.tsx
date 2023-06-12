@@ -2,8 +2,7 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Button, Card, CardBody, Flex, Heading, IconButton, Link, Menu, MenuButton, MenuItem, MenuList, } from '@chakra-ui/react';
-import { MdMenu, } from 'react-icons/md';
+import { Box, Button, Card, CardBody, Flex, Heading, Link, Menu, MenuButton, MenuItem, MenuList, Avatar, Text, } from '@chakra-ui/react';
 // etc
 import { Account, AccountAuth, TokenInfo, } from '../interfaces';
 import { MAX_WIDTH, } from '../constants/style';
@@ -28,35 +27,39 @@ const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
-  const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
+  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
 
   useEffect(() => {
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (storageTokenInfo === null) {
       setState(HeaderState.NOT_LOGIN);
-    } else if (myAccount === null || myAccount.auth === AccountAuth.ACCOUNT) {
+    } else if (account === null || account.auth === AccountAuth.ACCOUNT) {
       setState(HeaderState.ACCOUNT);
-    } else if (myAccount.auth === AccountAuth.BOARD_ADMIN) {
+    } else if (account.auth === AccountAuth.BOARD_ADMIN) {
       setState(HeaderState.BOARD_ADMIN);
-    } else if (myAccount.auth === AccountAuth.SYSTEM_ADMIN) {
+    } else if (account.auth === AccountAuth.SYSTEM_ADMIN) {
       setState(HeaderState.SYSTEM_ADMIN);
     }
-  }, [myAccount,]);
+  }, [account,]);
 
   const onClickSignOut = () => {
     BrowserStorage.clear();
-    setMyAccount(null);
+    setAccount(null);
     void router.push('/');
   };
 
-  const systemAdminMenu = <Menu>
-    <MenuButton
-      as={IconButton}
-      icon={<MdMenu/>}
-      variant='ghost'
-      size='sm'
-    />
+  const loginButton = <MenuButton as={Button} variant='outline' size='sm' borderColor='gray.300'>
+    <Flex>
+      <Avatar bg='gray.400' size='2xs'/>
+      <Box marginLeft='0.4rem'>
+        <Text fontSize='xs' color='gray.600'>{account && (account.nickname || account.email)}</Text>
+      </Box>
+    </Flex>
+  </MenuButton>;
+
+  const systemAdminMenu = <Menu isLazy>
+    {loginButton}
     <MenuList>
       <NextLink href='/admin/board'>
         <MenuItem fontSize='1rem'>
@@ -75,12 +78,7 @@ const Header = ({
   </Menu>;
 
   const accountMenu = <Menu>
-    <MenuButton
-      as={IconButton}
-      icon={<MdMenu/>}
-      variant='ghost'
-      size='sm'
-    />
+    {loginButton}
     <MenuList>
       <NextLink href='/info'>
         <MenuItem>
@@ -115,7 +113,9 @@ const Header = ({
             <Link as={NextLink} marginRight='auto' href='/' _hover={{ textDecoration: 'none', }}>
               <Heading color='gray.700' size='md'>{title}</Heading>
             </Link>
-            {getRightElement()}
+            <Box marginLeft='0.4rem'>
+              {getRightElement()}
+            </Box>
           </Flex>
         </CardBody>
       </Card>
