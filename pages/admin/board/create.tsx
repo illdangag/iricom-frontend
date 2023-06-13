@@ -2,13 +2,13 @@
 import { ChangeEvent, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { VStack, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
-  Button, useToast, useMediaQuery, } from '@chakra-ui/react';
+  Button, useToast, } from '@chakra-ui/react';
 import { PageBody, } from '../../../layouts';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';
 // etc
 import { AccountAuth, } from '../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../constants/style';
+import { BORDER_RADIUS, } from '../../../constants/style';
 import { PageTitle, } from '../../../components';
 
 enum PageState {
@@ -24,7 +24,6 @@ const AdminBoardCreatePage = () => {
   const toast = useToast();
   const iricomAPI = useIricomAPI();
 
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
   const [title, setTitle,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
@@ -78,8 +77,8 @@ const AdminBoardCreatePage = () => {
           descriptions={['새로운 게시판을 생성합니다.',]}
         />
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <VStack spacing='1rem'>

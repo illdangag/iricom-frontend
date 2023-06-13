@@ -1,14 +1,13 @@
 // react
 import { useState, } from 'react';
 import NextLink from 'next/link';
-import { Badge, Button, Divider, Flex, HStack, LinkBox, LinkOverlay, Text, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { Badge, Button, Divider, Flex, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import Pagination from './Pagination';
 // etc
 import { Post, PostList, } from '../interfaces';
 import { getFormattedDateTime, } from '../utils';
 import PostDeleteAlert from './alerts/PostDeleteAlert';
-import { MOBILE_MEDIA_QUERY, } from '../constants/style';
 
 type Props = {
   postList: PostList,
@@ -29,10 +28,6 @@ const PostListTable = ({
   onClickPagination = () => {},
   onChangePost = () => {},
 }: Props) => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
   const [isShowDeleteAlert, setShowDeleteAlert,] = useState<boolean>(false);
   const [deletePost, setDeletePost,] = useState<Post | null>(null);
 
@@ -54,7 +49,10 @@ const PostListTable = ({
     <LinkBox key={key}>
       <VStack alignItems='stretch' spacing='0.2rem'>
         <HStack justifyContent='space-between'>
-          <Flex flexDirection={isMobile ? 'column' : 'row'} justifyContent='start'>
+          <Flex
+            flexDirection={{ base: 'column', md: 'row', }}
+            justifyContent='start'
+          >
             <HStack>
               <Text>
                 <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
@@ -68,7 +66,12 @@ const PostListTable = ({
                 </HStack>
               )}
             </HStack>
-            <Flex flexDirection='row' alignItems='center' marginLeft={isMobile ? '0' : '0.5rem'} marginTop={isMobile ? '0.2rem' : '0'}>
+            <Flex
+              flexDirection='row'
+              alignItems='center'
+              marginLeft={{ base: '0', md: '0.5rem', }}
+              marginTop={{ base: '0.2rem', md: '0', }}
+            >
               <HStack>
                 <Badge><HStack><MdThumbUpOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.upvote}</Text></HStack></Badge>
                 <Badge><HStack><MdThumbDownOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.downvote}</Text></HStack></Badge>

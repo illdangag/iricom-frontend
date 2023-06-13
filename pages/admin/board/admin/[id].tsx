@@ -1,7 +1,7 @@
 // react
 import React, { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { VStack, Card, CardBody, Heading, Text, UnorderedList, ListItem, Button, HStack, useMediaQuery, } from '@chakra-ui/react';
+import { VStack, Card, CardBody, Heading, Text, UnorderedList, ListItem, Button, HStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { AccountListTable, PageTitle, } from '../../../../components';
@@ -9,14 +9,13 @@ import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '../../../../compo
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { BoardAdmin, AccountAuth, Account, } from '../../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
+import { BORDER_RADIUS, } from '../../../../constants/style';
 
 const AdminBoardAdminEditPage = () => {
   const router = useRouter();
   const iricomAPI = useIricomAPI();
 
   const id: string = router.query.id as string;
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [boardAdmin, setBoardAdmin,] = useState<BoardAdmin | null>(null);
   const [selectedAccount, setSelectedAccount,] = useState<Account | null>(null);
   const [isOpenBoardAdminCreateAlert, setOpenBoardAdminCreateAlert,] = useState<boolean>(false);
@@ -72,8 +71,8 @@ const AdminBoardAdminEditPage = () => {
         />
         <VStack align='stretch' spacing='1rem'>
           {boardAdmin && <Card
-            shadow={isMobile ? 'none' : 'sm'}
-            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            shadow={{ base: 'none', md: 'sm', }}
+            borderRadius={{ base: '0', md: BORDER_RADIUS, }}
           >
             <CardBody>
               <Heading size='md'>{boardAdmin.title}</Heading>
@@ -97,8 +96,8 @@ const AdminBoardAdminEditPage = () => {
             </CardBody>
           </Card>}
           <Card
-            shadow={isMobile ? 'none' : 'sm'}
-            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            shadow={{ base: 'none', md: 'sm', }}
+            borderRadius={{ base: '0', md: BORDER_RADIUS, }}
           >
             <CardBody>
               <AccountListTable

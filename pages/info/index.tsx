@@ -3,7 +3,7 @@ import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, useMediaQuery,
+import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text,
   VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../layouts';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
@@ -14,7 +14,7 @@ import { useRecoilValue, } from 'recoil';
 import { myAccountAtom, } from '../../recoil';
 // etc
 import { Account, AccountAuth, PostList, } from '../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
+import { BORDER_RADIUS, } from '../../constants/style';
 
 const PAGE_LIMIT: number = 10;
 
@@ -23,7 +23,6 @@ const InfoPage = () => {
   const iricomAPI = useIricomAPI();
 
   const pageQuery: string = router.query.page as string;
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const myAccount = useRecoilValue<Account | null>(myAccountAtom);
   const [postList, setPostList,] = useState<PostList | null>(null);
   const [page, setPage,] = useState<number>(1);
@@ -58,8 +57,8 @@ const InfoPage = () => {
         />
         <VStack spacing='1rem' align='stretch'>
           <Card
-            shadow={isMobile ? 'none' : 'sm'}
-            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            shadow={{ base: 'none', md: 'sm', }}
+            borderRadius={{ base: '0', md: BORDER_RADIUS, }}
           >
             <CardHeader>
               <HStack justifyContent='flex-start'>
@@ -86,8 +85,8 @@ const InfoPage = () => {
             </CardBody>
           </Card>
           <Card
-            shadow={isMobile ? 'none' : 'sm'}
-            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            shadow={{ base: 'none', md: 'sm', }}
+            borderRadius={{ base: '0', md: BORDER_RADIUS, }}
           >
             <CardHeader>
               <Heading size='sm'>작성한 글 목록</Heading>

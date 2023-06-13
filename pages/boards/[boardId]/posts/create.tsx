@@ -1,16 +1,15 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, useMediaQuery, } from '@chakra-ui/react';
+import { Card, CardBody, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { PostEditor, } from '../../../../components';
+import { PostEditor, BoardTitle, } from '../../../../components';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { useAccountState, useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, Post, PostState, } from '../../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
-import BoarderHeader from '../../../../components/BoardTitle';
+import { BORDER_RADIUS, } from '../../../../constants/style';
 
 enum PageState {
   INVALID,
@@ -22,10 +21,6 @@ const PostCreatePage = () => {
   const router = useRouter();
   const [_loginState, accountAuth,] = useAccountState();
   const iricomAPI = useIricomAPI();
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
 
   const boardId: string = router.query.boardId as string;
   const [board, setBoard,] = useState<Board | null>(null);
@@ -61,11 +56,11 @@ const PostCreatePage = () => {
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.ACCOUNT}>
       <PageBody>
         {/* 게시판 헤더 */}
-        {board && <BoarderHeader board={board} isShowCreateButton={false}/>}
+        {board && <BoardTitle board={board} isShowCreateButton={false}/>}
         {/* 게시물 에디터 */}
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <PostEditor accountAuth={accountAuth} boardId={boardId} disabled={pageState === PageState.INVALID_BOARD} onRequest={onRequest}/>

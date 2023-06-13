@@ -1,11 +1,11 @@
 // react
 import { GetServerSideProps, } from 'next/types';
-import { Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { Card, CardBody, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '../layouts';
 // etc
 import { Board, PostList, PostType, } from '../interfaces';
 import BoardPostPreview from '../components/BoardPostPreview';
-import { BORDER_RADIUS, MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../constants/style';
+import { BORDER_RADIUS, MAX_WIDTH, } from '../constants/style';
 import iricomAPI from '../utils/iricomAPI';
 
 type BoardPostList = {
@@ -19,7 +19,6 @@ type Props = {
 
 const IndexPage = (props: Props) => {
   const boardPostListList: BoardPostList[] = props.boardPostListList;
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
 
   return (
     <MainLayout>
@@ -33,8 +32,8 @@ const IndexPage = (props: Props) => {
             return <Card
               key={index}
               width='100%'
-              shadow={isMobile ? 'none' : 'sm'}
-              borderRadius={isMobile ? '0' : BORDER_RADIUS}
+              shadow={{ base: 'none', md: 'sm', }}
+              borderRadius={{ base: '0', md: BORDER_RADIUS, }}
             >
               <CardBody>
                 <BoardPostPreview board={boardPostList.board} postList={boardPostList.postList} key={index}/>

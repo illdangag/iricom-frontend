@@ -1,5 +1,4 @@
-import { Box, Heading, HStack, Text, useMediaQuery, } from '@chakra-ui/react';
-import { MOBILE_MEDIA_QUERY, } from '../constants/style';
+import { Box, Heading, HStack, Text, } from '@chakra-ui/react';
 
 type Props = {
   title: string,
@@ -10,12 +9,12 @@ const PageTitle = ({
   title,
   descriptions = [],
 }: Props) => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
-
   return (<HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-    <Box marginLeft={isMobile ? '1rem' : '0'}>
+    <Box
+      marginLeft={{ base: '1rem', md: '0', }}
+    >
       <Heading size='md' fontWeight='semibold'>{title}</Heading>
-      {descriptions.map(description => <Text fontSize='xs'>{description}</Text>)}
+      {descriptions.map((description, index) => <Text key={index} fontSize='xs'>{description}</Text>)}
     </Box>
   </HStack>);
 };

@@ -1,10 +1,11 @@
 // react
 import { useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Badge, Card, CardBody, useMediaQuery, VStack, } from '@chakra-ui/react';
-import MainLayout, { LoginState, } from '../../layouts/MainLayout';
+import { GetServerSideProps, } from 'next/types';
+import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../layouts';
-import { NoContent, PostListTable, } from '../../components';
+import MainLayout, { LoginState, } from '../../layouts/MainLayout';
+import { NoContent, PostListTable, BoardTitle, } from '../../components';
 import { RequireAccountDetailAlert, } from '../../components/alerts';
 import { useAccountState, } from '../../hooks';
 // recoil
@@ -12,9 +13,7 @@ import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
 // etc
 import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
-import BoarderHeader from '../../components/BoardTitle';
-import { GetServerSideProps, } from 'next/types';
+import { BORDER_RADIUS, } from '../../constants/style';
 import iricomAPI from '../../utils/iricomAPI';
 
 const PAGE_LIMIT: number = 10;
@@ -31,8 +30,6 @@ const BoardsPage = (props: Props) => {
   const [loginState, accountAuth,] = useAccountState();
 
   const boardId: string = router.query.boardId as string;
-
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
 
   const board = Object.assign(new Board(), props.board as Board);
   const postList = Object.assign(new PostList(), props.postList as PostList);
@@ -70,13 +67,13 @@ const BoardsPage = (props: Props) => {
     <MainLayout loginState={LoginState.ANY}>
       <PageBody>
         {/* 게시판 헤더 */}
-        {board && <BoarderHeader board={board} isShowCreateButton={true}/>}
+        {board && <BoardTitle board={board} isShowCreateButton={true}/>}
         {/* 게시물 목록 */}
         <VStack alignItems='stretch'>
           {/* 공지 사항 목록 */}
           {notificationList && notificationList.total > 0 && <Card
-            shadow={isMobile ? 'none' : 'sm'}
-            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            shadow={{ base: 'none', md: 'sm', }}
+            borderRadius={{ base: '0', md: BORDER_RADIUS, }}
           >
             <CardBody>
               <Badge fontSize='1rem' colorScheme='purple' marginBottom='0.5rem'>공지사항</Badge>
@@ -90,8 +87,8 @@ const BoardsPage = (props: Props) => {
           </Card>}
           {/* 게시물 목록 */}
           {postList && postList.total > 0 && <Card
-            shadow={isMobile ? 'none' : 'sm'}
-            borderRadius={isMobile ? '0' : BORDER_RADIUS}
+            shadow={{ base: 'none', md: 'sm', }}
+            borderRadius={{ base: '0', md: BORDER_RADIUS, }}
           >
             <CardBody>
               <PostListTable

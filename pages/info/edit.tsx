@@ -2,7 +2,7 @@
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, FormControl, FormLabel, Heading, HStack, Input, VStack,
-  useToast, useMediaQuery, } from '@chakra-ui/react';
+  useToast, } from '@chakra-ui/react';
 import { PageBody, } from '../../layouts';
 import MainLayout, { LoginState, } from '../../layouts/MainLayout';
 import { PageTitle, } from '../../components';
@@ -12,7 +12,7 @@ import { useRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../../recoil';
 // etc
 import { Account, AccountAuth, } from '../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../constants/style';
+import { BORDER_RADIUS, } from '../../constants/style';
 
 enum PageState {
   INVALID,
@@ -27,7 +27,6 @@ const InfoEditPage = () => {
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [myAccount, setMyAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [nickname, setNickname,] = useState<string>('');
@@ -79,8 +78,8 @@ const InfoEditPage = () => {
           descriptions={['닉네임 및 설명을 수정합니다',]}
         />
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardHeader padding='0.8rem'>
             <HStack>

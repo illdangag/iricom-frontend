@@ -1,5 +1,5 @@
 import AccountListTable from './AccountListTable';
-import BoardHeader from './BoardTitle';
+import BoardTitle from './BoardTitle';
 import BoardView from './BoardView';
 import BoardPostPreview from './BoardPostPreview';
 import CommentEditor from './CommentEditor';
@@ -11,5 +11,5 @@ import PostListTable from './PostListTable';
 import PostView from './PostView';
 import PageTitle from './PageTitle';
 
-export { BoardHeader, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
+export { BoardTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
   NoContent, AccountListTable, Pagination, PageTitle, };

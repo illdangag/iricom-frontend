@@ -1,16 +1,15 @@
 // react
 import React from 'react';
 import NextLink from 'next/link';
-import { Text, Card, CardBody, Heading, LinkBox, LinkOverlay, VStack, CardHeader, useMediaQuery, Divider, } from '@chakra-ui/react';
+import { Text, Card, CardBody, Heading, LinkBox, LinkOverlay, VStack, CardHeader, Divider, } from '@chakra-ui/react';
 import { PageBody, } from '../../../layouts';
 import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
 import { PageTitle, } from '../../../components';
 // etc
 import { AccountAuth, } from '../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../constants/style';
+import { BORDER_RADIUS, } from '../../../constants/style';
 
 const AdminBoardPage = () => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   return (
     <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
       <PageBody>
@@ -19,8 +18,8 @@ const AdminBoardPage = () => {
           descriptions={['게시판 생성 및 수정, 게시판의 관리자를 관리합니다',]}
         />
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardHeader paddingBottom='0'>
             <Heading size='md'>게시판</Heading>

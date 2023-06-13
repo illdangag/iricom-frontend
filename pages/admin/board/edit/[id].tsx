@@ -2,7 +2,7 @@
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, VStack,
-  useToast, CardBody, CardFooter, useMediaQuery, } from '@chakra-ui/react';
+  useToast, CardBody, CardFooter, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
@@ -10,7 +10,7 @@ import { PageTitle, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, } from '../../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
+import { BORDER_RADIUS, } from '../../../../constants/style';
 
 enum PageState {
   INVALID,
@@ -26,7 +26,6 @@ const AdminBoardEditIdPage = () => {
   const iriconAPI = useIricomAPI();
 
   const id = router.query.id as string;
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [board, setBoard,] = useState<Board | null>(null);
   const [title, setTitle,] = useState<string>('');
@@ -114,8 +113,8 @@ const AdminBoardEditIdPage = () => {
           descriptions={[board.description,]}
         />}
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <VStack spacing='1.8rem'>

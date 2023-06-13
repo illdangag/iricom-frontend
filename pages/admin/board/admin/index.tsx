@@ -2,19 +2,18 @@
 import React, { useState, useEffect, } from 'react';
 import NextLink from 'next/link';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, Divider, LinkBox, LinkOverlay, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { BoardView, NoContent, PageTitle, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, BoardList, } from '../../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
+import { BORDER_RADIUS, } from '../../../../constants/style';
 
 const AdminBoardAdminPage = () => {
   const router = useRouter();
   const iricomApi = useIricomAPI();
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [boardList, setBoardList,] = useState<Board[] | null>(null);
 
   useEffect(() => {
@@ -32,12 +31,12 @@ const AdminBoardAdminPage = () => {
     const elementList: JSX.Element[] = [];
     for (let index = 0; index < boardList.length; index++) {
       const board: Board = boardList[index];
-      elementList.push(<LinkBox>
+      elementList.push(<LinkBox key={index}>
         <LinkOverlay as={NextLink} href={`/admin/board/admin/${board.id}`}/>
         <BoardView board={board}/>
       </LinkBox>);
       if (index < boardList.length - 1) {
-        elementList.push(<Divider/>);
+        elementList.push(<Divider key={'divider-' + index}/>);
       }
     }
     return elementList;
@@ -51,8 +50,8 @@ const AdminBoardAdminPage = () => {
           descriptions={['게시판에 관리자를 설정합니다.', '게시판 관리자는 해당 게시판에 공지사항을 작성 할 수 있으며, 게시물을 차단 할 수 있습니다.',]}
         />
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             {boardList && boardList.length === 0 && <NoContent message='게시판이 존재하지 않습니다.'/>}

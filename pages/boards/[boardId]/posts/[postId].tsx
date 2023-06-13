@@ -1,15 +1,15 @@
 // react
 import { useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, useMediaQuery, VStack, } from '@chakra-ui/react';
+import { GetServerSideProps, } from 'next/types';
+import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, VStack, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { BoardHeader, CommentEditor, CommentView, PostView, } from '../../../../components';
+import { BoardTitle, CommentEditor, CommentView, PostView, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { Board, Comment, CommentList, Post, PostState, } from '../../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
-import { GetServerSideProps, } from 'next/types';
+import { BORDER_RADIUS, } from '../../../../constants/style';
 import iricomAPI from '../../../../utils/iricomAPI';
 
 type Props = {
@@ -21,10 +21,6 @@ type Props = {
 const BoardsPostsPage = (props: Props) => {
   const router = useRouter();
   const iricomAPI = useIricomAPI();
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
 
   const boardId: string = router.query.boardId as string;
   const postId: string = router.query.postId as string;
@@ -90,11 +86,11 @@ const BoardsPostsPage = (props: Props) => {
   return (
     <MainLayout loginState={LoginState.ANY}>
       <PageBody>
-        {board && <BoardHeader board={board}/>}
+        {board && <BoardTitle board={board}/>}
         {post && <Card
           width='100%'
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <PostView post={post} onChange={onChangePostView}/>
@@ -103,8 +99,8 @@ const BoardsPostsPage = (props: Props) => {
         {commentList && commentList.length > 0 && <Card
           marginTop='1rem'
           width='100%'
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <VStack align='stretch' spacing='1rem'>
@@ -116,8 +112,8 @@ const BoardsPostsPage = (props: Props) => {
           marginTop='1rem'
           marginBottom='1rem'
           width='100%'
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
@@ -127,8 +123,8 @@ const BoardsPostsPage = (props: Props) => {
           marginTop='1rem'
           marginBottom='1rem'
           width='100%'
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             <Alert status='warning' borderRadius='.5rem'>

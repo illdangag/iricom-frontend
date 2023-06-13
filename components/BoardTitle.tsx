@@ -1,10 +1,9 @@
 // react
-import { Box, Button, Heading, HStack, Link, Text, useMediaQuery, } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Link, Text, } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { MdCreate, } from 'react-icons/md';
 // etc
 import { Board, } from '../interfaces';
-import { MOBILE_MEDIA_QUERY, } from '../constants/style';
 
 type Props = {
   board: Board,
@@ -15,11 +14,12 @@ const BoarderHeader = ({
   board,
   isShowCreateButton = false,
 }: Props) => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
 
   return (
     <HStack justifyContent='space-between' alignItems='end' marginBottom='1rem'>
-      <Box marginLeft={isMobile ? '1rem' : '0'}>
+      <Box
+        marginLeft={{ base: '1rem', md: '0', }}
+      >
         <Link as={NextLink} href={`/boards/${board.id}`} _hover={{ textDecoration: 'none', }}>
           <Heading size='md' fontWeight='semibold'>{board.title}</Heading>
         </Link>
@@ -31,7 +31,7 @@ const BoarderHeader = ({
           variant='outline'
           backgroundColor='white'
           leftIcon={<MdCreate/>}
-          marginRight={isMobile ? '1rem' : '0'}
+          marginRight={{ base: '1rem', md: '0', }}
         >
           글 쓰기
         </Button>

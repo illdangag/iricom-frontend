@@ -1,7 +1,7 @@
 // react
 import React, { ReactNode, } from 'react';
-import { Box, useMediaQuery, } from '@chakra-ui/react';
-import { MAX_WIDTH, MOBILE_MEDIA_QUERY, } from '../constants/style';
+import { Box, } from '@chakra-ui/react';
+import { MAX_WIDTH, } from '../constants/style';
 
 type Props = {
   children?: ReactNode,
@@ -10,17 +10,13 @@ type Props = {
 const PageBody = ({
   children,
 }: Props) => {
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
 
   return (
     <Box
-      marginLeft={isMobile ? '0' : 'auto'}
-      marginRight={isMobile ? '0' : 'auto'}
-      paddingLeft={isMobile ? '0' : '1rem'}
-      paddingRight={isMobile ? '0' : '1rem'}
+      marginLeft={{ base: 'none', md: 'auto', }}
+      marginRight={{ base: 'none', md: 'auto', }}
+      paddingLeft={{ base: 'none', md: '1rem', }}
+      paddingRight={{ base: 'none', md: '1rem', }}
       maxWidth={MAX_WIDTH}
     >
       {children}

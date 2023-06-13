@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, useMediaQuery, } from '@chakra-ui/react';
+import { Card, CardBody, } from '@chakra-ui/react';
 import { PageBody, } from '../../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../../layouts/MainLayout';
 import { PostEditor, } from '../../../../../components';
@@ -10,16 +10,12 @@ import { useAccountState, useIricomAPI, } from '../../../../../hooks';
 // etc
 import { AccountAuth, Board, Post, PostState, } from '../../../../../interfaces';
 import BoarderHeader from '../../../../../components/BoardTitle';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../../constants/style';
+import { BORDER_RADIUS, } from '../../../../../constants/style';
 
 const BoardsPostsEditPage = () => {
   const router = useRouter();
   const [_loginState, accountAuth,] = useAccountState();
   const iricomAPI = useIricomAPI();
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, {
-    ssr: true,
-    fallback: false,
-  });
 
   const boardId: string = router.query.boardId as string;
   const postId: string = router.query.postId as string;
@@ -84,8 +80,8 @@ const BoardsPostsEditPage = () => {
         {board && <BoarderHeader board={board} isShowCreateButton={false}/>}
         {/* 게시물 에디터 */}
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             {!post && <PostEditor

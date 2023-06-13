@@ -1,18 +1,17 @@
 // react
 import { useState, } from 'react';
 import NextLink from 'next/link';
-import { VStack, Card, CardBody, useMediaQuery, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
+import { VStack, Card, CardBody, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
 import { BoardView, NoContent, PageTitle, } from '../../../../components';
 import { PageBody, } from '../../../../layouts';
 import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
 import { useIricomAPI, } from '../../../../hooks';
 // etc
 import { AccountAuth, Board, } from '../../../../interfaces';
-import { BORDER_RADIUS, MOBILE_MEDIA_QUERY, } from '../../../../constants/style';
+import { BORDER_RADIUS, } from '../../../../constants/style';
 
 const AdminBoardEditPage = () => {
   const iricomApi = useIricomAPI();
-  const [isMobile,] = useMediaQuery(MOBILE_MEDIA_QUERY, { ssr: true, fallback: false, });
   const [boardList, setBoardList,] = useState<Board[] | null>(null);
 
   const onMount = () => {
@@ -45,8 +44,8 @@ const AdminBoardEditPage = () => {
           descriptions={['게시판 정보를 수정합니다',]}
         />
         <Card
-          shadow={isMobile ? 'none' : 'sm'}
-          borderRadius={isMobile ? '0' : BORDER_RADIUS}
+          shadow={{ base: 'none', md: 'sm', }}
+          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
             {boardList && boardList.length === 0 && <NoContent message='게시판이 존재하지 않습니다.'/>}
