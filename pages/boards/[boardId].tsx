@@ -69,7 +69,7 @@ const BoardsPage = (props: Props) => {
         {/* 게시판 헤더 */}
         {board && <BoardTitle board={board} isShowCreateButton={true}/>}
         {/* 게시물 목록 */}
-        <VStack alignItems='stretch'>
+        <VStack align='stretch'>
           {/* 공지 사항 목록 */}
           {notificationList && notificationList.total > 0 && <Card
             shadow={{ base: 'none', md: 'sm', }}

@@ -17,7 +17,7 @@ const BoardPostPreview = ({
   postList,
 }: Props) => {
   return (
-    <VStack alignItems='start'>
+    <VStack align='stretch'>
       <LinkBox>
         <Flex>
           <Heading size='sm' fontWeight='semibold'>

@@ -18,11 +18,14 @@ const Pagination = ({
 }: Props) => {
   return (<HStack justifyContent='center' marginTop='0.4rem'>
     <ButtonGroup size='xs' variant='outline' isAttached>
-      {listResponse.getPaginationList(pageMaxLength).map((pagination, index) => <Button key={index}
-        backgroundColor={pagination === page ? 'gray.100' : 'transparent'}
+      {listResponse.getPaginationList(pageMaxLength).map((pagination, index) => <Button
+        key={index}
+        // backgroundColor={pagination === page ? 'gray.100' : 'transparent'}
+        variant={pagination === page ? 'solid' : 'outline'}
         onClick={() => {
           onClick(pagination);
-        }}>
+        }}
+      >
         {pagination}
       </Button>)}
     </ButtonGroup>

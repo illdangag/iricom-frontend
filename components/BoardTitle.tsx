@@ -1,6 +1,6 @@
 // react
-import { Box, Button, Heading, HStack, Link, Text, } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { Box, Button, Heading, HStack, Link, Text, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 // etc
 import { Board, } from '../interfaces';

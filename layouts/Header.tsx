@@ -50,7 +50,7 @@ const Header = ({
   };
 
   const loginButton = <MenuButton as={Button} variant='outline' size='sm' borderColor='gray.300'>
-    <Flex>
+    <Flex alignItems='center'>
       <Avatar bg='gray.400' size='2xs'/>
       <Box marginLeft='0.4rem'>
         <Text fontSize='xs' color='gray.600'>{account && (account.nickname || account.email)}</Text>

@@ -24,7 +24,7 @@ const IndexPage = (props: Props) => {
     <MainLayout>
       <PageBody>
         <VStack
-          alignItems='stretch'
+          align='stretch'
           spacing='1rem'
           maxWidth={MAX_WIDTH}
         >

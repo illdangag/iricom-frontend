@@ -47,7 +47,7 @@ const PostListTable = ({
 
   const getPostItem = (post: Post, key: string) => (
     <LinkBox key={key}>
-      <VStack alignItems='stretch' spacing='0.2rem'>
+      <VStack align='stretch' spacing='0.2rem'>
         <HStack justifyContent='space-between'>
           <Flex
             flexDirection={{ base: 'column', md: 'row', }}
@@ -99,10 +99,23 @@ const PostListTable = ({
     </LinkBox>
   );
 
+  const getPostList = (): JSX.Element[] => {
+    const postElementList: JSX.Element[] = postList.posts.map((post: Post, index: number) => getPostItem(post, '' + index));
+    const elementList: JSX.Element[] = [];
+    for (let index = 0; index < postElementList.length; index++) {
+      const postElement: JSX.Element = postElementList[index];
+      elementList.push(postElement);
+      if (index < postElementList.length - 1) {
+        elementList.push(<Divider key={'divider-' + index}/>);
+      }
+    }
+    return elementList;
+  };
+
   return (
     <>
-      <VStack alignItems='stretch' spacing='2rem'>
-        {postList.posts.map((post: Post, index: number) => getPostItem(post, '' + index))}
+      <VStack alignItems='stretch' spacing='2rem' align='stretch'>
+        {getPostList()}
       </VStack>
       {isShowPagination && <Pagination page={page} listResponse={postList} onClick={onClickPagination}/>}
       <PostDeleteAlert
