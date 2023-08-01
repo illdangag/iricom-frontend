@@ -16,11 +16,11 @@ type Props = {
 };
 
 enum HeaderState {
-  NONE,
-  NOT_LOGIN,
-  ACCOUNT,
-  BOARD_ADMIN,
-  SYSTEM_ADMIN,
+  NONE = 'NONE',
+  NOT_LOGIN = 'NOT_LOGIN',
+  ACCOUNT = 'ACCOUNT',
+  BOARD_ADMIN = 'BOARD_ADMIN',
+  SYSTEM_ADMIN = 'SYSTEM_ADMIN',
 }
 
 const Header = ({
