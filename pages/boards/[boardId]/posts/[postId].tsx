@@ -1,18 +1,26 @@
 // react
-import { useState, } from 'react';
+import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, VStack, } from '@chakra-ui/react';
+
 import { PageBody, } from '../../../../layouts';
-import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
+import MainLayout from '../../../../layouts/MainLayout';
 import { BoardTitle, CommentEditor, CommentView, PostView, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
+
+// store
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../../../../recoil';
+
 // etc
-import { Board, Comment, CommentList, Post, PostState, } from '../../../../interfaces';
+import { Account, Board, Comment, CommentList, Post, PostState, TokenInfo, } from '../../../../interfaces';
 import { BORDER_RADIUS, } from '../../../../constants/style';
 import iricomAPI from '../../../../utils/iricomAPI';
+import { getTokenInfoByCookies, } from '../../../../utils';
 
 type Props = {
+  account: Account | null,
   board: Board,
   post: Post,
   commentList: CommentList,
@@ -28,6 +36,12 @@ const BoardsPostsPage = (props: Props) => {
   const board: Board = Object.assign(new Board(), props.board);
   const [post, setPost,] = useState<Post | null>(props.post);
   const [commentList, setCommentList,] = useState<Comment[] | null>(Object.assign(new CommentList(), props.commentList).comments);
+
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+
+  useEffect(() => {
+    setAccount(props.account);
+  }, [router.isReady,]);
 
   const initCommentList = (boardId: string, postId: string) => {
     void iricomAPI.getCommentList(boardId, postId)
@@ -84,7 +98,7 @@ const BoardsPostsPage = (props: Props) => {
   };
 
   return (
-    <MainLayout loginState={LoginState.ANY}>
+    <MainLayout>
       <PageBody>
         {board && <BoardTitle board={board}/>}
         {post && <Card
@@ -108,7 +122,7 @@ const BoardsPostsPage = (props: Props) => {
             </VStack>
           </CardBody>
         </Card>}
-        {post && post.isAllowComment && <Card
+        {post && post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
           width='100%'
@@ -119,7 +133,7 @@ const BoardsPostsPage = (props: Props) => {
             <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
           </CardBody>
         </Card>}
-        {post && !post.isAllowComment && <Card
+        {post && !post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
           width='100%'
@@ -139,15 +153,35 @@ const BoardsPostsPage = (props: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
   const boardId: string = context.query.boardId as string;
   const postId: string = context.query.postId as string;
 
-  const board: Board = await iricomAPI.getBoard(boardId);
-  const post: Post = await iricomAPI.getPost(boardId, postId, PostState.PUBLISH, null);
-  const commentList: CommentList = await iricomAPI.getCommentList(boardId, postId);
+  let account: Account = null;
+  let board: Board = null;
+  let post: Post = null;
+  let commentList: CommentList = null;
+
+  if (tokenInfo !== null) {
+    try {
+      account = await iricomAPI.getMyAccount(tokenInfo);
+    } catch (error) {
+      // TODO
+    }
+  }
+
+  try {
+    board = await iricomAPI.getBoard(tokenInfo, boardId);
+    post = await iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH);
+    commentList = await iricomAPI.getCommentList(boardId, postId);
+  } catch (error) {
+    // TODO
+  }
 
   return {
     props: {
+      account: account,
       board: JSON.parse(JSON.stringify(board)),
       post: JSON.parse(JSON.stringify(post)),
       commentList: JSON.parse(JSON.stringify(commentList)),

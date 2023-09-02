@@ -1,17 +1,37 @@
 // react
-import React from 'react';
+import React, { useEffect, } from 'react';
 import NextLink from 'next/link';
-import { Text, Card, CardBody, Heading, LinkBox, LinkOverlay, VStack, CardHeader, Divider, } from '@chakra-ui/react';
-import { PageBody, } from '../../../layouts';
-import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
-import { PageTitle, } from '../../../components';
-// etc
-import { AccountAuth, } from '../../../interfaces';
-import { BORDER_RADIUS, } from '../../../constants/style';
+import { GetServerSideProps, } from 'next/types';
+import { Card, CardBody, CardHeader, Divider, Heading, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 
-const AdminBoardPage = () => {
+import { PageBody, } from '../../../layouts';
+import MainLayout from '../../../layouts/MainLayout';
+import { PageTitle, } from '../../../components';
+
+// store
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../../../recoil';
+
+// etc
+import { Account, AccountAuth, TokenInfo, } from '../../../interfaces';
+import { BORDER_RADIUS, } from '../../../constants/style';
+import { getTokenInfoByCookies, } from '../../../utils';
+import iricomAPI from '../../../utils/iricomAPI';
+
+type Props = {
+  account: Account | null,
+}
+
+const AdminBoardPage = (props: Props) => {
+
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+
+  useEffect(() => {
+    setAccount(props.account);
+  }, []);
+
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
+    <MainLayout>
       <PageBody>
         <PageTitle
           title='관리자 페이지'
@@ -53,6 +73,34 @@ const AdminBoardPage = () => {
       </PageBody>
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo === null) {
+    return {
+      props: {},
+      redirect: {
+        statusCode: 307,
+        destination: '/login?success=/admin/board',
+      },
+    };
+  } else {
+    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+
+    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
+      return {
+        props: {
+          account,
+        },
+      };
+    } else {
+      return {
+        notFound: true,
+      };
+    }
+  }
 };
 
 export default AdminBoardPage;

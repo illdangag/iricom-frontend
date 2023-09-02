@@ -61,7 +61,7 @@ const PostListTable = ({
               </Text>
               {isShowPostState && (
                 <HStack>
-                  {post.isPublish && <Badge colorScheme='blue'>발행</Badge>}
+                  {post.publish && <Badge colorScheme='blue'>발행</Badge>}
                   {post.hasTemporary && <Badge colorScheme='gray'>임시저장</Badge>}
                 </HStack>
               )}
@@ -114,7 +114,7 @@ const PostListTable = ({
 
   return (
     <>
-      <VStack alignItems='stretch' spacing='2rem' align='stretch'>
+      <VStack alignItems='stretch' spacing='1rem' align='stretch'>
         {getPostList()}
       </VStack>
       {isShowPagination && <Pagination page={page} listResponse={postList} onClick={onClickPagination}/>}

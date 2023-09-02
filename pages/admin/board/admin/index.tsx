@@ -1,26 +1,37 @@
 // react
-import React, { useState, useEffect, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
-import { useRouter, } from 'next/router';
+import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
-import { PageBody, } from '../../../../layouts';
-import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { BoardView, NoContent, PageTitle, } from '../../../../components';
-import { useIricomAPI, } from '../../../../hooks';
-// etc
-import { AccountAuth, Board, BoardList, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
 
-const AdminBoardAdminPage = () => {
-  const router = useRouter();
+import { MainLayout, PageBody, } from '../../../../layouts';
+import { BoardView, NoContent, PageTitle, } from '../../../../components';
+
+// store
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../../../../recoil';
+
+// etc
+import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '../../../../interfaces';
+import { BORDER_RADIUS, } from '../../../../constants/style';
+import { useIricomAPI, } from '../../../../hooks';
+import { getTokenInfoByCookies, } from '../../../../utils';
+import iricomAPI from '../../../../utils/iricomAPI';
+
+type Props = {
+  account: Account,
+}
+
+const AdminBoardAdminPage = (props: Props) => {
   const iricomApi = useIricomAPI();
   const [boardList, setBoardList,] = useState<Board[] | null>(null);
 
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+
   useEffect(() => {
-    if (router.isReady) {
-      void init();
-    }
-  }, [router.isReady,]);
+    setAccount(props.account);
+    void init();
+  }, []);
 
   const init = async () => {
     const boardList: BoardList = await iricomApi.getBoardList(0, 20, null);
@@ -43,7 +54,7 @@ const AdminBoardAdminPage = () => {
   };
 
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
+    <MainLayout>
       <PageBody>
         <PageTitle
           title='게시판 관리자 설정'
@@ -63,6 +74,34 @@ const AdminBoardAdminPage = () => {
       </PageBody>
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo === null) {
+    return {
+      props: {},
+      redirect: {
+        statusCode: 307,
+        destination: '/login?success=/admin/board/admin',
+      },
+    };
+  } else {
+    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+
+    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
+      return {
+        props: {
+          account,
+        },
+      };
+    } else {
+      return {
+        notFound: true,
+      };
+    }
+  }
 };
 
 export default AdminBoardAdminPage;

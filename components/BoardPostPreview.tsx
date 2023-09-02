@@ -18,9 +18,9 @@ const BoardPostPreview = ({
 }: Props) => {
   return (
     <VStack align='stretch'>
-      <LinkBox>
+      <LinkBox marginBottom='1rem'>
         <Flex>
-          <Heading size='sm' fontWeight='semibold'>
+          <Heading size='md' fontWeight='semibold'>
             <LinkOverlay as={NextLink} href={`/boards/${board.id}`}>
               {board.title}
             </LinkOverlay>

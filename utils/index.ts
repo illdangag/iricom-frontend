@@ -1,25 +1,28 @@
+import { parseCookies, setCookie, } from 'nookies';
 import { TokenInfo, } from '../interfaces';
+import { GetServerSidePropsContext, } from 'next/types';
+import iricomAPI from './iricomAPI';
 
 export class BrowserStorage {
   static TOKEN_INFO_KEY: string = 'tokenInfo';
 
   static clear (): void {
-    localStorage.removeItem(this.TOKEN_INFO_KEY);
+    setCookie(null, this.TOKEN_INFO_KEY, '', {
+      maxAge: 0,
+      path: '/',
+    });
   }
 
   static getTokenInfo (): TokenInfo | null {
-    const tokenInfoValue: string = localStorage.getItem(this.TOKEN_INFO_KEY);
-    if (tokenInfoValue === null) {
-      return null;
-    } else {
-      const tokenInfo: TokenInfo = JSON.parse(tokenInfoValue) as TokenInfo;
-      tokenInfo.expiredDate = new Date(tokenInfo.expiredDate);
-      return tokenInfo;
-    }
+    const cookies = parseCookies();
+    return TokenInfo.getInstance(cookies[this.TOKEN_INFO_KEY]);
   }
 
   static setTokenInfo (tokenInfo: TokenInfo): void {
-    localStorage.setItem(this.TOKEN_INFO_KEY, JSON.stringify(tokenInfo));
+    setCookie(null, this.TOKEN_INFO_KEY, JSON.stringify(tokenInfo), {
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/',
+    });
   }
 }
 
@@ -39,4 +42,29 @@ export function getFormattedDateTime (time: number): string {
   const minute: number = targetDate.getMinutes();
 
   return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
+}
+
+export function getTokenInfoByCookies (context: GetServerSidePropsContext): Promise<TokenInfo | null> {
+  return new Promise(resolve => {
+    let tokenInfo: TokenInfo | null = TokenInfo.getInstance(context.req.cookies.tokenInfo);
+
+    if (tokenInfo !== null) {
+      if (tokenInfo.isExpired()) {
+        iricomAPI.refreshToken(tokenInfo)
+          .then(newTokenInfo => {
+            context.res.setHeader('set-cookie', `${BrowserStorage.TOKEN_INFO_KEY}=${JSON.stringify(newTokenInfo)}; Path=/`);
+            resolve(newTokenInfo);
+          })
+          .catch(error => {
+            console.error(error);
+            context.res.setHeader('set-cookie', `${BrowserStorage.TOKEN_INFO_KEY}=; Path=/; Max-Age=0`);
+            resolve(null);
+          });
+      } else {
+        resolve(tokenInfo);
+      }
+    } else {
+      resolve(null);
+    }
+  });
 }

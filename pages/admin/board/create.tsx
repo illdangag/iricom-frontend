@@ -1,15 +1,23 @@
 // react
-import { ChangeEvent, useState, } from 'react';
+import { ChangeEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { VStack, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter,
-  Button, useToast, } from '@chakra-ui/react';
+import { GetServerSideProps, } from 'next/types';
+import { VStack, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter, Button, useToast, } from '@chakra-ui/react';
+
 import { PageBody, } from '../../../layouts';
-import MainLayout, { LoginState, } from '../../../layouts/MainLayout';
+import MainLayout from '../../../layouts/MainLayout';
 import useIricomAPI from '../../../hooks/useIricomAPI';
+
+// store
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../../../recoil';
+
 // etc
-import { AccountAuth, } from '../../../interfaces';
+import { Account, AccountAuth, TokenInfo, } from '../../../interfaces';
 import { BORDER_RADIUS, } from '../../../constants/style';
 import { PageTitle, } from '../../../components';
+import { getTokenInfoByCookies, } from '../../../utils';
+import iricomAPI from '../../../utils/iricomAPI';
 
 enum PageState {
   READY,
@@ -19,7 +27,11 @@ enum PageState {
   FAIL,
 }
 
-const AdminBoardCreatePage = () => {
+type Props = {
+  account: Account | null,
+}
+
+const AdminBoardCreatePage = (props: Props) => {
   const router = useRouter();
   const toast = useToast();
   const iricomAPI = useIricomAPI();
@@ -28,6 +40,12 @@ const AdminBoardCreatePage = () => {
   const [title, setTitle,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
   const [enabled, setEnabled,] = useState<boolean>(false);
+
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+
+  useEffect(() => {
+    setAccount(props.account);
+  }, []);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -70,7 +88,7 @@ const AdminBoardCreatePage = () => {
   };
 
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
+    <MainLayout>
       <PageBody>
         <PageTitle
           title='게시판 생성'
@@ -109,6 +127,34 @@ const AdminBoardCreatePage = () => {
       </PageBody>
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo === null) {
+    return {
+      props: {},
+      redirect: {
+        statusCode: 307,
+        destination: '/login?success=/admin/board/create',
+      },
+    };
+  } else {
+    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+
+    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
+      return {
+        props: {
+          account,
+        },
+      };
+    } else {
+      return {
+        notFound: true,
+      };
+    }
+  }
 };
 
 export default AdminBoardCreatePage;

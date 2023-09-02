@@ -1,10 +1,13 @@
 // react
 import { useState, useEffect, } from 'react';
+import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, useToast, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
-import EmptyLayout, { LoginState, } from '../layouts/EmptyLayout';
+import EmptyLayout from '../layouts/EmptyLayout';
 import { useGoogleAuth, } from '../hooks';
+import { TokenInfo, } from '../interfaces';
+import { getTokenInfoByCookies, } from '../utils';
 
 enum PageState {
   READY,
@@ -46,7 +49,7 @@ const LoginPage = () => {
   };
 
   return (
-    <EmptyLayout loginState={LoginState.LOGOUT}>
+    <EmptyLayout>
       <Flex flexDirection='column' height='100%'>
         <Spacer/>
         <Container>
@@ -75,6 +78,23 @@ const LoginPage = () => {
       </Flex>
     </EmptyLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo !== null) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/',
+      },
+    };
+  } else {
+    return {
+      props: {},
+    };
+  }
 };
 
 export default LoginPage;

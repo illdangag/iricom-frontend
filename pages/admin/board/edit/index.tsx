@@ -1,34 +1,48 @@
 // react
-import { useState, } from 'react';
+import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
+import { GetServerSideProps, } from 'next/types';
 import { VStack, Card, CardBody, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
+
 import { BoardView, NoContent, PageTitle, } from '../../../../components';
 import { PageBody, } from '../../../../layouts';
-import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
-import { useIricomAPI, } from '../../../../hooks';
-// etc
-import { AccountAuth, Board, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
+import MainLayout from '../../../../layouts/MainLayout';
 
-const AdminBoardEditPage = () => {
-  const iricomApi = useIricomAPI();
+// store
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../../../../recoil';
+
+// etc
+import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '../../../../interfaces';
+import { BORDER_RADIUS, } from '../../../../constants/style';
+import { getTokenInfoByCookies, } from '../../../../utils';
+import iricomAPI from '../../../../utils/iricomAPI';
+
+type Props = {
+  account: Account | null,
+  boardList: Board[],
+};
+
+const AdminBoardEditPage = (props: Props) => {
   const [boardList, setBoardList,] = useState<Board[] | null>(null);
 
-  const onMount = () => {
-    void iricomApi.getBoardList(0, 20, null)
-      .then(boardList => {
-        setBoardList(boardList.boards);
-      });
-  };
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+
+  useEffect(() => {
+    setAccount(props.account);
+    setBoardList(props.boardList);
+  }, []);
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];
     for (let index = 0; index < boardList.length; index++) {
       const board: Board = boardList[index];
-      elementList.push(<LinkBox>
-        <LinkOverlay as={NextLink} href={`/admin/board/edit/${board.id}`}/>
-        <BoardView board={board}/>
-      </LinkBox>);
+      elementList.push(
+        <LinkBox key={index}>
+          <LinkOverlay as={NextLink} href={`/admin/board/edit/${board.id}`}/>
+          <BoardView board={board}/>
+        </LinkBox>,
+      );
       if (index < boardList.length - 1) {
         elementList.push(<Divider/>);
       }
@@ -37,7 +51,7 @@ const AdminBoardEditPage = () => {
   };
 
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN} onMount={onMount}>
+    <MainLayout>
       <PageBody>
         <PageTitle
           title='게시판 수정'
@@ -58,5 +72,35 @@ const AdminBoardEditPage = () => {
     </MainLayout>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo === null) {
+    return {
+      props: {},
+      redirect: {
+        statusCode: 307,
+        destination: '/login?success=/admin/board/edit',
+      },
+    };
+  } else {
+    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
+      const boardList: BoardList = await iricomAPI.getBoardList(tokenInfo, 0, 20, null);
+      return {
+        props: {
+          account,
+          boardList: boardList.boards,
+        },
+      };
+    } else {
+      return {
+        notFound: true,
+      };
+    }
+  }
+};
+
 
 export default AdminBoardEditPage;

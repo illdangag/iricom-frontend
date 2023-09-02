@@ -1,25 +1,29 @@
 // react
-import { useState, } from 'react';
+import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { GetServerSideProps, } from 'next/types';
+import { GetServerSideProps, GetServerSidePropsResult, } from 'next/types';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
+
 import { PageBody, } from '../../layouts';
-import MainLayout, { LoginState, } from '../../layouts/MainLayout';
+import MainLayout from '../../layouts/MainLayout';
 import { NoContent, PostListTable, BoardTitle, } from '../../components';
 import { RequireAccountDetailAlert, } from '../../components/alerts';
-import { useAccountState, } from '../../hooks';
-// recoil
+
+// store
 import { useSetRecoilState, } from 'recoil';
-import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../../recoil/requireLoginPopup';
+import { myAccountAtom, } from '../../recoil';
+
 // etc
-import { AccountAuth, Board, PostList, PostType, } from '../../interfaces';
+import { Account, Board, PostList, PostType, TokenInfo, } from '../../interfaces';
 import { BORDER_RADIUS, } from '../../constants/style';
 import iricomAPI from '../../utils/iricomAPI';
+import { getTokenInfoByCookies, } from '../../utils';
 
 const PAGE_LIMIT: number = 10;
 const NOTIFICATION_PAGE_LIMIT: number = 5;
 
 type Props = {
+  account: Account | null,
   board: Board,
   postList: PostList,
   notificationList: PostList,
@@ -27,7 +31,6 @@ type Props = {
 
 const BoardsPage = (props: Props) => {
   const router = useRouter();
-  const [loginState, accountAuth,] = useAccountState();
 
   const boardId: string = router.query.boardId as string;
 
@@ -38,21 +41,11 @@ const BoardsPage = (props: Props) => {
   const [page, setPage,] = useState<number>(1);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
-  const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
-  const onClickCreatePost = () => {
-    if (loginState === LoginState.LOGOUT) {
-      setRequirePopup({
-        isShow: true,
-        message: '글을 쓰기 위해서는 로그인이 필요합니다.',
-        successURL: `/boards/${boardId}/posts/create`,
-      });
-    } else if (accountAuth === AccountAuth.UNREGISTERED_ACCOUNT) {
-      setShowRegisteredAccountAlert(true);
-    } else {
-      void router.push(`/boards/${boardId}/posts/create`);
-    }
-  };
+  useEffect(() => {
+    setAccount(props.account);
+  }, []);
 
   const onCloseRegisteredAccountDetailAlert = () => {
     setShowRegisteredAccountAlert(false);
@@ -64,7 +57,7 @@ const BoardsPage = (props: Props) => {
   };
 
   return (
-    <MainLayout loginState={LoginState.ANY}>
+    <MainLayout>
       <PageBody>
         {/* 게시판 헤더 */}
         {board && <BoardTitle board={board} isShowCreateButton={true}/>}
@@ -114,23 +107,34 @@ const BoardsPage = (props: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const result: GetServerSidePropsResult<any> = {
+    props: {},
+  };
+
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo !== null) {
+    result.props.account = await iricomAPI.getMyAccount(tokenInfo);
+  } else {
+    result.props.account = null;
+  }
+
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;
+
   const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
   const skip: number = PAGE_LIMIT * (page - 1);
   const limit: number = PAGE_LIMIT;
 
-  const board: Board = await iricomAPI.getBoard(boardId);
+  const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
   const postList: PostList = await iricomAPI.getPostList(boardId, skip, limit, PostType.POST);
   const notificationList: PostList = await iricomAPI.getPostList(boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION);
 
-  return {
-    props: {
-      board: JSON.parse(JSON.stringify(board)),
-      postList: JSON.parse(JSON.stringify(postList)),
-      notificationList: JSON.parse(JSON.stringify(notificationList)),
-    },
-  };
+  result.props.board = JSON.parse(JSON.stringify(board));
+  result.props.postList = JSON.parse(JSON.stringify(postList));
+  result.props.notificationList = JSON.parse(JSON.stringify(notificationList));
+
+  return result;
 };
 
 export default BoardsPage;

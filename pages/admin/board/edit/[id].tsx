@@ -1,16 +1,23 @@
 // react
 import { ChangeEvent, useState, useEffect, } from 'react';
+import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
-import { Button, Card, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, VStack,
-  useToast, CardBody, CardFooter, } from '@chakra-ui/react';
-import { PageBody, } from '../../../../layouts';
-import MainLayout, { LoginState, } from '../../../../layouts/MainLayout';
+import { Button, Card, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, VStack, useToast, CardBody, CardFooter, } from '@chakra-ui/react';
+
+import { PageBody, MainLayout, } from '../../../../layouts';
 import { NotExistBoardAlert, } from '../../../../components/alerts';
 import { PageTitle, } from '../../../../components';
 import { useIricomAPI, } from '../../../../hooks';
+
+// store
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, } from '../../../../recoil';
+
 // etc
-import { AccountAuth, Board, } from '../../../../interfaces';
+import { Account, AccountAuth, Board, TokenInfo, } from '../../../../interfaces';
 import { BORDER_RADIUS, } from '../../../../constants/style';
+import { getTokenInfoByCookies, } from '../../../../utils';
+import iricomAPI from '../../../../utils/iricomAPI';
 
 enum PageState {
   INVALID,
@@ -20,12 +27,16 @@ enum PageState {
   FAIL,
 }
 
-const AdminBoardEditIdPage = () => {
+type Props = {
+  account: Account,
+  board: Board,
+}
+
+const AdminBoardEditIdPage = (props: Props) => {
   const router = useRouter();
   const toast = useToast();
   const iriconAPI = useIricomAPI();
 
-  const id = router.query.id as string;
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [board, setBoard,] = useState<Board | null>(null);
   const [title, setTitle,] = useState<string>('');
@@ -33,23 +44,17 @@ const AdminBoardEditIdPage = () => {
   const [enabled, setEnabled,] = useState<boolean>(false);
   const [showAlert, setShowAlert,] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (typeof id !== 'string') {
-      // TODO path parameter가 올바르지 않은 경우
-      return;
-    }
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
-    void iriconAPI.getBoard(id)
-      .then(board => {
-        setTitle(board.title);
-        setDescription(board.description);
-        setEnabled(board.enabled);
-        setBoard(board);
-      })
-      .catch(() => {
-        setShowAlert(true);
-      });
-  }, [id,]);
+  useEffect(() => {
+    setAccount(props.account);
+
+    const board: Board = Object.assign(new Board(), props.board);
+    setTitle(board.title);
+    setDescription(board.description);
+    setEnabled(board.enabled);
+    setBoard(board);
+  }, []);
 
   useEffect(() => {
     if (board === null || title.length === 0) {
@@ -106,7 +111,7 @@ const AdminBoardEditIdPage = () => {
   };
 
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.SYSTEM_ADMIN}>
+    <MainLayout>
       <PageBody>
         {board && <PageTitle
           title={board.title}
@@ -142,5 +147,36 @@ const AdminBoardEditIdPage = () => {
     </MainLayout>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+  const boardId: string = context.query.id as string;
+
+  if (tokenInfo === null) {
+    return {
+      props: {},
+      redirect: {
+        statusCode: 307,
+        destination: `/login?success=/admin/board/${boardId}`,
+      },
+    };
+  } else {
+    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
+      const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
+      return {
+        props: {
+          account,
+          board: JSON.parse(JSON.stringify(board)),
+        },
+      };
+    } else {
+      return {
+        notFound: true,
+      };
+    }
+  }
+};
+
 
 export default AdminBoardEditIdPage;

@@ -66,14 +66,14 @@ function useIricomAPI (): IricomAPI {
     } as AxiosRequestConfig;
   };
 
-  const getToken = async (tokenInfo: TokenInfo): Promise<string> => {
-    let token: string = tokenInfo.token;
+  const getTokenInfo = async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
     if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
       const newTokenInfo: TokenInfo = await refreshToken(tokenInfo);
-      token = newTokenInfo.token;
       BrowserStorage.setTokenInfo(newTokenInfo);
+      return newTokenInfo;
+    } else {
+      return tokenInfo;
     }
-    return token;
   };
 
   const refreshToken = async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
@@ -94,11 +94,7 @@ function useIricomAPI (): IricomAPI {
       const token: string = response.data.id_token;
       const refreshToken: string = response.data.refresh_token;
       const expiredDate: Date = new Date((new Date()).getTime() + (Number(response.data.expires_in) * 1000));
-      return {
-        token,
-        refreshToken,
-        expiredDate,
-      };
+      return new TokenInfo(token, refreshToken, expiredDate);
     } catch (error) {
       console.error(error);
     }
@@ -111,42 +107,17 @@ function useIricomAPI (): IricomAPI {
 
   const iricomApi: IricomAPI = {
     getMyAccount: async (tokenInfo: TokenInfo) => {
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = backendProperties.host + '/v1/infos';
-      config.method = 'GET';
-
-      try {
-        let response: AxiosResponse<Account> = await axios.request(config);
-        return response.data;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
+      return await iricomAPI.getMyAccount(tokenInfo);
     },
 
     getMyPostList: async (skip: number, limit: number): Promise<PostList> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = `${backendProperties.host}/v1/infos/posts`;
-      config.method = 'GET';
-      config.params = {
-        skip: skip,
-        limit: limit,
-      };
-
-      try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: PostList = new PostList();
-        Object.assign(result, response.data);
-        return result;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
+      return await iricomAPI.getMyPostList(tokenInfo, skip, limit);
     },
 
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null): Promise<BoardList> => {
-      return await iricomAPI.getBoardList(skip, limit, enabled);
+      const tokenInfo: TokenInfo = await getTokenInfo(BrowserStorage.getTokenInfo());
+      return await iricomAPI.getBoardList(tokenInfo, skip, limit, enabled);
     },
 
     createBoard: async (title: string, description: string, enabled: boolean): Promise<Board> => {
@@ -172,7 +143,7 @@ function useIricomAPI (): IricomAPI {
     },
 
     getBoard: async (id: string) => {
-      return await iricomAPI.getBoard(id);
+      return await iricomAPI.getBoard(null, id);
     },
 
     updateBoard: async (board: Board): Promise<Board> => {
@@ -310,16 +281,8 @@ function useIricomAPI (): IricomAPI {
     },
 
     getPost: async (boardId: string, postId: string, postState: PostState | null): Promise<Post> => {
-      let token: string;
-      if (postState === PostState.TEMPORARY) {
-        const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-        if (tokenInfo === null) {
-          throw new Error(); // TODO
-        }
-        token = await getToken(tokenInfo);
-      }
-
-      return await iricomAPI.getPost(boardId, postId, postState, token);
+      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+      return await iricomAPI.getPost(tokenInfo, boardId, postId, postState);
     },
 
     getCommentList: async (boardId: string, postId: string): Promise<CommentList> => {
@@ -430,7 +393,7 @@ function useIricomAPI (): IricomAPI {
       const token: TokenInfo | null = BrowserStorage.getTokenInfo();
       const config: AxiosRequestConfig = await getRequestConfig(token);
 
-      config.url = `${backendProperties.host}/v1/auth/board/${boardId}`;
+      config.url = `${backendProperties.host}/v1/auth/boards/${boardId}`;
       config.method = 'GET';
 
       try {

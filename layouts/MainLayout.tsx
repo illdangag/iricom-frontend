@@ -2,16 +2,12 @@
 import { ReactNode, } from 'react';
 import { Box, } from '@chakra-ui/react';
 import Header from './Header';
-import EmptyLayout, { LoginState, } from './EmptyLayout';
-// etc
-import { AccountAuth, } from '../interfaces';
+import EmptyLayout from './EmptyLayout';
 
 type Props = {
   children?: ReactNode,
   title?: string,
   headerTitle?: string,
-  loginState?: LoginState,
-  auth?: AccountAuth,
   onMount?: () => void,
 }
 
@@ -19,12 +15,10 @@ const MainLayout = ({
   children,
   title,
   headerTitle,
-  loginState,
-  auth,
   onMount,
 }: Props) => {
   return (
-    <EmptyLayout title={title} loginState={loginState} auth={auth} onMount={onMount}>
+    <EmptyLayout title={title} onMount={onMount}>
       <Box>
         <Header title={headerTitle}/>
         <Box marginTop='1rem'>
@@ -35,5 +29,4 @@ const MainLayout = ({
   );
 };
 
-export { LoginState, };
 export default MainLayout;

@@ -17,6 +17,7 @@
     "framer-motion": "^9.0.2",
     "next": "latest",
     "next-remove-imports": "^1.0.10",
+    "nookies": "^2.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",

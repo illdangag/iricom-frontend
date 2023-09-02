@@ -1,20 +1,31 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
+import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, } from '@chakra-ui/react';
-import { PageBody, } from '../../../../../layouts';
-import MainLayout, { LoginState, } from '../../../../../layouts/MainLayout';
-import { PostEditor, } from '../../../../../components';
-import { InvalidPostAlert, PostPublishAlert, } from '../../../../../components/alerts';
-import { useAccountState, useIricomAPI, } from '../../../../../hooks';
-// etc
-import { AccountAuth, Board, Post, PostState, } from '../../../../../interfaces';
-import BoarderHeader from '../../../../../components/BoardTitle';
-import { BORDER_RADIUS, } from '../../../../../constants/style';
 
-const BoardsPostsEditPage = () => {
+import { PageBody, MainLayout, } from '../../../../../layouts';
+import { PostEditor, } from '../../../../../components';
+import BoarderHeader from '../../../../../components/BoardTitle';
+import { InvalidPostAlert, PostPublishAlert, } from '../../../../../components/alerts';
+import { useIricomAPI, } from '../../../../../hooks';
+
+// store
+import { useRecoilState, } from 'recoil';
+
+import { myAccountAtom, } from '../../../../../recoil';
+// etc
+import { Account, AccountAuth, Board, Post, PostState, TokenInfo, } from '../../../../../interfaces';
+import { BORDER_RADIUS, } from '../../../../../constants/style';
+import { getTokenInfoByCookies, } from '../../../../../utils';
+import iricomAPI from '../../../../../utils/iricomAPI';
+
+type Props = {
+  account: Account | null,
+}
+
+const BoardsPostsEditPage = (props: Props) => {
   const router = useRouter();
-  const [_loginState, accountAuth,] = useAccountState();
   const iricomAPI = useIricomAPI();
 
   const boardId: string = router.query.boardId as string;
@@ -25,6 +36,17 @@ const BoardsPostsEditPage = () => {
   const [publishPost, setPublishPost,] = useState<Post | null>(null);
   const [isOpenInvalidPostAlert, setOpenInvalidPostAlert,] = useState<boolean>(false);
   const [isOpenPostPublishAlert, setOpenPostPublishAlert,] = useState<boolean>(false);
+
+  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
+
+  useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(props.account);
+
+  }, [router.isReady,]);
 
   useEffect(() => {
     if (boardId && postId) {
@@ -74,7 +96,7 @@ const BoardsPostsEditPage = () => {
   };
 
   return (
-    <MainLayout loginState={LoginState.LOGIN} auth={AccountAuth.ACCOUNT}>
+    <MainLayout>
       <PageBody>
         {/* 게시판 헤더 */}
         {board && <BoarderHeader board={board} isShowCreateButton={false}/>}
@@ -85,11 +107,11 @@ const BoardsPostsEditPage = () => {
         >
           <CardBody>
             {!post && <PostEditor
-              accountAuth={accountAuth}
+              accountAuth={account !== null ? account.auth : AccountAuth.NONE}
               disabled={true}
             />}
             {post && <PostEditor
-              accountAuth={accountAuth}
+              accountAuth={account !== null ? account.auth : AccountAuth.NONE}
               defaultValue={post}
               boardId={boardId}
               onRequest={onRequest}
@@ -105,6 +127,29 @@ const BoardsPostsEditPage = () => {
       />}
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  const boardId: string = context.query.boardId as string;
+  const postId: string = context.query.postId as string;
+
+  if (tokenInfo === null) {
+    return {
+      props: {},
+      redirect: {
+        statusCode: 307,
+        destination: `/login?success=/boards/${boardId}/posts/${postId}/edit`,
+      },
+    };
+  } else {
+    return {
+      props: {
+        account: await iricomAPI.getMyAccount(tokenInfo),
+      },
+    };
+  }
 };
 
 export default BoardsPostsEditPage;

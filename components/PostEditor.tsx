@@ -41,7 +41,7 @@ const PostEditor = ({
   const [content, setContent,] = useState<string>(defaultValue ? defaultValue.content : '');
   const DEFAULT_POST_TYPE: PostType = defaultValue ? defaultValue.type : PostType.POST;
   const [postType, setPostType,] = useState<PostType>(DEFAULT_POST_TYPE);
-  const DEFAULT_DISABLED_COMMENT: boolean = defaultValue ? !defaultValue.isAllowComment : false;
+  const DEFAULT_DISABLED_COMMENT: boolean = defaultValue ? !defaultValue.allowComment : false;
   const [disabledComment, setDisabledComment,] = useState<boolean>(DEFAULT_DISABLED_COMMENT);
 
   useEffect(() => {
@@ -115,7 +115,7 @@ const PostEditor = ({
           </Box>
         </FormControl>
       </VStack>
-      {accountAuth === AccountAuth.SYSTEM_ADMIN && <>
+      {(accountAuth === AccountAuth.SYSTEM_ADMIN || accountAuth === AccountAuth.BOARD_ADMIN) && <>
         <Divider marginTop='.8rem'/>
         <VStack alignItems='stretch' spacing='1rem' marginTop='.8rem'>
           <Text>관리자 설정</Text>

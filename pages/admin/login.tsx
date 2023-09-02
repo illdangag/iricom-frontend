@@ -1,10 +1,15 @@
 // react
-import { ChangeEvent, useState, useEffect, KeyboardEvent, } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, CardHeader, Heading, Image, Flex, Spacer, Stack, Input, Button, Container, useToast, } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardHeader, Container, Flex, Heading, Image, Input, Spacer, Stack, useToast, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
-import EmptyLayout, { LoginState, } from '../../layouts/EmptyLayout';
+
+import { EmptyLayout, } from '../../layouts';
 import { useEmailAuth, } from '../../hooks';
+import { GetServerSideProps, } from 'next/types';
+import { Account, AccountAuth, TokenInfo, } from '../../interfaces';
+import { getTokenInfoByCookies, } from '../../utils';
+import iricomAPI from '../../utils/iricomAPI';
 
 enum PageState {
   READY,
@@ -77,7 +82,7 @@ const LoginPage = () => {
   };
 
   return (
-    <EmptyLayout loginState={LoginState.LOGOUT}>
+    <EmptyLayout>
       <Flex flexDirection='column' height='100%'>
         <Spacer/>
         <Container>
@@ -125,6 +130,33 @@ const LoginPage = () => {
       </Flex>
     </EmptyLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo !== null) {
+    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
+      return {
+        props: {},
+        redirect: {
+          statusCode: 307,
+          destination: '/',
+        },
+      };
+    } else {
+      return {
+        props: {},
+        notFound: true,
+      };
+    }
+  } else {
+    return {
+      props: {},
+      notFound: true,
+    };
+  }
 };
 
 export default LoginPage;

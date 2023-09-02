@@ -40,12 +40,7 @@ function useGoogleAuth (): [State, () => Promise<void>] {
       const refreshToken: string = userCredential.user.refreshToken;
       const expiredDate: Date = getTokenExpiredDate(token);
 
-      const tokenInfo: TokenInfo = {
-        token,
-        refreshToken,
-        expiredDate,
-      };
-
+      const tokenInfo: TokenInfo = new TokenInfo(token, refreshToken, expiredDate);
       void iricomAPI.getMyAccount(tokenInfo)
         .then(account => {
           setState('success');
