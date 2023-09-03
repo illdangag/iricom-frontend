@@ -174,7 +174,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     board = await iricomAPI.getBoard(tokenInfo, boardId);
     post = await iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH);
-    commentList = await iricomAPI.getCommentList(boardId, postId);
+    commentList = await iricomAPI.getCommentList(tokenInfo, boardId, postId);
   } catch (error) {
     // TODO
   }

@@ -1,4 +1,6 @@
 // properties
+import { h } from 'hastscript';
+
 export type FirebaseProperties = {
   projectId: string,
   apiKey: string,
@@ -51,11 +53,17 @@ export class NotExistTokenError extends Error {
 }
 
 export class IricomError extends Error {
+  private _httpStatusCode: number;
   private _code: string;
 
-  constructor (code: string, message: string) {
+  constructor (httpStatusCode: number, code: string, message: string) {
     super(message);
+    this._httpStatusCode = httpStatusCode;
     this._code = code;
+  }
+
+  get httpStatusCode (): number {
+    return this._httpStatusCode;
   }
 
   get code (): string {

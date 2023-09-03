@@ -127,8 +127,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const limit: number = PAGE_LIMIT;
 
   const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
-  const postList: PostList = await iricomAPI.getPostList(boardId, skip, limit, PostType.POST);
-  const notificationList: PostList = await iricomAPI.getPostList(boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION);
+  const postList: PostList = await iricomAPI.getPostList(tokenInfo, boardId, skip, limit, PostType.POST);
+  const notificationList: PostList = await iricomAPI.getPostList(tokenInfo, boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION);
 
   result.props.board = JSON.parse(JSON.stringify(board));
   result.props.postList = JSON.parse(JSON.stringify(postList));

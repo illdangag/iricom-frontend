@@ -1,16 +1,12 @@
-// node
-import process from 'process';
 // etc
-import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, } from 'axios';
+import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
+import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
 import { BrowserStorage, } from '../utils';
 // recoil
 import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../recoil/requireLoginPopup';
-
-const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
 
 type IricomAPI = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
@@ -42,33 +38,16 @@ type IricomAPI = {
 }
 
 function useIricomAPI (): IricomAPI {
-  const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
   axios.defaults.withCredentials = false;
 
   const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
 
-  const getRequestConfig = async (tokenInfo: TokenInfo | null): Promise<AxiosRequestConfig> => {
+  const getTokenInfo = async (): Promise<TokenInfo | null> => {
+    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (tokenInfo === null) {
-      throw new NotExistTokenError('Token is not exist.');
-    }
-
-    let token: string = tokenInfo.token;
-    if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
-      const newTokenInfo: TokenInfo = await refreshToken(tokenInfo);
-      token = newTokenInfo.token;
-      BrowserStorage.setTokenInfo(newTokenInfo);
-    }
-
-    return {
-      headers: {
-        Authorization: 'Bearer ' + token,
-      },
-    } as AxiosRequestConfig;
-  };
-
-  const getTokenInfo = async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
-    if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
-      const newTokenInfo: TokenInfo = await refreshToken(tokenInfo);
+      return null;
+    } else if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
+      const newTokenInfo: TokenInfo = await iricomAPI.refreshToken(tokenInfo);
       BrowserStorage.setTokenInfo(newTokenInfo);
       return newTokenInfo;
     } else {
@@ -76,369 +55,218 @@ function useIricomAPI (): IricomAPI {
     }
   };
 
-  const refreshToken = async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
-    const config: AxiosRequestConfig = {
-      url: 'https://securetoken.googleapis.com/v1/token',
-      method: 'POST',
-      params: {
-        key: firebaseProperties.apiKey,
-      },
-      data: {
-        grant_type: 'refresh_token',
-        refresh_token: tokenInfo.refreshToken,
-      },
-    };
-
-    try {
-      const response: AxiosResponse<any> = await axios.request(config);
-      const token: string = response.data.id_token;
-      const refreshToken: string = response.data.refresh_token;
-      const expiredDate: Date = new Date((new Date()).getTime() + (Number(response.data.expires_in) * 1000));
-      return new TokenInfo(token, refreshToken, expiredDate);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const defaultErrorHandler = (error: AxiosError) => {
+  const defaultErrorHandler = (error: AxiosError): IricomError => {
+    const httpStatusCode: number = error.response.status;
     const iricomErrorResponse: IricomErrorResponse = error.response.data as IricomErrorResponse;
-    throw new IricomError(iricomErrorResponse.code, iricomErrorResponse.message);
+    return new IricomError(httpStatusCode, iricomErrorResponse.code, iricomErrorResponse.message);
   };
 
   const iricomApi: IricomAPI = {
     getMyAccount: async (tokenInfo: TokenInfo) => {
-      return await iricomAPI.getMyAccount(tokenInfo);
+      try {
+        return await iricomAPI.getMyAccount(tokenInfo);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     getMyPostList: async (skip: number, limit: number): Promise<PostList> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      return await iricomAPI.getMyPostList(tokenInfo, skip, limit);
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getMyPostList(tokenInfo, skip, limit);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null): Promise<BoardList> => {
-      const tokenInfo: TokenInfo = await getTokenInfo(BrowserStorage.getTokenInfo());
-      return await iricomAPI.getBoardList(tokenInfo, skip, limit, enabled);
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getBoardList(tokenInfo, skip, limit, enabled);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     createBoard: async (title: string, description: string, enabled: boolean): Promise<Board> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = backendProperties.host + '/v1/boards';
-      config.method = 'POST';
-      config.data = {
-        title,
-        description,
-        enabled,
-      };
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: Board = new Board();
-        Object.assign(result, response.data);
-        return result;
+        return await iricomAPI.createBoard(tokenInfo, title, description, enabled);
       } catch (error) {
-        console.error(error);
-        throw error;
+        defaultErrorHandler(error);
       }
     },
 
     getBoard: async (id: string) => {
-      return await iricomAPI.getBoard(null, id);
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getBoard(tokenInfo, id);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     updateBoard: async (board: Board): Promise<Board> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = backendProperties.host + '/v1/boards/' + board.id;
-      config.method = 'PATCH';
-      config.data = board;
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: Board = new Board();
-        Object.assign(result, response.data);
-        return result;
+        return await iricomAPI.updateBoard(tokenInfo, board);
       } catch (error) {
-        console.error(error);
-        throw error;
+        throw defaultErrorHandler(error);
       }
     },
 
     getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null): Promise<PostList> => {
-      return await iricomAPI.getPostList(boardId, skip, limit, type);
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getPostList(tokenInfo, boardId, skip, limit, type);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     createPost: async (boardId: string, title: string, content: string, postType: PostType, isAllowComment: boolean): Promise<Post> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts`;
-      config.method = 'POST';
-      config.data = {
-        title,
-        content,
-        type: postType,
-        isAllowComment,
-      };
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Post> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.createPost(tokenInfo, boardId, title, content, postType, isAllowComment);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     updatePost: async (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null): Promise<Post> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
-      config.method = 'PATCH';
-      config.data = {};
-
-      if (title) {
-        config.data.title = title;
-      }
-      if (content) {
-        config.data.content = content;
-      }
-      if (postType) {
-        config.data.type = postType;
-      }
-      if (isAllowComment) {
-        config.data.isAllowComment = isAllowComment;
-      }
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Post> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.updatePost(tokenInfo, boardId, postId, title, content, postType, isAllowComment);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     publishPost: async (boardId: string, postId: string): Promise<Post> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/publish`;
-      config.method = 'POST';
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Post> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.publishPost(tokenInfo, boardId, postId);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     votePost: async (boardId: string, postId: string, type: VoteType): Promise<Post> => {
-      const tokeInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      let config: AxiosRequestConfig;
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        config = await getRequestConfig(tokeInfo);
-        config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/vote`;
-        config.method = 'PATCH';
-        config.data = {
-          type: type,
-        };
+        return await iricomAPI.votePost(tokenInfo, boardId, postId, type);
       } catch (error) {
-        if (error instanceof NotExistTokenError) {
-          setRequirePopup({
-            isShow: true,
-            message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
-            successURL: `/boards/${boardId}/posts/${postId}`,
-          });
-        }
-        throw error;
-      }
-
-      try {
-        const response: AxiosResponse<Post> = await axios.request(config);
-        return response.data;
-      } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     updateMyAccountInfo: async (nickname: string | null, description: string | null): Promise<Account> => {
-      const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(tokenInfo);
-      config.url = `${backendProperties.host}/v1/accounts/`;
-      config.method = 'PATCH';
-      config.data = {};
-      if (nickname !== null) {
-        config.data.nickname = nickname;
-      }
-      if (description !== null) {
-        config.data.description = description;
-      }
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Account> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.updateMyAccountInfo(tokenInfo, nickname, description);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     getPost: async (boardId: string, postId: string, postState: PostState | null): Promise<Post> => {
       const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-      return await iricomAPI.getPost(tokenInfo, boardId, postId, postState);
+      try {
+        return await iricomAPI.getPost(tokenInfo, boardId, postId, postState);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     getCommentList: async (boardId: string, postId: string): Promise<CommentList> => {
-      return await iricomAPI.getCommentList(boardId, postId);
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getCommentList(tokenInfo, boardId, postId);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
     },
 
     createComment: async (boardId: string, postId: string, content: string, referenceCommentId: string | null): Promise<Comment> => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      let config: AxiosRequestConfig;
-      try {
-        config = await getRequestConfig(token);
-      } catch (error) {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+
+      if (tokenInfo === null) {
         setRequirePopup({
           isShow: true,
           message: '댓글을 쓰기 위해서는 로그인이 필요합니다.',
           successURL: `/boards/${boardId}/posts/${postId}`,
         });
-        throw error;
-      }
-
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments`;
-      config.method = 'POST';
-      config.data = {
-        content: content,
-      };
-
-      if (referenceCommentId) {
-        config.data.referenceCommentId = referenceCommentId;
+        return;
       }
 
       try {
-        const response: AxiosResponse<Comment> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.createComment(tokenInfo, boardId, postId, content, referenceCommentId);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     voteComment: async (boardId: string, postId: string, commentId: string, type: VoteType): Promise<Comment> => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      let config: AxiosRequestConfig;
-      try {
-        config = await getRequestConfig(token);
-      } catch (error) {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+
+      if (tokenInfo === null) {
         setRequirePopup({
           isShow: true,
           message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
           successURL: `/boards/${boardId}/posts/${postId}`,
         });
-        throw error;
+        return;
       }
 
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments/${commentId}/vote`;
-      config.method = 'PATCH';
-      config.data = {
-        type: type,
-      };
-
       try {
-        const response: AxiosResponse<Comment> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.voteComment(tokenInfo, boardId, postId, commentId, type);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     deletePost: async (boardId: string, postId: string): Promise<Post> => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
-
-      config.url = `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`;
-      config.method = 'DELETE';
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        const response: AxiosResponse<Post> = await axios.request(config);
-        return response.data;
+        return await iricomAPI.deletePost(tokenInfo, boardId, postId);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     getAccountList: async (skip: number, limit: number, keyword: string | null): Promise<AccountList> => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
-
-      config.url = `${backendProperties.host}/v1/accounts`;
-      config.method = 'GET';
-      config.params = {
-        skip: skip,
-        limit: limit,
-      };
-
-      if (keyword !== null) {
-        config.params.keyword = keyword;
-      }
-
+      const tokenInfo: TokenInfo | null = await this.getTokenInfo();
       try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: AccountList = new AccountList();
-        Object.assign(result, response.data);
-        return result;
+        return await iricomAPI.getAccountList(tokenInfo, skip, limit, keyword);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     getBoardAdminInfo: async (boardId: string): Promise<BoardAdmin> => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
-
-      config.url = `${backendProperties.host}/v1/auth/boards/${boardId}`;
-      config.method = 'GET';
-
+      const tokenInfo: TokenInfo | null = await this.getTokenInfo();
       try {
-        const response: AxiosResponse<Object> = await axios.request(config);
-        const result: BoardAdmin = new BoardAdmin();
-        Object.assign(result, response.data);
-        return result;
+        return await iricomAPI.getBoardAdminInfo(tokenInfo, boardId);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     createBoardAdmin: async (boardId: string, accountId: string) => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
-
-      config.url = `${backendProperties.host}/v1/auth/board`;
-      config.method = 'POST';
-      config.data = {
-        boardId: boardId,
-        accountId: accountId,
-      };
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        await axios.request(config);
+        await iricomAPI.createBoardAdmin(tokenInfo, boardId, accountId);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
 
     deleteBoardAdmin: async (boardId: string, accountId: string) => {
-      const token: TokenInfo | null = BrowserStorage.getTokenInfo();
-      const config: AxiosRequestConfig = await getRequestConfig(token);
-
-      config.url = `${backendProperties.host}/v1/auth/board`;
-      config.method = 'DELETE';
-      config.data = {
-        boardId: boardId,
-        accountId: accountId,
-      };
-
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        await axios.request(config);
+        await iricomAPI.deleteBoardAdmin(tokenInfo, boardId, accountId);
       } catch (error) {
-        defaultErrorHandler(error);
+        throw defaultErrorHandler(error);
       }
     },
   };
