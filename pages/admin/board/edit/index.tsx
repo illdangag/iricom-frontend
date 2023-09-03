@@ -44,7 +44,7 @@ const AdminBoardEditPage = (props: Props) => {
         </LinkBox>,
       );
       if (index < boardList.length - 1) {
-        elementList.push(<Divider/>);
+        elementList.push(<Divider key={`divider-${index}`}/>);
       }
     }
     return elementList;

@@ -3,12 +3,12 @@ import { useEffect, useRef, useState, } from 'react';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Text, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../../hooks';
 // etc
-import { Account, Board, } from '../../interfaces';
+import { Account, Board, BoardAdmin, } from '../../interfaces';
 
 type Props = {
   isOpen?: boolean;
   onClose?: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (boardAdmin: BoardAdmin) => void;
   board?: Board;
   account?: Account;
 };
@@ -48,9 +48,9 @@ const BoardAdminDeleteAlert = ({
 
     setState(State.REQUEST);
     void iricomAPI.deleteBoardAdmin(board.id, account.id)
-      .then(() => {
+      .then((boardAdmin: BoardAdmin) => {
         setState(State.VALID);
-        onConfirm();
+        onConfirm(boardAdmin);
       });
   };
 

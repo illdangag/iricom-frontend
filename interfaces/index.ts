@@ -1,6 +1,3 @@
-// properties
-import { h } from 'hastscript';
-
 export type FirebaseProperties = {
   projectId: string,
   apiKey: string,

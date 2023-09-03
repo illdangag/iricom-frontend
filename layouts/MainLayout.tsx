@@ -8,17 +8,15 @@ type Props = {
   children?: ReactNode,
   title?: string,
   headerTitle?: string,
-  onMount?: () => void,
 }
 
 const MainLayout = ({
   children,
   title,
   headerTitle,
-  onMount,
 }: Props) => {
   return (
-    <EmptyLayout title={title} onMount={onMount}>
+    <EmptyLayout title={title}>
       <Box>
         <Header title={headerTitle}/>
         <Box marginTop='1rem'>

@@ -80,27 +80,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (tokenInfo === null) {
     return {
-      props: {},
-      redirect: {
-        statusCode: 307,
-        destination: '/login?success=/admin/board',
-      },
+      notFound: true,
     };
-  } else {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-
-    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
-      return {
-        props: {
-          account,
-        },
-      };
-    } else {
-      return {
-        notFound: true,
-      };
-    }
   }
+
+  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      account,
+    },
+  };
 };
 
 export default AdminBoardPage;

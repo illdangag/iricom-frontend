@@ -158,25 +158,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const boardId: string = context.query.boardId as string;
   const postId: string = context.query.postId as string;
 
-  let account: Account = null;
-  let board: Board = null;
-  let post: Post = null;
-  let commentList: CommentList = null;
-
+  const apiRequestList: any[] = [
+    iricomAPI.getBoard(tokenInfo, boardId),
+    iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH),
+    iricomAPI.getCommentList(tokenInfo, boardId, postId),
+  ];
   if (tokenInfo !== null) {
-    try {
-      account = await iricomAPI.getMyAccount(tokenInfo);
-    } catch (error) {
-      // TODO
-    }
+    apiRequestList.push(iricomAPI.getMyAccount(tokenInfo));
   }
 
-  try {
-    board = await iricomAPI.getBoard(tokenInfo, boardId);
-    post = await iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH);
-    commentList = await iricomAPI.getCommentList(tokenInfo, boardId, postId);
-  } catch (error) {
-    // TODO
+  const responseList: any[] = await Promise.all(apiRequestList);
+  const board: Board = responseList[0] as Board;
+  const post: Post = responseList[1] as Post;
+  const commentList: CommentList = responseList[2] as CommentList;
+  let account: Account = null;
+  if (tokenInfo !== null) {
+    account = responseList[3] as Account;
   }
 
   return {

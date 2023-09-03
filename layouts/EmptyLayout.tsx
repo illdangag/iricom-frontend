@@ -10,7 +10,6 @@ import requireLoginPopupAtom, { RequireLoginPopup, setPopupSelector as setRequir
 type Props = {
   children?: ReactNode,
   title?: string,
-  onMount?: () => void,
 };
 
 const EmptyLayout = ({

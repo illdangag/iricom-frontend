@@ -32,9 +32,9 @@ type IricomAPI = {
 
   getAccountList: (skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
 
-  createBoardAdmin: (boardId: string, accountId: string) => Promise<void>,
   getBoardAdminInfo: (boardId: string) => Promise<BoardAdmin>,
-  deleteBoardAdmin: (boardId: string, accountId: string) => Promise<void>,
+  createBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
+  deleteBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
 }
 
 function useIricomAPI (): IricomAPI {
@@ -235,7 +235,7 @@ function useIricomAPI (): IricomAPI {
     },
 
     getAccountList: async (skip: number, limit: number, keyword: string | null): Promise<AccountList> => {
-      const tokenInfo: TokenInfo | null = await this.getTokenInfo();
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.getAccountList(tokenInfo, skip, limit, keyword);
       } catch (error) {
@@ -244,7 +244,7 @@ function useIricomAPI (): IricomAPI {
     },
 
     getBoardAdminInfo: async (boardId: string): Promise<BoardAdmin> => {
-      const tokenInfo: TokenInfo | null = await this.getTokenInfo();
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.getBoardAdminInfo(tokenInfo, boardId);
       } catch (error) {
@@ -255,7 +255,7 @@ function useIricomAPI (): IricomAPI {
     createBoardAdmin: async (boardId: string, accountId: string) => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        await iricomAPI.createBoardAdmin(tokenInfo, boardId, accountId);
+        return await iricomAPI.createBoardAdmin(tokenInfo, boardId, accountId);
       } catch (error) {
         throw defaultErrorHandler(error);
       }
@@ -264,7 +264,7 @@ function useIricomAPI (): IricomAPI {
     deleteBoardAdmin: async (boardId: string, accountId: string) => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        await iricomAPI.deleteBoardAdmin(tokenInfo, boardId, accountId);
+        return await iricomAPI.deleteBoardAdmin(tokenInfo, boardId, accountId);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

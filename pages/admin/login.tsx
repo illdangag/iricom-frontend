@@ -7,8 +7,8 @@ import { MdLogin, } from 'react-icons/md';
 import { EmptyLayout, } from '../../layouts';
 import { useEmailAuth, } from '../../hooks';
 import { GetServerSideProps, } from 'next/types';
-import { Account, AccountAuth, TokenInfo, } from '../../interfaces';
-import { getTokenInfoByCookies, } from '../../utils';
+import { Account, TokenInfo } from '../../interfaces';
+import { getTokenInfoByCookies } from '../../utils';
 import iricomAPI from '../../utils/iricomAPI';
 
 enum PageState {
@@ -133,30 +133,9 @@ const LoginPage = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
-
-  if (tokenInfo !== null) {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
-      return {
-        props: {},
-        redirect: {
-          statusCode: 307,
-          destination: '/',
-        },
-      };
-    } else {
-      return {
-        props: {},
-        notFound: true,
-      };
-    }
-  } else {
-    return {
-      props: {},
-      notFound: true,
-    };
-  }
+  return {
+    props: {},
+  };
 };
 
 export default LoginPage;

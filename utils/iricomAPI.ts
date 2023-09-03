@@ -16,8 +16,8 @@ type IricomAPIList = {
 
   // 관리자
   getBoardAdminInfo: (tokenInfo: TokenInfo | null, boardId: string) => Promise<BoardAdmin>,
-  createBoardAdmin: (tokenInfo: TokenInfo | null, boardId: string, accountId: string) => Promise<void>,
-  deleteBoardAdmin: (tokenInfo: TokenInfo | null, boardId: string, accountId: string) => Promise<void>,
+  createBoardAdmin: (tokenInfo: TokenInfo | null, boardId: string, accountId: string) => Promise<BoardAdmin>,
+  deleteBoardAdmin: (tokenInfo: TokenInfo | null, boardId: string, accountId: string) => Promise<BoardAdmin>,
 
   // 계정
   getAccountList: (tokenInfo: TokenInfo | null, skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
@@ -201,7 +201,7 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     }
   },
@@ -246,9 +246,9 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  createBoardAdmin: async (tokenInfo: TokenInfo | null, boardId: string, accountId: string): Promise<void> => {
+  createBoardAdmin: async (tokenInfo: TokenInfo | null, boardId: string, accountId: string): Promise<BoardAdmin> => {
     const config: AxiosRequestConfig = {
-      url: `${backendProperties.host}/v1/auth/board`,
+      url: `${backendProperties.host}/v1/auth/boards`,
       method: 'POST',
       data: {
         boardId,
@@ -258,16 +258,19 @@ const IricomAPI: IricomAPIList = {
     setToken(config, tokenInfo);
 
     try {
-      await axios.request(config);
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: BoardAdmin = new BoardAdmin();
+      Object.assign(result, response.data);
+      return result;
     } catch (error) {
       console.error(error);
       throw error;
     }
   },
 
-  deleteBoardAdmin: async (tokenInfo: TokenInfo | null, boardId: string, accountId: string): Promise<void> => {
+  deleteBoardAdmin: async (tokenInfo: TokenInfo | null, boardId: string, accountId: string): Promise<BoardAdmin> => {
     const config: AxiosRequestConfig = {
-      url: `${backendProperties.host}/v1/auth/board`,
+      url: `${backendProperties.host}/v1/auth/boards`,
       method: 'DELETE',
       data: {
         boardId,
@@ -277,7 +280,10 @@ const IricomAPI: IricomAPIList = {
     setToken(config, tokenInfo);
 
     try {
-      await axios.request(config);
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: BoardAdmin = new BoardAdmin();
+      Object.assign(result, response.data);
+      return result;
     } catch (error) {
       console.error(error);
       throw error;

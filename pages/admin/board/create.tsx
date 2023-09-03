@@ -2,7 +2,7 @@
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { VStack, Card, Input, FormControl, FormLabel, FormHelperText, Checkbox, Textarea, CardBody, CardFooter, Button, useToast, } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, useToast, VStack, } from '@chakra-ui/react';
 
 import { PageBody, } from '../../../layouts';
 import MainLayout from '../../../layouts/MainLayout';
@@ -134,27 +134,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (tokenInfo === null) {
     return {
-      props: {},
-      redirect: {
-        statusCode: 307,
-        destination: '/login?success=/admin/board/create',
-      },
+      notFound: true,
     };
-  } else {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-
-    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
-      return {
-        props: {
-          account,
-        },
-      };
-    } else {
-      return {
-        notFound: true,
-      };
-    }
   }
+
+  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      account,
+    },
+  };
 };
 
 export default AdminBoardCreatePage;

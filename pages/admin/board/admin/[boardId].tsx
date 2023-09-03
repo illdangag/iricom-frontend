@@ -1,13 +1,11 @@
 // react
 import React, { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, Heading, HStack, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '../../../../layouts';
 import { AccountListTable, PageTitle, } from '../../../../components';
 import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '../../../../components/alerts';
-import { useIricomAPI, } from '../../../../hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -21,40 +19,28 @@ import iricomAPI from '../../../../utils/iricomAPI';
 
 type Props = {
   account: Account,
+  boardAdmin: BoardAdmin,
 }
 
 const AdminBoardAdminEditPage = (props: Props) => {
-  const router = useRouter();
-  const iricomAPI = useIricomAPI();
-
-  const id: string = router.query.id as string;
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
-  const [boardAdmin, setBoardAdmin,] = useState<BoardAdmin | null>(null);
+  const [boardAdmin, setBoardAdmin,] = useState<BoardAdmin | null>(props.boardAdmin);
   const [selectedAccount, setSelectedAccount,] = useState<Account | null>(null);
   const [isOpenBoardAdminCreateAlert, setOpenBoardAdminCreateAlert,] = useState<boolean>(false);
   const [isOpenBoardAdminDeleteAlert, setOpenBoardAdminDeleteAlert,] = useState<boolean>(false);
 
   useEffect(() => {
     setAccount(props.account);
-    init();
   }, []);
-
-  const init = () => {
-    void iricomAPI.getBoardAdminInfo(id)
-      .then((boardAdmin) => {
-        setBoardAdmin(boardAdmin);
-      });
-  };
 
   const onCloseAddAdminAlert = () => {
     setOpenBoardAdminCreateAlert(false);
   };
 
-  const onConfirmAddAdminAlert = () => {
+  const onConfirmAddAdminAlert = (boardAdmin: BoardAdmin) => {
     setOpenBoardAdminCreateAlert(false);
-    init();
+    setBoardAdmin(boardAdmin);
   };
 
   const onClickAccount = (account: Account) => {
@@ -71,9 +57,9 @@ const AdminBoardAdminEditPage = (props: Props) => {
     setOpenBoardAdminDeleteAlert(false);
   };
 
-  const onConfirmDeleteAlert = () => {
+  const onConfirmDeleteAlert = (boardAdmin: BoardAdmin) => {
     setOpenBoardAdminDeleteAlert(false);
-    init();
+    setBoardAdmin(boardAdmin);
   };
 
   return (
@@ -156,25 +142,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (tokenInfo === null) {
     return {
-      props: {},
       notFound: true,
     };
-  } else {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-
-    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
-      return {
-        props: {
-          account,
-        },
-      };
-    } else {
-      return {
-        props: {},
-        notFound: true,
-      };
-    }
   }
+
+  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const boardId: string = context.query.boardId as string;
+  const boardAdmin: BoardAdmin = await iricomAPI.getBoardAdminInfo(tokenInfo, boardId);
+  return {
+    props: {
+      account,
+      boardAdmin: JSON.parse(JSON.stringify(boardAdmin)),
+    },
+  };
 };
 
 export default AdminBoardAdminEditPage;

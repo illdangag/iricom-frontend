@@ -1,5 +1,5 @@
 // react
-import React, { useEffect, useState, } from 'react';
+import React, { useEffect, } from 'react';
 import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
@@ -14,29 +14,20 @@ import { myAccountAtom, } from '../../../../recoil';
 // etc
 import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '../../../../interfaces';
 import { BORDER_RADIUS, } from '../../../../constants/style';
-import { useIricomAPI, } from '../../../../hooks';
 import { getTokenInfoByCookies, } from '../../../../utils';
 import iricomAPI from '../../../../utils/iricomAPI';
 
 type Props = {
   account: Account,
+  boardList: BoardList,
 }
 
 const AdminBoardAdminPage = (props: Props) => {
-  const iricomApi = useIricomAPI();
-  const [boardList, setBoardList,] = useState<Board[] | null>(null);
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
     setAccount(props.account);
-    void init();
   }, []);
-
-  const init = async () => {
-    const boardList: BoardList = await iricomApi.getBoardList(0, 20, null);
-    setBoardList(boardList.boards);
-  };
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];
@@ -65,9 +56,9 @@ const AdminBoardAdminPage = (props: Props) => {
           borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
-            {boardList && boardList.length === 0 && <NoContent message='게시판이 존재하지 않습니다.'/>}
-            {boardList && boardList.length > 0 && <VStack align='stretch' spacing='1rem'>
-              {getBoardListElement(boardList)}
+            {props.boardList.boards && props.boardList.boards.length === 0 && <NoContent message='게시판이 존재하지 않습니다.'/>}
+            {props.boardList.boards && props.boardList.boards.length > 0 && <VStack align='stretch' spacing='1rem'>
+              {getBoardListElement(props.boardList.boards)}
             </VStack>}
           </CardBody>
         </Card>
@@ -81,27 +72,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (tokenInfo === null) {
     return {
-      props: {},
-      redirect: {
-        statusCode: 307,
-        destination: '/login?success=/admin/board/admin',
-      },
+      notFound: true,
     };
-  } else {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-
-    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
-      return {
-        props: {
-          account,
-        },
-      };
-    } else {
-      return {
-        notFound: true,
-      };
-    }
   }
+
+  const response: any[] = await Promise.all([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getBoardList(tokenInfo, 0, 20, null),
+  ]);
+  const account: Account = response[0] as Account;
+  const boardList: BoardList = response[1] as BoardList;
+
+  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      account,
+      boardList: JSON.parse(JSON.stringify(boardList)),
+    },
+  };
 };
 
 export default AdminBoardAdminPage;
