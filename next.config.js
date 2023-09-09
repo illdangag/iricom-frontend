@@ -3,6 +3,8 @@ const removeImports = require('next-remove-imports')();
 const localConfig = require('./config/local.next.config');
 const preProductionConfig = require('./config/pre-production.next.config');
 
+console.log('NEXT_PUBLIC_RUN_MODE:', process.env.NEXT_PUBLIC_RUN_MODE);
+
 module.exports = (phase) => {
   let env;
 
