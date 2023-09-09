@@ -190,7 +190,7 @@ const IricomAPI: IricomAPIList = {
   updateBoard: async (tokenInfo: TokenInfo | null, board: Board): Promise<Board> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/boards/${board.id}`,
-      method: 'POST',
+      method: 'PATCH',
       data: board,
     };
     setToken(config, tokenInfo);
