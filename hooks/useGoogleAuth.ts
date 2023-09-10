@@ -43,7 +43,6 @@ function useGoogleAuth (): [State, () => Promise<void>] {
       const tokenInfo: TokenInfo = new TokenInfo(token, refreshToken, expiredDate);
       const account: Account = await iricomAPI.getMyAccount(tokenInfo);
       BrowserStorage.setTokenInfo(tokenInfo);
-
       setMyAccount(account);
       setState('success');
     } catch {

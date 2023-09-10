@@ -96,12 +96,10 @@ const Header = ({
       return <Link as={NextLink} href='/login'>
         <Button size='sm' variant='outline'>로그인</Button>
       </Link>;
-    } else if (state === HeaderState.ACCOUNT || state === HeaderState.BOARD_ADMIN) {
-      return accountMenu;
     } else if (state === HeaderState.SYSTEM_ADMIN) {
       return systemAdminMenu;
     } else {
-      return <></>;
+      return accountMenu;
     }
   };
 
