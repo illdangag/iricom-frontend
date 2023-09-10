@@ -112,7 +112,7 @@ const CommentView = ({
         <HStack>
           {allowNestedComment && <Button size='xs' onClick={onClickReReply}>답글</Button>}
           <Spacer/>
-          <ButtonGroup size='xs' variant='ghost'>
+          <ButtonGroup size='xs' variant='outline'>
             <Button
               rightIcon={<MdThumbUpOffAlt/>}
               onClick={onClickUpvote}

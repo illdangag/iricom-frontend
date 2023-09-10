@@ -9,6 +9,7 @@ import { getFormattedDateTime, } from '../utils';
 
 import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
+
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
   ssr: false,
 });
@@ -33,44 +34,42 @@ const PostView = ({
 
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
 
-  const onClickUpvote = () => {
+  const onClickUpvote = async () => {
     setViewState(ViewState.REQUEST);
-    void iricomAPI.votePost(post.boardId, post.id, VoteType.UP)
-      .then((post) => {
-        onChange(post);
-      })
-      .catch((error: Error) => {
-        if (!(error instanceof NotExistTokenError)) {
-          toast({
-            title: '이미 \'좋아요\'한 게시물입니다.',
-            status: 'warning',
-            duration: 3000,
-          });
-        }
-      })
-      .finally(() => {
-        setViewState(ViewState.IDLE);
-      });
+
+    try {
+      const votedPost: Post = await iricomAPI.votePost(post.boardId, post.id, VoteType.UP);
+      onChange(votedPost);
+    } catch (error) {
+      if (!(error instanceof NotExistTokenError)) {
+        toast({
+          title: '이미 \'좋아요\'한 게시물입니다.',
+          status: 'warning',
+          duration: 3000,
+        });
+      }
+    } finally {
+      setViewState(ViewState.IDLE);
+    }
   };
 
-  const onClickDownvote = () => {
+  const onClickDownvote = async () => {
     setViewState(ViewState.REQUEST);
-    void iricomAPI.votePost(post.boardId, post.id, VoteType.DOWN)
-      .then((post) => {
-        onChange(post);
-      })
-      .catch((error: Error) => {
-        if (!(error instanceof NotExistTokenError)) {
-          toast({
-            title: '이미 \'싫어요\'한 게시물입니다.',
-            status: 'warning',
-            duration: 3000,
-          });
-        }
-      })
-      .finally(() => {
-        setViewState(ViewState.IDLE);
-      });
+
+    try {
+      const votedPost: Post = await iricomAPI.votePost(post.boardId, post.id, VoteType.DOWN);
+      onChange(votedPost);
+    } catch (error) {
+      if (!(error instanceof NotExistTokenError)) {
+        toast({
+          title: '이미 \'싫어요\'한 게시물입니다.',
+          status: 'warning',
+          duration: 3000,
+        });
+      }
+    } finally {
+      setViewState(ViewState.IDLE);
+    }
   };
 
   return (
@@ -78,20 +77,9 @@ const PostView = ({
       <Box>
         <Flex flexDirection='column'>
           <Flex flexDirection='row' justifyContent='space-between'>
-            <Heading size='md' fontWeight='medium'>{post.title}</Heading>
-            <Menu>
-              <MenuButton as={IconButton} icon={<MdMoreHoriz/>} variant='ghost' size='sm'/>
-              <MenuList>
-                <MenuItem icon={<MdShare/>}>
-                  공유
-                </MenuItem>
-                <MenuItem icon={<MdOutlineReport/>}>
-                  신고
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            <Heading size='lg' fontWeight='medium'>{post.title}</Heading>
           </Flex>
-          <Flex marginTop='0.4rem'>
+          <Flex marginTop='1rem'>
             <Text fontSize='0.8rem'>{post.account.nickname}</Text>
             <Spacer/>
             <VStack alignItems='flex-end' spacing='0.2rem'>
@@ -109,7 +97,7 @@ const PostView = ({
         </Box>
       </Box>
       <Flex justifyContent='center'>
-        <ButtonGroup>
+        <ButtonGroup variant='outline'>
           <Button
             rightIcon={<MdThumbUpOffAlt/>}
             onClick={onClickUpvote}
@@ -125,6 +113,22 @@ const PostView = ({
             size='sm'
           >
             {post.downvote}
+          </Button>
+        </ButtonGroup>
+      </Flex>
+      <Flex justifyContent='flex-end' marginTop='0.5rem'>
+        <ButtonGroup variant='outline'>
+          <Button
+            leftIcon={<MdShare/>}
+            size='xs'
+          >
+            공유
+          </Button>
+          <Button
+            leftIcon={<MdOutlineReport/>}
+            size='xs'
+          >
+            신고
           </Button>
         </ButtonGroup>
       </Flex>
