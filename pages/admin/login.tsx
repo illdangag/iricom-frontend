@@ -7,9 +7,6 @@ import { MdLogin, } from 'react-icons/md';
 import { EmptyLayout, } from '../../layouts';
 import { useEmailAuth, } from '../../hooks';
 import { GetServerSideProps, } from 'next/types';
-import { Account, TokenInfo } from '../../interfaces';
-import { getTokenInfoByCookies } from '../../utils';
-import iricomAPI from '../../utils/iricomAPI';
 
 enum PageState {
   READY,

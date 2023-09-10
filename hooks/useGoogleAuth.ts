@@ -41,12 +41,11 @@ function useGoogleAuth (): [State, () => Promise<void>] {
       const expiredDate: Date = getTokenExpiredDate(token);
 
       const tokenInfo: TokenInfo = new TokenInfo(token, refreshToken, expiredDate);
-      void iricomAPI.getMyAccount(tokenInfo)
-        .then(account => {
-          setState('success');
-          setMyAccount(account);
-          BrowserStorage.setTokenInfo(tokenInfo);
-        });
+      const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+      BrowserStorage.setTokenInfo(tokenInfo);
+
+      setMyAccount(account);
+      setState('success');
     } catch {
       setState('fail');
     }
