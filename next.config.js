@@ -1,9 +1,6 @@
-const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
 const removeImports = require('next-remove-imports')();
 const localConfig = require('./config/local.next.config');
 const preProductionConfig = require('./config/pre-production.next.config');
-
-console.log('NEXT_PUBLIC_RUN_MODE:', process.env.NEXT_PUBLIC_RUN_MODE);
 
 module.exports = (phase) => {
   let env;
@@ -16,6 +13,8 @@ module.exports = (phase) => {
       env = preProductionConfig.env;
       break;
   }
+
+  console.log('config env:', env);
 
   return removeImports({
     env: env,

@@ -2,10 +2,11 @@
   "private": true,
   "scripts": {
     "dev": "next",
-    "dev:pre": "env-cmd -f .env.pre-production next",
+    "dev:pre": "env-cmd -f .env.pre-production next -p 3001",
     "build": "next build",
     "build:pre":  "env-cmd -f .env.pre-production next build",
     "start": "next start",
+    "start:pre": "next start -p 3001",
     "type-check": "tsc",
     "eslint": "eslint './**/*.{ts,tsx}'"
   },
