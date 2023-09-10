@@ -6,7 +6,6 @@ import { MdLogin, } from 'react-icons/md';
 
 import { EmptyLayout, } from '../../layouts';
 import { useEmailAuth, } from '../../hooks';
-import { GetServerSideProps, } from 'next/types';
 
 enum PageState {
   READY,
@@ -127,12 +126,6 @@ const LoginPage = () => {
       </Flex>
     </EmptyLayout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return {
-    props: {},
-  };
 };
 
 export default LoginPage;

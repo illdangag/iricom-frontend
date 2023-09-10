@@ -14,7 +14,7 @@ import { useRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../../recoil';
 
 // etc
-import { Account, AccountAuth, TokenInfo, } from '../../interfaces';
+import { Account, AccountAuth, IricomError, TokenInfo, } from '../../interfaces';
 import { BORDER_RADIUS, } from '../../constants/style';
 import { getTokenInfoByCookies, } from '../../utils';
 import iricomAPI from '../../utils/iricomAPI';
@@ -62,18 +62,27 @@ const InfoEditPage = (props: Props) => {
     setDescription(event.target.value);
   };
 
-  const onClickSave = () => {
+  const onClickSave = async () => {
     setPageState(PageState.REQUEST);
-    void iricomAPI.updateMyAccountInfo(nickname, description)
-      .then(account => {
-        setAccount(account);
-        toast({
-          title: '저장 하였습니다.',
-          status: 'success',
-          duration: 3000,
-        });
-        void router.push('/info');
+    try {
+      const account: Account = await iricomAPI.updateMyAccountInfo(nickname, description);
+      setAccount(account);
+      toast({
+        title: '저장 하였습니다.',
+        status: 'success',
+        duration: 3000,
       });
+      void router.push('/info');
+    } catch (error) {
+      const iricomError: IricomError = error as IricomError;
+      const message: string = iricomError.message;
+      toast({
+        title: message,
+        status: 'error',
+        duration: 3000,
+      });
+      setPageState(PageState.FAIL);
+    }
   };
 
   return (

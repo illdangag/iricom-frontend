@@ -52,11 +52,13 @@ export class NotExistTokenError extends Error {
 export class IricomError extends Error {
   private _httpStatusCode: number;
   private _code: string;
+  private _message: string;
 
   constructor (httpStatusCode: number, code: string, message: string) {
     super(message);
     this._httpStatusCode = httpStatusCode;
     this._code = code;
+    this._message = message;
   }
 
   get httpStatusCode (): number {
@@ -65,6 +67,10 @@ export class IricomError extends Error {
 
   get code (): string {
     return this._code;
+  }
+
+  get message (): string {
+    return this._message;
   }
 }
 
