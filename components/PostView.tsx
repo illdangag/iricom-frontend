@@ -116,7 +116,7 @@ const PostView = ({
           </Button>
         </ButtonGroup>
       </Flex>
-      <Flex justifyContent='flex-end' marginTop='0.5rem'>
+      <Flex justifyContent='flex-end' marginTop='1rem'>
         <ButtonGroup variant='outline'>
           <Button
             leftIcon={<MdShare/>}

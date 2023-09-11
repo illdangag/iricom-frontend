@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, Divider, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, Divider, Flex, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // store
@@ -112,7 +112,7 @@ const CommentView = ({
         <HStack>
           {allowNestedComment && <Button size='xs' onClick={onClickReReply}>답글</Button>}
           <Spacer/>
-          <ButtonGroup size='xs' variant='outline'>
+          <ButtonGroup size='xs' variant='ghost'>
             <Button
               rightIcon={<MdThumbUpOffAlt/>}
               onClick={onClickUpvote}
@@ -130,16 +130,16 @@ const CommentView = ({
           </ButtonGroup>
         </HStack>
       </VStack>
-      {showCommentEditor && <Box marginTop='0.8rem'>
-        <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id} onChange={onChange} autoFocus/>
-      </Box>}
       {comment.nestedComments && <Card shadow='none' backgroundColor='gray.50' marginTop='.5rem'>
         <CardBody>
-          <VStack align='stretch' spacing='1rem'>
+          <VStack align='stretch' spacing='.8rem'>
             {getNestedCommentListElement(comment.nestedComments)}
           </VStack>
         </CardBody>
       </Card>}
+      {showCommentEditor && <Box marginTop='0.8rem'>
+        <CommentEditor boardId={boardId} postId={postId} referenceCommentId={comment.id} onChange={onChange} autoFocus/>
+      </Box>}
     </Box>
   );
 };
