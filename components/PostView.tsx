@@ -1,7 +1,7 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Flex, Heading, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
-import { MdMoreHoriz, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
+import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // etc
 import { NotExistTokenError, Post, VoteType, } from '../interfaces';
@@ -72,6 +72,23 @@ const PostView = ({
     }
   };
 
+  const onClickShareButton = async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      toast({
+        title: '게시물 링크를 복사하였습니다.',
+        status: 'success',
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: '클립보드 접근에 실패하였습니다.',
+        status: 'warning',
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <Box>
@@ -121,6 +138,7 @@ const PostView = ({
           <Button
             leftIcon={<MdShare/>}
             size='xs'
+            onClick={onClickShareButton}
           >
             공유
           </Button>
