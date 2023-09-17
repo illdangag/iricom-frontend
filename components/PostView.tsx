@@ -3,9 +3,13 @@ import { useState, } from 'react';
 import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
+import { PostReportAlert, } from './alerts';
+// store
+import { useSetRecoilState, } from 'recoil';
+import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
 // etc
-import { NotExistTokenError, Post, VoteType, } from '../interfaces';
-import { getFormattedDateTime, } from '../utils';
+import { NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
+import { getFormattedDateTime, getTokenInfo, } from '../utils';
 
 import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
@@ -32,7 +36,10 @@ const PostView = ({
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
+  const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(requireLoginPopupAtom);
+
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
+  const [isOpenReport, setOpenReport,] = useState<boolean>(false);
 
   const onClickUpvote = async () => {
     setViewState(ViewState.REQUEST);
@@ -87,6 +94,23 @@ const PostView = ({
         duration: 3000,
       });
     }
+  };
+
+  const onClickReportButton = async () => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    if (tokenInfo !== null) {
+      setOpenReport(true);
+    } else {
+      setRequireLoginPopup({
+        isShow: true,
+        message: '게시물을 신고하기 위해서는 로그인이 필요합니다.',
+        successURL: location.href,
+      });
+    }
+  };
+
+  const onCloseReport = async () => {
+    setOpenReport(false);
   };
 
   return (
@@ -145,11 +169,17 @@ const PostView = ({
           <Button
             leftIcon={<MdOutlineReport/>}
             size='xs'
+            onClick={onClickReportButton}
           >
             신고
           </Button>
         </ButtonGroup>
       </Flex>
+      <PostReportAlert
+        post={post}
+        isOpen={isOpenReport}
+        onClose={onCloseReport}
+      />
     </>
   );
 };

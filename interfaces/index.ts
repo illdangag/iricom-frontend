@@ -210,3 +210,19 @@ export enum VoteType {
   UP = 'upvote',
   DOWN = 'downvote',
 }
+
+export enum ReportType {
+  HATE = 'hate',
+  PORNOGRAPHY = 'pornography',
+  POLITICAL = 'political',
+  ETC = 'etc',
+}
+
+export type PostReport = {
+  id: string,
+  createDate: number,
+  updateDate: number,
+  type: ReportType,
+  reason: string,
+  post: Post,
+}

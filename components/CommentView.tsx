@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, Divider, Flex, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, Divider, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // store

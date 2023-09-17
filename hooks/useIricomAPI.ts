@@ -1,9 +1,9 @@
 // etc
-import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
-import { BrowserStorage, } from '../utils';
+import { BrowserStorage, getTokenInfo, } from '../utils';
 // recoil
 import { useSetRecoilState, } from 'recoil';
 import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../recoil/requireLoginPopup';
@@ -25,6 +25,7 @@ type IricomAPI = {
   publishPost: (boardId: string, postId: string) => Promise<Post>,
   votePost: (boardId: string, postId: string, type: VoteType) => Promise<Post>,
   deletePost: (boardId: string, postId: string) => Promise<Post>,
+  reportPost: (boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
@@ -41,19 +42,6 @@ function useIricomAPI (): IricomAPI {
   axios.defaults.withCredentials = false;
 
   const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
-
-  const getTokenInfo = async (): Promise<TokenInfo | null> => {
-    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-    if (tokenInfo === null) {
-      return null;
-    } else if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
-      const newTokenInfo: TokenInfo = await iricomAPI.refreshToken(tokenInfo);
-      BrowserStorage.setTokenInfo(newTokenInfo);
-      return newTokenInfo;
-    } else {
-      return tokenInfo;
-    }
-  };
 
   const defaultErrorHandler = (error: AxiosError): IricomError => {
     const httpStatusCode: number = error.response.status;
@@ -229,6 +217,16 @@ function useIricomAPI (): IricomAPI {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.deletePost(tokenInfo, boardId, postId);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    reportPost: async (boardId: string, postId: string, type: ReportType, reason: string): Promise<PostReport> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+
+      try {
+        return await iricomAPI.reportPost(tokenInfo, boardId, postId, type, reason);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

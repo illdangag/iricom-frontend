@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
-import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostState, PostType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import process from 'process';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
@@ -36,6 +36,7 @@ type IricomAPIList = {
   publishPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
   votePost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: VoteType) => Promise<Post>,
   deletePost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
+  reportPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
 
   // 댓글
   getCommentList: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<CommentList>,
@@ -460,6 +461,26 @@ const IricomAPI: IricomAPIList = {
 
     try {
       const response: AxiosResponse<Post> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  reportPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string): Promise<PostReport> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/report/post/boards/${boardId}/posts/${postId}`,
+      method: 'POST',
+      data: {
+        type,
+        reason,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PostReport> = await axios.request(config);
       return response.data;
     } catch (error) {
       console.error(error);

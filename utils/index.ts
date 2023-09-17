@@ -68,3 +68,23 @@ export function getTokenInfoByCookies (context: GetServerSidePropsContext): Prom
     }
   });
 }
+
+export function getTokenInfo (): Promise<TokenInfo | null> {
+  return new Promise((resolve, reject) => {
+    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+    if (tokenInfo === null) {
+      resolve(null);
+    } else if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
+      void iricomAPI.refreshToken(tokenInfo)
+        .then(newTokenInfo => {
+          BrowserStorage.setTokenInfo(newTokenInfo);
+          resolve(newTokenInfo);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    } else {
+      resolve(tokenInfo);
+    }
+  });
+}
