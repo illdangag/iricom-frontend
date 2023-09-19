@@ -1,5 +1,5 @@
 // etc
-import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
@@ -177,16 +177,6 @@ function useIricomAPI (): IricomAPI {
 
     createComment: async (boardId: string, postId: string, content: string, referenceCommentId: string | null): Promise<Comment> => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
-
-      if (tokenInfo === null) {
-        setRequirePopup({
-          isShow: true,
-          message: '댓글을 쓰기 위해서는 로그인이 필요합니다.',
-          successURL: `/boards/${boardId}/posts/${postId}`,
-        });
-        return;
-      }
-
       try {
         return await iricomAPI.createComment(tokenInfo, boardId, postId, content, referenceCommentId);
       } catch (error) {
@@ -198,12 +188,7 @@ function useIricomAPI (): IricomAPI {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
 
       if (tokenInfo === null) {
-        setRequirePopup({
-          isShow: true,
-          message: '좋아요/싫어요 하기 위해서는 로그인이 필요합니다.',
-          successURL: `/boards/${boardId}/posts/${postId}`,
-        });
-        return;
+        throw new NotExistTokenError();
       }
 
       try {

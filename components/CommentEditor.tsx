@@ -2,6 +2,9 @@
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { Box, Button, HStack, Textarea, } from '@chakra-ui/react';
 import { useIricomAPI, } from '../hooks';
+// store
+import { useSetRecoilState, } from 'recoil';
+import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
 // etc
 import { NotExistTokenError, Comment, } from '../interfaces';
 
@@ -28,6 +31,8 @@ const CommentEditor = ({
 }: Props) => {
   const iricomAPI = useIricomAPI();
 
+  const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(requireLoginPopupAtom);
+
   const [state, setState,] = useState<EditorState>(EditorState.INVALID);
   const [commentContent, setCommentContent,] = useState<string>('');
 
@@ -43,21 +48,23 @@ const CommentEditor = ({
     setCommentContent(event.target.value);
   };
 
-  const onClickConfirm = () => {
+  const onClickConfirm = async () => {
     setState(EditorState.REQUEST);
 
-    void iricomAPI.createComment(boardId, postId, commentContent, referenceCommentId)
-      .then((comment: Comment) => {
-        onChange(comment);
-      })
-      .catch((error: Error) => {
-        if (!(error instanceof NotExistTokenError)) {
-          console.error(error);
-        }
-      })
-      .finally(() => {
-        setCommentContent('');
-      });
+    try {
+      const comment: Comment = await iricomAPI.createComment(boardId, postId, commentContent, referenceCommentId);
+      onChange(comment);
+    } catch (error) {
+      if (!(error instanceof NotExistTokenError)) {
+        setRequireLoginPopup({
+          isShow: true,
+          message: '댓글을 쓰기 위해서는 로그인이 필요합니다.',
+          successURL: `/boards/${boardId}/posts/${postId}`,
+        });
+      }
+    } finally {
+      setCommentContent('');
+    }
   };
 
   return (

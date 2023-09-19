@@ -104,7 +104,7 @@ const PostView = ({
       setRequireLoginPopup({
         isShow: true,
         message: '게시물을 신고하기 위해서는 로그인이 필요합니다.',
-        successURL: location.href,
+        successURL: location.pathname + location.search,
       });
     }
   };

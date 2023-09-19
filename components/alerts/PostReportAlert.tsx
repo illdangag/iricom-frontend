@@ -49,13 +49,8 @@ const PostReportAlert = ({
       await iricomAPI.reportPost(boardId, postId, reportType, reason);
     } catch (error) {
       const iricomError: IricomError = error as IricomError;
-
-      const title: string = iricomError.code === '06000001' ? '이미 신고한 게시물입니다.' : '알 수 없는 오류 입니다.';
-      const description: string = iricomError.code === '06000001' ? '' : `${iricomError.message}(${iricomError.code})`;
-
       toast({
-        title: title,
-        description: description,
+        title: iricomError.message,
         status: 'warning',
         duration: 3000,
       });

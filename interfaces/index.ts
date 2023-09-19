@@ -52,13 +52,16 @@ export class NotExistTokenError extends Error {
 export class IricomError extends Error {
   private _httpStatusCode: number;
   private _code: string;
-  private _message: string;
+  static messageMap = {
+    '04000006': '이미 \'좋아요\' 또는 \'싫어요\'한 게시물입니다.',
+    '05000005': '이미 \'좋아요\' 또는 \'싫어요\'한 댓글입니다.',
+    '06000001': '이미 신고한 게시물입니다.',
+  };
 
   constructor (httpStatusCode: number, code: string, message: string) {
-    super(message);
+    super(IricomError.messageMap[code] ? IricomError.messageMap[code] : `${message}(${code})`);
     this._httpStatusCode = httpStatusCode;
     this._code = code;
-    this._message = message;
   }
 
   get httpStatusCode (): number {
@@ -67,10 +70,6 @@ export class IricomError extends Error {
 
   get code (): string {
     return this._code;
-  }
-
-  get message (): string {
-    return this._message;
   }
 }
 

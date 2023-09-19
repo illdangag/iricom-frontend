@@ -1,13 +1,14 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Card, CardBody, HStack, IconButton, Spacer, Text, VStack, useToast, Divider, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // store
-import { useRecoilValue, } from 'recoil';
+import { useRecoilValue, useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../recoil';
+import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
 // etc
-import { Account, Comment, NotExistTokenError, VoteType, } from '../interfaces';
+import { Account, Comment, IricomError, NotExistTokenError, VoteType, } from '../interfaces';
 import CommentEditor from './CommentEditor';
 import { getFormattedDateTime, } from '../utils';
 
@@ -35,6 +36,7 @@ const CommentView = ({
   const toast = useToast();
 
   const account: Account | null = useRecoilValue<Account | null>(myAccountAtom);
+  const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(requireLoginPopupAtom);
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
   const [showCommentEditor, setShowCommentEditor,] = useState<boolean>(false);
 
@@ -42,44 +44,56 @@ const CommentView = ({
     setShowCommentEditor(!showCommentEditor);
   };
 
-  const onClickUpvote = () => {
+  const onClickUpvote = async () => {
     setViewState(ViewState.REQUEST);
-    void iricomAPI.voteComment(boardId, postId, comment.id, VoteType.UP)
-      .then((comment) => {
-        onChange(comment);
-      })
-      .catch((error: Error) => {
-        if (!(error instanceof NotExistTokenError)) {
-          toast({
-            title: '이미 \'좋아요\'한 댓글입니다.',
-            status: 'warning',
-            duration: 3000,
-          });
-        }
-      })
-      .finally(() => {
-        setViewState(ViewState.IDLE);
-      });
+
+    try {
+      const updatedComment: Comment = await iricomAPI.voteComment(boardId, postId, comment.id, VoteType.UP);
+      onChange(updatedComment);
+    } catch (error) {
+      if (error instanceof NotExistTokenError) {
+        setRequireLoginPopup({
+          isShow: true,
+          message: '\'좋아요\' 하기 위해서는 로그인이 필요합니다.',
+          successURL: `/boards/${boardId}/posts/${postId}`,
+        });
+      } else {
+        const iricomError: IricomError = error as IricomError;
+        toast({
+          title: iricomError.message,
+          status: 'warning',
+          duration: 3000,
+        });
+      }
+    } finally {
+      setViewState(ViewState.IDLE);
+    }
   };
 
-  const onClickDownvote = () => {
+  const onClickDownvote = async () => {
     setViewState(ViewState.REQUEST);
-    void iricomAPI.voteComment(boardId, postId, comment.id, VoteType.DOWN)
-      .then((comment) => {
-        onChange(comment);
-      })
-      .catch((error: Error) => {
-        if (!(error instanceof NotExistTokenError)) {
-          toast({
-            title: '이미 \'싫어요\'한 댓글입니다.',
-            status: 'warning',
-            duration: 3000,
-          });
-        }
-      })
-      .finally(() => {
-        setViewState(ViewState.IDLE);
-      });
+
+    try {
+      const updateComment: Comment = await iricomAPI.voteComment(boardId, postId, comment.id, VoteType.DOWN);
+      onChange(updateComment);
+    } catch (error) {
+      if (error instanceof NotExistTokenError) {
+        setRequireLoginPopup({
+          isShow: true,
+          message: '\'싫어요\' 하기 위해서는 로그인이 필요합니다.',
+          successURL: `/boards/${boardId}/posts/${postId}`,
+        });
+      } else {
+        const iricomError: IricomError = error as IricomError;
+        toast({
+          title: iricomError.message,
+          status: 'warning',
+          duration: 3000,
+        });
+      }
+    } finally {
+      setViewState(ViewState.IDLE);
+    }
   };
 
   const getNestedCommentListElement = (commentList: Comment[]) => {
