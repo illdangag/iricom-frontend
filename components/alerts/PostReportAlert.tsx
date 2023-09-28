@@ -1,8 +1,7 @@
 // react
 import React, { ChangeEventHandler, MouseEventHandler, useRef, useState, } from 'react';
 import { useIricomAPI, } from '../../hooks';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup,
-  FormControl, FormLabel, Select, Textarea, useToast, } from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, FormControl, FormLabel, Select, Textarea, useToast, } from '@chakra-ui/react';
 // etc
 import { IricomError, Post, ReportType, } from '../../interfaces';
 
@@ -47,6 +46,11 @@ const PostReportAlert = ({
 
     try {
       await iricomAPI.reportPost(boardId, postId, reportType, reason);
+      toast({
+        title: '게시물을 신고 하였습니다.',
+        status: 'success',
+        duration: 3000,
+      });
     } catch (error) {
       const iricomError: IricomError = error as IricomError;
       toast({
@@ -57,6 +61,8 @@ const PostReportAlert = ({
     } finally {
       setState(ComponentState.IDLE);
       onClose();
+      setReportType(ReportType.HATE);
+      setReason('');
     }
   };
 

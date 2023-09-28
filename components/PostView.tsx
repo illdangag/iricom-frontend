@@ -10,7 +10,6 @@ import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLogi
 // etc
 import { NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
 import { getFormattedDateTime, getTokenInfo, } from '../utils';
-
 import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
 
