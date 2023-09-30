@@ -1,49 +1,47 @@
 // react
-import React, { useEffect, } from 'react';
-import NextLink from 'next/link';
+import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Card, CardBody, CardHeader, Divider, Heading, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
+import { Card, CardBody, Divider, Heading, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 
-import { PageBody, } from '../../../layouts';
-import MainLayout from '../../../layouts/MainLayout';
-import { PageTitle, } from '../../../components';
+import { MainLayout, PageBody, } from '../../layouts';
+import { PageTitle, } from '../../components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../recoil';
+import { myAccountAtom, } from '../../recoil';
 
 // etc
-import { Account, AccountAuth, TokenInfo, } from '../../../interfaces';
-import { BORDER_RADIUS, } from '../../../constants/style';
-import { getTokenInfoByCookies, } from '../../../utils';
-import iricomAPI from '../../../utils/iricomAPI';
+import { BORDER_RADIUS, } from '../../constants/style';
+import iricomAPI from '../../utils/iricomAPI';
+import { getTokenInfoByCookies, } from '../../utils';
+import { Account, AccountAuth, TokenInfo, } from '../../interfaces';
+import NextLink from 'next/link';
 
 type Props = {
   account: Account | null,
 }
 
-const AdminBoardPage = (props: Props) => {
-
+const AdminPage = (props: Props) => {
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
     setAccount(props.account);
   }, []);
 
-  return (
-    <MainLayout>
-      <PageBody>
-        <PageTitle
-          title='관리자 페이지'
-          descriptions={['게시판 생성 및 수정, 게시판의 관리자를 관리합니다',]}
-        />
-        <Card
-          shadow={{ base: 'none', md: 'sm', }}
-          borderRadius={{ base: '0', md: BORDER_RADIUS, }}
+  return <MainLayout>
+    <PageBody>
+      <PageTitle title='관리자 페이지'/>
+      <VStack spacing='1rem' alignItems='stretch'>
+        {props && props.account && props.account.auth === AccountAuth.SYSTEM_ADMIN && <Card
+          shadow={{
+            base: 'none',
+            md: 'sm',
+          }}
+          borderRadius={{
+            base: '0',
+            md: BORDER_RADIUS,
+          }}
         >
-          <CardHeader paddingBottom='0'>
-            <Heading size='md'>게시판</Heading>
-          </CardHeader>
           <CardBody>
             <VStack spacing='1rem'>
               <LinkBox width='100%'>
@@ -69,10 +67,29 @@ const AdminBoardPage = (props: Props) => {
               </LinkBox>
             </VStack>
           </CardBody>
-        </Card>
-      </PageBody>
-    </MainLayout>
-  );
+        </Card>}
+        {props && props.account && (props.account.auth === AccountAuth.SYSTEM_ADMIN || props.account.auth === AccountAuth.BOARD_ADMIN) && <Card
+          shadow={{
+            base: 'none',
+            md: 'sm',
+          }}
+          borderRadius={{
+            base: '0',
+            md: BORDER_RADIUS,
+          }}
+        >
+          <CardBody>
+            <LinkBox width='100%'>
+              <Heading size='sm'>
+                <LinkOverlay as={NextLink} href='#'>게시물 신고 내역</LinkOverlay>
+                <Text fontSize='sm' fontWeight='normal'>신고된 게시물 목록을 조회합니다</Text>
+              </Heading>
+            </LinkBox>
+          </CardBody>
+        </Card>}
+      </VStack>
+    </PageBody>
+  </MainLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -85,7 +102,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+  const auth: AccountAuth = account.auth;
+
+  if (auth !== AccountAuth.SYSTEM_ADMIN && auth !== AccountAuth.BOARD_ADMIN) {
     return {
       notFound: true,
     };
@@ -98,4 +117,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default AdminBoardPage;
+export default AdminPage;
+

@@ -61,7 +61,26 @@ const Header = ({
   const systemAdminMenu = <Menu isLazy>
     {loginButton}
     <MenuList>
-      <NextLink href='/admin/board'>
+      <NextLink href='/admin'>
+        <MenuItem fontSize='1rem'>
+          관리자 페이지
+        </MenuItem>
+      </NextLink>
+      <NextLink href='/info'>
+        <MenuItem>
+          내 정보
+        </MenuItem>
+      </NextLink>
+      <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+        로그아웃
+      </MenuItem>
+    </MenuList>
+  </Menu>;
+
+  const boardAdminMenu = <Menu isLazy>
+    {loginButton}
+    <MenuList>
+      <NextLink href='/admin'>
         <MenuItem fontSize='1rem'>
           관리자 페이지
         </MenuItem>
@@ -98,6 +117,8 @@ const Header = ({
       </Link>;
     } else if (state === HeaderState.SYSTEM_ADMIN) {
       return systemAdminMenu;
+    } else if (state === HeaderState.BOARD_ADMIN) {
+      return boardAdminMenu;
     } else {
       return accountMenu;
     }
