@@ -1,16 +1,17 @@
 // react
-import { VStack, Box, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Badge, } from '@chakra-ui/react';
+import { VStack, Box, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Badge, Link, } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import Pagination from '../Pagination';
 
 // etc
-import { BoardList, Board, } from '../../interfaces';
+import { BoardList, } from '../../interfaces';
 
 type Props = {
   boardList: BoardList,
   page: number,
   isShowPagination?: boolean,
   pageLinkHref?: string,
-  onClickBoard?: (board: Board) => void,
+  boardLinkHref?: string,
 }
 
 const BoardListTable = ({
@@ -18,7 +19,7 @@ const BoardListTable = ({
   page,
   isShowPagination = true,
   pageLinkHref = '?page={{page}}',
-  onClickBoard = () => {},
+  boardLinkHref = '#',
 }: Props) => {
   return <VStack alignItems='stretch'>
     <TableContainer>
@@ -34,14 +35,16 @@ const BoardListTable = ({
         <Tbody>
           {boardList.boards.map((board, index) => <Tr
             key={index}
-            onClick={() => onClickBoard(board)}
-            cursor='pointer'
             _hover={{
               background: 'gray.50',
             }}
           >
             <Td>{board.id}</Td>
-            <Td>{board.title}</Td>
+            <Td>
+              <Link as={NextLink} href={boardLinkHref.replaceAll('{{boardId}}', '' + board.id)}>
+                {board.title}
+              </Link>
+            </Td>
             <Td>{board.description}</Td>
             <Td>
               {board.enabled && <Badge colorScheme='green'>활성화</Badge>}

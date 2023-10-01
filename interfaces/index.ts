@@ -233,3 +233,7 @@ export type PostReport = {
   reason: string,
   post: Post,
 }
+
+export class ReportPostList extends ListResponse {
+  public reports: PostReport[];
+}

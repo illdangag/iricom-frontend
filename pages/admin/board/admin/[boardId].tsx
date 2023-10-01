@@ -209,7 +209,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const accountLimit: number = PAGE_LIMIT;
 
   const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+  const auth: AccountAuth = account.auth;
+  if (auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };

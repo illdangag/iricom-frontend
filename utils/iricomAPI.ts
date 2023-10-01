@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
-import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostReport, PostState, PostType, ReportPostList, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import process from 'process';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
@@ -28,6 +28,7 @@ type IricomAPIList = {
   getBoard: (tokenInfo: TokenInfo | null, id: string) => Promise<Board>,
   createBoard: (tokenInfo: TokenInfo | null, title: string, description: string, enabled: boolean) => Promise<Board>,
   updateBoard: (tokenInfo: TokenInfo | null, board: Board) => Promise<Board>,
+  getReportedPostList: (tokenInfo: TokenInfo | null, id: string, skip: number, limit: number, type: ReportType | null, reason: string | null) => Promise<ReportPostList>,
 
   // 게시물
   getPostList: (tokenInfo: TokenInfo | null, boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
@@ -136,6 +137,36 @@ const IricomAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Object> = await axios.request(config);
       const result: BoardList = new BoardList();
+      Object.assign(result, response.data);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  getReportedPostList: async (tokenInfo: TokenInfo | null, id: string, skip: number = 0, limit: number = 20, type: ReportType | null, reason: string | null): Promise<ReportPostList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/report/post/boards/${id}`,
+      method: 'GET',
+      params: {
+        skip: skip,
+        limit: limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    if (type !== null) {
+      config.params.type = type;
+    }
+
+    if (reason !== null) {
+      config.params.reason = reason;
+    }
+
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: ReportPostList = new ReportPostList();
       Object.assign(result, response.data);
       return result;
     } catch (error) {

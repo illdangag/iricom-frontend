@@ -14,7 +14,6 @@ import { Account, AccountAuth, BoardList, TokenInfo, Board, } from '../../../../
 import { getTokenInfoByCookies, } from '../../../../utils';
 import iricomAPI from '../../../../utils/iricomAPI';
 import { BORDER_RADIUS, } from '../../../../constants/style';
-const PAGE_LIMIT: number = 5;
 
 type Props = {
   account: Account,
@@ -31,10 +30,6 @@ const AdminReportsBoardsPage = (props: Props) => {
   useEffect(() => {
     setAccount(props.account);
   }, []);
-
-  const onClickBoard = (board: Board) => {
-    console.log(board);
-  };
 
   return <MainLayout>
     <PageBody>
@@ -54,8 +49,8 @@ const AdminReportsBoardsPage = (props: Props) => {
             <BoardListTable
               boardList={boardList}
               page={page}
+              boardLinkHref='/admin/reports/boards/{{boardId}}'
               pageLinkHref='/admin/reports/boards?page={{page}}'
-              onClickBoard={onClickBoard}
             />
           </CardBody>
         </Card>
@@ -73,12 +68,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const pageQuery: string | undefined = context.query.page as string;
-
-  const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
-  const skip: number = PAGE_LIMIT * (page - 1);
-  const limit: number = PAGE_LIMIT;
-
   const account: Account = await iricomAPI.getMyAccount(tokenInfo);
   const auth: AccountAuth = account.auth;
 
@@ -87,6 +76,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
   }
+
+  const pageQuery: string | undefined = context.query.page as string;
+  const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
+  const PAGE_LIMIT: number = 5;
+  const skip: number = PAGE_LIMIT * (page - 1);
+  const limit: number = PAGE_LIMIT;
 
   const boardList: BoardList = await iricomAPI.getBoardListByBoardAdmin(tokenInfo, skip, limit);
 
