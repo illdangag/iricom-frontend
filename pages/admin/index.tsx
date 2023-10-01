@@ -1,6 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import NextLink from 'next/link';
 import { Card, CardBody, Divider, Heading, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '../../layouts';
@@ -15,7 +16,6 @@ import { BORDER_RADIUS, } from '../../constants/style';
 import iricomAPI from '../../utils/iricomAPI';
 import { getTokenInfoByCookies, } from '../../utils';
 import { Account, AccountAuth, TokenInfo, } from '../../interfaces';
-import NextLink from 'next/link';
 
 type Props = {
   account: Account | null,
@@ -81,7 +81,7 @@ const AdminPage = (props: Props) => {
           <CardBody>
             <LinkBox width='100%'>
               <Heading size='sm'>
-                <LinkOverlay as={NextLink} href='#'>게시물 신고 내역</LinkOverlay>
+                <LinkOverlay as={NextLink} href='/admin/reports/boards'>게시물 신고 내역</LinkOverlay>
                 <Text fontSize='sm' fontWeight='normal'>신고된 게시물 목록을 조회합니다</Text>
               </Heading>
             </LinkBox>

@@ -4,14 +4,12 @@ import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
 import { BrowserStorage, getTokenInfo, } from '../utils';
-// recoil
-import { useSetRecoilState, } from 'recoil';
-import { RequireLoginPopup, setPopupSelector as setRequireLoginPopupSelector, } from '../recoil/requireLoginPopup';
 
 type IricomAPI = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   getMyPostList: (skip: number, limit: number) => Promise<PostList>,
   updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
+  getBoardListByBoardAdmin: (skip: number, limit: number) => Promise<BoardList>,
 
   getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
@@ -41,8 +39,6 @@ type IricomAPI = {
 function useIricomAPI (): IricomAPI {
   axios.defaults.withCredentials = false;
 
-  const setRequirePopup = useSetRecoilState<RequireLoginPopup>(setRequireLoginPopupSelector);
-
   const defaultErrorHandler = (error: AxiosError): IricomError => {
     const httpStatusCode: number = error.response.status;
     const iricomErrorResponse: IricomErrorResponse = error.response.data as IricomErrorResponse;
@@ -62,6 +58,15 @@ function useIricomAPI (): IricomAPI {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.getMyPostList(tokenInfo, skip, limit);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    getBoardListByBoardAdmin: async (skip: number, limit: number): Promise<BoardList> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getBoardListByBoardAdmin(tokenInfo, skip, limit);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

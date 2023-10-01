@@ -13,6 +13,7 @@ type IricomAPIList = {
   getMyAccount: (tokenInfo: TokenInfo | null) => Promise<Account>,
   updateMyAccountInfo: (tokenInfo: TokenInfo | null, nickname: string | null, description: string | null) => Promise<Account>,
   getMyPostList: (tokenInfo: TokenInfo | null, skip: number, limit: number) => Promise<PostList>,
+  getBoardListByBoardAdmin: (tokenInfo: TokenInfo | null, skip: number, limit: number) => Promise<BoardList>,
 
   // 관리자
   getBoardAdminInfo: (tokenInfo: TokenInfo | null, boardId: string) => Promise<BoardAdmin>,
@@ -115,6 +116,28 @@ const IricomAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  getBoardListByBoardAdmin: async (tokenInfo: TokenInfo | null, skip: number, limit: number): Promise<BoardList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/infos/admin/boards`,
+      method: 'GET',
+      params: {
+        skip: skip,
+        limit: limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: BoardList = new BoardList();
+      Object.assign(result, response.data);
+      return result;
     } catch (error) {
       console.error(error);
       throw error;

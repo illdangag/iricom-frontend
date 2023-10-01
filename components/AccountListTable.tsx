@@ -1,7 +1,6 @@
 // react
 import { useState, useEffect, ChangeEvent, KeyboardEvent, } from 'react';
-import { Text, Checkbox, HStack, VStack, Input, InputGroup, InputLeftElement,
-  InputRightElement, Button, } from '@chakra-ui/react';
+import { Text, Checkbox, HStack, VStack, Input, InputGroup, InputLeftElement, InputRightElement, Button, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
 import { Pagination, } from '../components';
 import { useIricomAPI, } from '../hooks';

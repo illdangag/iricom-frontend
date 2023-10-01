@@ -10,6 +10,7 @@ import PostEditor from './PostEditor';
 import PostListTable from './PostListTable';
 import PostView from './PostView';
 import PageTitle from './PageTitle';
+import BoardListTable from './table/BoardListTable';
 
 export { BoardTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
-  NoContent, AccountListTable, Pagination, PageTitle, };
+  NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, };
