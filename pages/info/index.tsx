@@ -1,14 +1,12 @@
 // react
-import { useEffect, useState, } from 'react';
+import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
 
-import { PageBody, } from '../../layouts';
-import MainLayout from '../../layouts/MainLayout';
+import { PageBody, MainLayout, } from '../../layouts';
 import { PageTitle, PostListTable, } from '../../components';
-import { useIricomAPI, } from '../../hooks';
 
 // store
 import { useRecoilState, } from 'recoil';
@@ -20,22 +18,21 @@ import { BORDER_RADIUS, } from '../../constants/style';
 import iricomAPI from '../../utils/iricomAPI';
 import { getTokenInfoByCookies, } from '../../utils';
 
-const PAGE_LIMIT: number = 10;
+const PAGE_LIMIT: number = 1;
 
 type Props = {
   account: Account,
   postList: any,
+  page: number,
 };
 
 const InfoPage = (props: Props) => {
-  const router = useRouter();
-  const iricomAPI = useIricomAPI();
+  const postList = Object.assign(new PostList(), props.postList);
+  const page: number = props.page;
 
-  const pageQuery: string = router.query.page as string;
+  const router = useRouter();
 
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
-  const [postList, setPostList,] = useState<PostList>(Object.assign(new PostList(), props.postList));
-  const [page, setPage,] = useState<number>(1);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -43,24 +40,7 @@ const InfoPage = (props: Props) => {
     }
 
     setAccount(props.account);
-    const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
-    setPage(page);
-
-  }, [router.isReady, pageQuery,]);
-
-  const initPostList = async (page: number) => {
-    const postList: PostList = await iricomAPI.getMyPostList(PAGE_LIMIT * (page - 1), PAGE_LIMIT);
-    setPostList(postList);
-  };
-
-  const onClickPagination = (page: number) => {
-    setPage(page);
-    void router.push(`/info?page=${page}`);
-  };
-
-  const onChangePost = () => {
-    void initPostList(page);
-  };
+  }, []);
 
   return (
     <MainLayout>
@@ -108,10 +88,9 @@ const InfoPage = (props: Props) => {
             <CardBody paddingTop='0'>
               {postList && postList.total > 0 && <PostListTable
                 postList={postList}
-                onClickPagination={onClickPagination}
+                pageLinkHref='/info?page={{page}}'
                 isShowEditButton
                 page={page}
-                onChangePost={onChangePost}
               />}
               {postList && postList.total === 0 && <Alert status='info' borderRadius='.375rem'>
                 <Text>등록한 게시물이 없습니다.</Text>
@@ -136,6 +115,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {
         account,
         postList: JSON.parse(JSON.stringify(postList)),
+        page,
       },
     };
   } else {

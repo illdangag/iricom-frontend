@@ -1,11 +1,9 @@
 // react
 import { useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsResult, } from 'next/types';
+import { GetServerSideProps, } from 'next/types';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
 
-import { PageBody, } from '../../layouts';
-import MainLayout from '../../layouts/MainLayout';
+import { MainLayout, PageBody, } from '../../layouts';
 import { NoContent, PostListTable, BoardTitle, } from '../../components';
 import { RequireAccountDetailAlert, } from '../../components/alerts';
 
@@ -27,18 +25,17 @@ type Props = {
   board: Board,
   postList: PostList,
   notificationList: PostList,
+  page: number,
+  boardId: string,
 };
 
 const BoardsPage = (props: Props) => {
-  const router = useRouter();
-
-  const boardId: string = router.query.boardId as string;
-
+  const boardId: string = props.boardId;
+  const page: number = props.page;
   const board = Object.assign(new Board(), props.board as Board);
   const postList = Object.assign(new PostList(), props.postList as PostList);
   const notificationList = Object.assign(new PostList(), props.notificationList as PostList);
 
-  const [page, setPage,] = useState<number>(1);
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
@@ -51,19 +48,11 @@ const BoardsPage = (props: Props) => {
     setShowRegisteredAccountAlert(false);
   };
 
-  const onClickPagination = (page: number) => {
-    setPage(page);
-    void router.push(`/boards/${boardId}?page=${page}`);
-  };
-
   return (
     <MainLayout>
       <PageBody>
-        {/* 게시판 헤더 */}
         {board && <BoardTitle board={board} isShowCreateButton={true}/>}
-        {/* 게시물 목록 */}
         <VStack align='stretch'>
-          {/* 공지 사항 목록 */}
           {notificationList && notificationList.total > 0 && <Card
             shadow={{ base: 'none', md: 'sm', }}
             borderRadius={{ base: '0', md: BORDER_RADIUS, }}
@@ -78,7 +67,6 @@ const BoardsPage = (props: Props) => {
               />
             </CardBody>
           </Card>}
-          {/* 게시물 목록 */}
           {postList && postList.total > 0 && <Card
             shadow={{ base: 'none', md: 'sm', }}
             borderRadius={{ base: '0', md: BORDER_RADIUS, }}
@@ -88,7 +76,7 @@ const BoardsPage = (props: Props) => {
                 postList={postList}
                 page={page}
                 isShowPostState={false}
-                onClickPagination={onClickPagination}
+                pageLinkHref={`/boards/${boardId}?page={{page}}`}
               />
             </CardBody>
           </Card>}
@@ -107,17 +95,9 @@ const BoardsPage = (props: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const result: GetServerSidePropsResult<any> = {
-    props: {},
-  };
-
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
 
-  if (tokenInfo !== null) {
-    result.props.account = await iricomAPI.getMyAccount(tokenInfo);
-  } else {
-    result.props.account = null;
-  }
+  const account: Account | null = tokenInfo !== null ? await iricomAPI.getMyAccount(tokenInfo) : null;
 
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;
@@ -126,15 +106,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const skip: number = PAGE_LIMIT * (page - 1);
   const limit: number = PAGE_LIMIT;
 
-  const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
-  const postList: PostList = await iricomAPI.getPostList(tokenInfo, boardId, skip, limit, PostType.POST);
-  const notificationList: PostList = await iricomAPI.getPostList(tokenInfo, boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION);
+  const resultList = await Promise.all([
+    iricomAPI.getBoard(tokenInfo, boardId),
+    iricomAPI.getPostList(tokenInfo, boardId, skip, limit, PostType.POST),
+    iricomAPI.getPostList(tokenInfo, boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION),
+  ]);
 
-  result.props.board = JSON.parse(JSON.stringify(board));
-  result.props.postList = JSON.parse(JSON.stringify(postList));
-  result.props.notificationList = JSON.parse(JSON.stringify(notificationList));
+  const board: Board = resultList[0];
+  const postList: PostList = resultList[1];
+  const notificationList: PostList = resultList[2];
 
-  return result;
+  return {
+    props: {
+      account,
+      boardId,
+      page,
+      board: JSON.parse(JSON.stringify(board)),
+      postList: JSON.parse(JSON.stringify(postList)),
+      notificationList: JSON.parse(JSON.stringify(notificationList)),
+    },
+  };
 };
 
 export default BoardsPage;

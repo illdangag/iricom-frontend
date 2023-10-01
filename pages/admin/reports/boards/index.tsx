@@ -1,10 +1,9 @@
 // react
-import { useEffect, useState, } from 'react';
+import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { VStack, Card, CardBody, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '../../../../layouts';
 import { PageTitle, BoardListTable, } from '../../../../components';
-import { useIricomAPI, } from '../../../../hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -27,8 +26,6 @@ const AdminReportsBoardsPage = (props: Props) => {
   const boardList = Object.assign(new BoardList(), props.boardList);
   const page: number = props.page;
 
-  const iricomAPI = useIricomAPI();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
@@ -37,10 +34,6 @@ const AdminReportsBoardsPage = (props: Props) => {
 
   const onClickBoard = (board: Board) => {
     console.log(board);
-  };
-
-  const onClickPagination = (page: number) => {
-    console.log(page);
   };
 
   return <MainLayout>
@@ -61,8 +54,8 @@ const AdminReportsBoardsPage = (props: Props) => {
             <BoardListTable
               boardList={boardList}
               page={page}
+              pageLinkHref='/admin/reports/boards?page={{page}}'
               onClickBoard={onClickBoard}
-              onClickPagination={onClickPagination}
             />
           </CardBody>
         </Card>
@@ -81,6 +74,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const pageQuery: string | undefined = context.query.page as string;
+
   const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
   const skip: number = PAGE_LIMIT * (page - 1);
   const limit: number = PAGE_LIMIT;

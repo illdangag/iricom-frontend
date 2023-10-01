@@ -12,20 +12,20 @@ import PostDeleteAlert from './alerts/PostDeleteAlert';
 type Props = {
   postList: PostList,
   page: number,
+  pageLinkHref?: string,
   isShowPostState?: boolean,
   isShowPagination?: boolean,
   isShowEditButton?: boolean,
-  onClickPagination?: (page: number) => void,
   onChangePost?: () => void,
 }
 
 const PostListTable = ({
   postList,
   page,
+  pageLinkHref = '?page={{page}}',
   isShowPostState = true,
   isShowPagination = true,
   isShowEditButton = false,
-  onClickPagination = () => {},
   onChangePost = () => {},
 }: Props) => {
   const [isShowDeleteAlert, setShowDeleteAlert,] = useState<boolean>(false);
@@ -117,7 +117,11 @@ const PostListTable = ({
       <VStack alignItems='stretch' spacing='1rem' align='stretch'>
         {getPostList()}
       </VStack>
-      {isShowPagination && <Pagination page={page} listResponse={postList} onClick={onClickPagination}/>}
+      {isShowPagination && <Pagination
+        page={page}
+        pageLinkHref={pageLinkHref}
+        listResponse={postList}
+      />}
       <PostDeleteAlert
         isOpen={isShowDeleteAlert}
         post={deletePost}

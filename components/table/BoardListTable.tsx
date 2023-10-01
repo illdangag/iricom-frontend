@@ -9,16 +9,16 @@ type Props = {
   boardList: BoardList,
   page: number,
   isShowPagination?: boolean,
+  pageLinkHref?: string,
   onClickBoard?: (board: Board) => void,
-  onClickPagination?: (page: number) => void,
 }
 
 const BoardListTable = ({
   boardList,
   page,
   isShowPagination = true,
+  pageLinkHref = '?page={{page}}',
   onClickBoard = () => {},
-  onClickPagination = () => {},
 }: Props) => {
   return <VStack alignItems='stretch'>
     <TableContainer>
@@ -55,7 +55,7 @@ const BoardListTable = ({
       <Pagination
         page={page}
         listResponse={boardList}
-        onClick={onClickPagination}
+        pageLinkHref={pageLinkHref}
       />
     </Box>}
   </VStack>;

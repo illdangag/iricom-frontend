@@ -99,7 +99,7 @@ const AdminBoardEditIdPage = (props: Props) => {
           status: 'success',
           duration: 3000,
         });
-        void router.push('/admin/board');
+        void router.push('/admin');
       })
       .catch(_error => {
         setPageState(PageState.FAIL);

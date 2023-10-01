@@ -1,7 +1,9 @@
 // react
-import React, { useEffect, useState, } from 'react';
+import React, { ChangeEvent, useEffect, useState, KeyboardEvent, } from 'react';
+import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { Button, Card, CardBody, Heading, HStack, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
+import { Button, Card, CardBody, Heading, HStack, ListItem, Text, UnorderedList, VStack, InputGroup, InputLeftElement, Input, InputRightElement, } from '@chakra-ui/react';
+import { MdSearch, } from 'react-icons/md';
 
 import { MainLayout, PageBody, } from '../../../../layouts';
 import { AccountListTable, PageTitle, } from '../../../../components';
@@ -12,23 +14,35 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../../../../recoil';
 
 // etc
-import { Account, AccountAuth, BoardAdmin, TokenInfo, } from '../../../../interfaces';
+import { Account, AccountList, AccountAuth, BoardAdmin, TokenInfo, } from '../../../../interfaces';
 import { BORDER_RADIUS, } from '../../../../constants/style';
 import { getTokenInfoByCookies, } from '../../../../utils';
 import iricomAPI from '../../../../utils/iricomAPI';
+const PAGE_LIMIT: number = 5;
 
 type Props = {
   account: Account,
+  boardId: string,
   boardAdmin: BoardAdmin,
+  accountList: AccountList,
+  accountPage: number,
+  accountKeyword: string,
 }
 
 const AdminBoardAdminEditPage = (props: Props) => {
+  const router = useRouter();
+
+  const boardId: string = props.boardId;
+  const accountPage: number = props.accountPage;
+  const accountList: AccountList = Object.assign(new AccountList(), props.accountList);
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
   const [boardAdmin, setBoardAdmin,] = useState<BoardAdmin | null>(props.boardAdmin);
   const [selectedAccount, setSelectedAccount,] = useState<Account | null>(null);
   const [isOpenBoardAdminCreateAlert, setOpenBoardAdminCreateAlert,] = useState<boolean>(false);
   const [isOpenBoardAdminDeleteAlert, setOpenBoardAdminDeleteAlert,] = useState<boolean>(false);
+  const [accountKeyword, setAccountKeyword,] = useState<string>('');
 
   useEffect(() => {
     setAccount(props.account);
@@ -60,6 +74,27 @@ const AdminBoardAdminEditPage = (props: Props) => {
   const onConfirmDeleteAlert = (boardAdmin: BoardAdmin) => {
     setOpenBoardAdminDeleteAlert(false);
     setBoardAdmin(boardAdmin);
+  };
+
+  const onChangeAccountKeyword = (event: ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value;
+    setAccountKeyword(value);
+  };
+
+  const onKeyUpAccountKeyword = (event: KeyboardEvent<HTMLInputElement>) => {
+    const key: string = event.key;
+    if (key === 'Enter') {
+      setUrlGetParameterAccountKeyword(accountKeyword);
+    }
+  };
+
+  const onClickAccountKeyword = () => {
+    setUrlGetParameterAccountKeyword(accountKeyword);
+  };
+
+  const setUrlGetParameterAccountKeyword = (accountKeyword: string) => {
+    const url: string = `/admin/board/admin/${boardId}?account_page=${accountPage}&account_keyword=${accountKeyword}`;
+    void router.push(url);
   };
 
   return (
@@ -112,7 +147,26 @@ const AdminBoardAdminEditPage = (props: Props) => {
             }}
           >
             <CardBody>
+              <HStack justifyContent='flex-end'>
+                <InputGroup size='sm' width='12rem' maxWidth='100%'>
+                  <InputLeftElement pointerEvents='none'>
+                    <MdSearch/>
+                  </InputLeftElement>
+                  <Input
+                    paddingRight='3rem'
+                    value={accountKeyword}
+                    onChange={onChangeAccountKeyword}
+                    onKeyUp={onKeyUpAccountKeyword}
+                  />
+                  <InputRightElement width='3rem'>
+                    <Button size='xs' onClick={onClickAccountKeyword}>검색</Button>
+                  </InputRightElement>
+                </InputGroup>
+              </HStack>
               <AccountListTable
+                accountList={accountList}
+                page={accountPage}
+                pageLinkHref={`/admin/board/admin/${boardId}?account_page={{page}}`}
                 onClickAccount={onClickAccount}
               />
             </CardBody>
@@ -146,6 +200,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const accountPageQuery: string | undefined = context.query.account_page as string;
+  const accountKeywordQuery: string | undefined = context.query.account_keyword as string;
+
+  const accountPage: number = accountPageQuery ? Number.parseInt(accountPageQuery, 10) : 1;
+  const accountKeyword: string = accountKeywordQuery ? accountKeywordQuery : '';
+  const accountSkip: number = PAGE_LIMIT * (accountPage - 1);
+  const accountLimit: number = PAGE_LIMIT;
+
   const account: Account = await iricomAPI.getMyAccount(tokenInfo);
   if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
@@ -155,10 +217,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const boardId: string = context.query.boardId as string;
   const boardAdmin: BoardAdmin = await iricomAPI.getBoardAdminInfo(tokenInfo, boardId);
+  const accountList: AccountList = await iricomAPI.getAccountList(tokenInfo, accountSkip, accountLimit, accountKeyword);
+
   return {
     props: {
       account,
+      boardId,
       boardAdmin: JSON.parse(JSON.stringify(boardAdmin)),
+      accountList: JSON.parse(JSON.stringify(accountList)),
+      accountPage,
+      accountKeyword,
     },
   };
 };

@@ -1,14 +1,16 @@
 // react
-import { useState, useEffect, ChangeEvent, KeyboardEvent, } from 'react';
-import { Text, Checkbox, HStack, VStack, Input, InputGroup, InputLeftElement, InputRightElement, Button, } from '@chakra-ui/react';
-import { MdSearch, } from 'react-icons/md';
+import { useState, ChangeEvent, } from 'react';
+import { Text, Checkbox, HStack, VStack, } from '@chakra-ui/react';
 import { Pagination, } from '../components';
-import { useIricomAPI, } from '../hooks';
+
 // etc
 import { Account, AccountList, } from '../interfaces';
 
 type Props = {
-  defaultPage?: number,
+  accountList: AccountList,
+  page: number,
+  pageLinkHref?: string,
+
   size?: number,
   defaultSelectedAccountIdList?: string[],
   isShowCheckbox?: boolean,
@@ -17,34 +19,17 @@ type Props = {
 };
 
 const AccountListTable = ({
-  defaultPage = 1,
-  size = 2,
+  accountList,
+  page,
+  pageLinkHref = '?page={{page}}',
+
   defaultSelectedAccountIdList = [],
   isShowCheckbox = false,
   onMultiSelect = () => {},
   onClickAccount = () => {},
 }: Props) => {
-  const iricomAPI = useIricomAPI();
-
-  const [page, setPage,] = useState<number>(defaultPage);
   const [selectedAccountIdList, setSelectedAccountIdList,] = useState<string[]>(defaultSelectedAccountIdList);
-  const [accountList, setAccountList,] = useState<AccountList | null>(null);
   const [selectedAccountList, setSelectedAccountList,] = useState<Account[]>([]);
-
-  const [inputKeyword, setInputKeyword,] = useState<string>('');
-  const [keyword, setKeyword,] = useState<string>('');
-
-  useEffect(() => {
-    getAccountList();
-  }, [page, keyword,]);
-
-  const getAccountList = () => {
-    const skip: number = (page - 1) * size;
-    void iricomAPI.getAccountList(skip, size, keyword === '' ? null : keyword)
-      .then(accountList => {
-        setAccountList(accountList);
-      });
-  };
 
   const onChangeCheckbox = (event: ChangeEvent<HTMLInputElement>, account: Account) => {
     const checked: boolean = event.target.checked;
@@ -63,26 +48,6 @@ const AccountListTable = ({
     }
     setSelectedAccountList(newAccountList);
     onMultiSelect(newAccountList);
-  };
-
-  const onClickPagination = (page: number) => {
-    setPage(page);
-  };
-
-  const onChangeKeyword = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputKeyword(event.target.value);
-  };
-
-  const onKeyupKeyword = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.code === 'Enter') {
-      setKeyword(inputKeyword);
-    }
-  };
-
-  const onClickKeyword = () => {
-    setKeyword(inputKeyword);
-    setPage(1);
-    setSelectedAccountIdList([]);
   };
 
   const getAccountItem = (account: Account) => {
@@ -118,21 +83,14 @@ const AccountListTable = ({
 
   return (
     <VStack alignItems='stretch'>
-      <HStack justifyContent='flex-end'>
-        <InputGroup size='sm' width='12rem' maxWidth='100%'>
-          <InputLeftElement pointerEvents='none'>
-            <MdSearch/>
-          </InputLeftElement>
-          <Input paddingRight='3rem' value={inputKeyword} onChange={onChangeKeyword} onKeyUp={onKeyupKeyword}/>
-          <InputRightElement width='3rem'>
-            <Button size='xs' onClick={onClickKeyword}>검색</Button>
-          </InputRightElement>
-        </InputGroup>
-      </HStack>
       <VStack alignItems='stretch'>
         {accountList && accountList.accounts.map((account) => getAccountRow(account))}
       </VStack>
-      {accountList && <Pagination page={page} listResponse={accountList} onClick={onClickPagination}/>}
+      {accountList && <Pagination
+        page={page}
+        listResponse={accountList}
+        pageLinkHref={pageLinkHref}
+      />}
     </VStack>
   );
 };

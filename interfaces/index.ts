@@ -1,6 +1,3 @@
-import { max } from '@popperjs/core/lib/utils/math';
-import { end } from '@popperjs/core';
-
 export type FirebaseProperties = {
   projectId: string,
   apiKey: string,
