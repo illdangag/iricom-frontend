@@ -1,10 +1,10 @@
 // react
 import { useState, ChangeEvent, } from 'react';
 import { Text, Checkbox, HStack, VStack, } from '@chakra-ui/react';
-import { Pagination, } from '../components';
+import { Pagination, } from '../index';
 
 // etc
-import { Account, AccountList, } from '../interfaces';
+import { Account, AccountList, } from '../../interfaces';
 
 type Props = {
   accountList: AccountList,

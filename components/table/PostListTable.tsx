@@ -5,9 +5,9 @@ import { Badge, Button, Divider, Flex, HStack, LinkBox, LinkOverlay, Text, VStac
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import Pagination from './Pagination';
 // etc
-import { Post, PostList, } from '../interfaces';
-import { getFormattedDateTime, } from '../utils';
-import PostDeleteAlert from './alerts/PostDeleteAlert';
+import { Post, PostList, } from '../../interfaces';
+import { getFormattedDateTime, } from '../../utils';
+import PostDeleteAlert from '../alerts/PostDeleteAlert';
 
 type Props = {
   postList: PostList,

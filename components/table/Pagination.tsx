@@ -2,7 +2,7 @@
 import { ButtonGroup, HStack, Button, LinkOverlay, } from '@chakra-ui/react';
 import NextLink from 'next/link';
 // etc
-import { ListResponse, } from '../interfaces';
+import { ListResponse, } from '../../interfaces';
 
 type Props = {
   page: number,

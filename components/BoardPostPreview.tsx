@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import { Heading, LinkBox, LinkOverlay, Alert, Text, Flex, VStack, } from '@chakra-ui/react';
 // etc
 import { Board, PostList, } from '../interfaces';
-import PostListTable from './PostListTable';
+import PostListTable from './table/PostListTable';
 import { BORDER_RADIUS, } from '../constants/style';
 
 type Props = {

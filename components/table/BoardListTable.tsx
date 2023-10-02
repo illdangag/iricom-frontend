@@ -1,7 +1,7 @@
 // react
 import { VStack, Box, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Badge, Link, } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import Pagination from '../Pagination';
+import Pagination from './Pagination';
 
 // etc
 import { BoardList, } from '../../interfaces';
