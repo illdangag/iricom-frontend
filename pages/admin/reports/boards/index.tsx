@@ -10,7 +10,7 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../../../../recoil';
 
 // etc
-import { Account, AccountAuth, BoardList, TokenInfo, Board, } from '../../../../interfaces';
+import { Account, AccountAuth, BoardList, TokenInfo, } from '../../../../interfaces';
 import { getTokenInfoByCookies, } from '../../../../utils';
 import iricomAPI from '../../../../utils/iricomAPI';
 import { BORDER_RADIUS, } from '../../../../constants/style';

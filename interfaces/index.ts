@@ -225,7 +225,7 @@ export enum ReportType {
   ETC = 'etc',
 }
 
-export type ReportPost = {
+export type PostReport = {
   id: string,
   createDate: number,
   updateDate: number,
@@ -235,6 +235,6 @@ export type ReportPost = {
   post: Post,
 }
 
-export class ReportPostList extends ListResponse {
-  public reports: ReportPost[];
+export class PostReportList extends ListResponse {
+  public reports: PostReport[];
 }

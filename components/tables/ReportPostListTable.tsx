@@ -3,12 +3,12 @@ import { Badge, Box, Table, TableContainer, Tbody, Td, Th, Thead, Tr, VStack, Li
 import Pagination from './Pagination';
 
 // etc
-import { ReportPostList, ReportType, } from '../../interfaces';
+import { PostReportList, ReportType, } from '../../interfaces';
 import { getFormattedDateTime, } from '../../utils';
 import NextLink from 'next/link';
 
 type Props = {
-  reportPostList: ReportPostList,
+  reportPostList: PostReportList,
   page: number,
   isShowPagination?: boolean,
   pageLinkHref?: string,
@@ -53,7 +53,10 @@ const ReportPostListTable = ({
             <Td>{reportPost.id}</Td>
             <Td>{getTypeElement(reportPost.type)}</Td>
             <Td>
-              <Link as={NextLink} href={reportLinkHref.replaceAll('{{reportId}}', reportPost.id)}>
+              <Link
+                as={NextLink}
+                href={reportLinkHref.replaceAll('{{reportId}}', reportPost.id).replaceAll('{{postId}}', reportPost.post.id)}
+              >
                 {reportPost.post.title}
               </Link>
             </Td>

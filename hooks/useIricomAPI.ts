@@ -1,5 +1,5 @@
 // etc
-import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, ReportPost, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
@@ -23,7 +23,7 @@ type IricomAPI = {
   publishPost: (boardId: string, postId: string) => Promise<Post>,
   votePost: (boardId: string, postId: string, type: VoteType) => Promise<Post>,
   deletePost: (boardId: string, postId: string) => Promise<Post>,
-  reportPost: (boardId: string, postId: string, type: ReportType, reason: string) => Promise<ReportPost>,
+  reportPost: (boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
@@ -212,7 +212,7 @@ function useIricomAPI (): IricomAPI {
       }
     },
 
-    reportPost: async (boardId: string, postId: string, type: ReportType, reason: string): Promise<ReportPost> => {
+    reportPost: async (boardId: string, postId: string, type: ReportType, reason: string): Promise<PostReport> => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
 
       try {

@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
-import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, ReportPost, PostState, PostType, ReportPostList, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import process from 'process';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
@@ -28,7 +28,7 @@ type IricomAPIList = {
   getBoard: (tokenInfo: TokenInfo | null, id: string) => Promise<Board>,
   createBoard: (tokenInfo: TokenInfo | null, title: string, description: string, enabled: boolean) => Promise<Board>,
   updateBoard: (tokenInfo: TokenInfo | null, board: Board) => Promise<Board>,
-  getReportedPostList: (tokenInfo: TokenInfo | null, id: string, skip: number, limit: number, type: ReportType | null, reason: string | null) => Promise<ReportPostList>,
+  getReportedPostList: (tokenInfo: TokenInfo | null, id: string, skip: number, limit: number, type: ReportType | null, reason: string | null) => Promise<PostReportList>,
 
   // 게시물
   getPostList: (tokenInfo: TokenInfo | null, boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
@@ -38,7 +38,8 @@ type IricomAPIList = {
   publishPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
   votePost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: VoteType) => Promise<Post>,
   deletePost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
-  reportPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string) => Promise<ReportPost>,
+  reportPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
+  getPostReport: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reportId: string) => Promise<PostReport>,
 
   // 댓글
   getCommentList: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<CommentList>,
@@ -145,7 +146,23 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  getReportedPostList: async (tokenInfo: TokenInfo | null, id: string, skip: number = 0, limit: number = 20, type: ReportType | null, reason: string | null): Promise<ReportPostList> => {
+  getPostReport: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, reportId: string): Promise<PostReport> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/report/post/boards/${boardId}/posts/${postId}/reports/${reportId}`,
+      method: 'GET',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PostReport> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  },
+
+  getReportedPostList: async (tokenInfo: TokenInfo | null, id: string, skip: number = 0, limit: number = 20, type: ReportType | null, reason: string | null): Promise<PostReportList> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/report/post/boards/${id}`,
       method: 'GET',
@@ -166,7 +183,7 @@ const IricomAPI: IricomAPIList = {
 
     try {
       const response: AxiosResponse<Object> = await axios.request(config);
-      const result: ReportPostList = new ReportPostList();
+      const result: PostReportList = new PostReportList();
       Object.assign(result, response.data);
       return result;
     } catch (error) {
@@ -522,7 +539,7 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  reportPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string): Promise<ReportPost> => {
+  reportPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string): Promise<PostReport> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/report/post/boards/${boardId}/posts/${postId}`,
       method: 'POST',
@@ -534,7 +551,7 @@ const IricomAPI: IricomAPIList = {
     setToken(config, tokenInfo);
 
     try {
-      const response: AxiosResponse<ReportPost> = await axios.request(config);
+      const response: AxiosResponse<PostReport> = await axios.request(config);
       return response.data;
     } catch (error) {
       console.error(error);

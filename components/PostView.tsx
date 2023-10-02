@@ -4,9 +4,11 @@ import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Text, useToast, VStack
 import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 import { PostReportAlert, } from './alerts';
+
 // store
 import { useSetRecoilState, } from 'recoil';
 import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
+
 // etc
 import { NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
 import { getFormattedDateTime, getTokenInfo, } from '../utils';
@@ -19,6 +21,8 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
 
 type Props = {
   post: Post,
+  isShowVote?: boolean,
+  isShowFooter?: boolean,
   onChange?: (post: Post) => void,
 }
 
@@ -29,8 +33,9 @@ enum ViewState {
 
 const PostView = ({
   post,
-  onChange = () => {
-  },
+  onChange = () => {},
+  isShowVote = true,
+  isShowFooter = true,
 }: Props) => {
   const iricomAPI = useIricomAPI();
   const toast = useToast();
@@ -136,7 +141,7 @@ const PostView = ({
           />
         </Box>
       </Box>
-      <Flex justifyContent='center'>
+      {isShowVote && <Flex justifyContent='center'>
         <ButtonGroup variant='outline'>
           <Button
             rightIcon={<MdThumbUpOffAlt/>}
@@ -155,8 +160,8 @@ const PostView = ({
             {post.downvote}
           </Button>
         </ButtonGroup>
-      </Flex>
-      <Flex justifyContent='flex-end' marginTop='1rem'>
+      </Flex>}
+      {isShowFooter && <Flex justifyContent='flex-end' marginTop='1rem'>
         <ButtonGroup variant='outline'>
           <Button
             leftIcon={<MdShare/>}
@@ -173,7 +178,7 @@ const PostView = ({
             신고
           </Button>
         </ButtonGroup>
-      </Flex>
+      </Flex>}
       <PostReportAlert
         post={post}
         isOpen={isOpenReport}

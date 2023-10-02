@@ -9,7 +9,7 @@ import Pagination from '././tables/Pagination';
 import PostEditor from './PostEditor';
 import PostListTable from '././tables/PostListTable';
 import PostView from './PostView';
-import PageTitle from '../layouts/PageTitle';
+import PageTitle from './PageTitle';
 import BoardListTable from '././tables/BoardListTable';
 import ReportPostListTable from './tables/ReportPostListTable';
 
