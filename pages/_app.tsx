@@ -5,6 +5,10 @@ import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
 import { RecoilRoot, } from 'recoil';
 
 const theme = extendTheme({
+  fonts: {
+    heading: '\'Noto Sans KR\', Roboto, sans-serif',
+    body: '\'Noto Sans KR\', Roboto, sans-serif',
+  },
   styles: {
     global: {
       body: {

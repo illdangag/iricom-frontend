@@ -1,7 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { VStack, Card, CardBody, } from '@chakra-ui/react';
+import { VStack, Card, CardBody, Text, CardHeader, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '../../../../layouts';
 import { PageTitle, BoardListTable, } from '../../../../components';
 
@@ -33,7 +33,7 @@ const AdminReportsBoardsPage = (props: Props) => {
 
   return <MainLayout>
     <PageBody>
-      <PageTitle title='게시물 신고 내역' descriptions={['관리자로 등록된 게시판 목록',]}/>
+      <PageTitle title='게시물 신고 내역'/>
       <VStack alignItems='stretch'>
         <Card
           shadow={{
@@ -45,6 +45,9 @@ const AdminReportsBoardsPage = (props: Props) => {
             md: BORDER_RADIUS,
           }}
         >
+          <CardHeader>
+            <Text fontWeight='500'>관리자로 등록된 게시판 목록</Text>
+          </CardHeader>
           <CardBody>
             <BoardListTable
               boardList={boardList}
