@@ -149,6 +149,7 @@ export class Board {
   public title: string;
   public description: string;
   public enabled: boolean;
+  public boardAdmin?: boolean;
 }
 
 export class BoardList extends ListResponse {

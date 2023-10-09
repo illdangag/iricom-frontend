@@ -1,5 +1,5 @@
 // react
-import { Flex, Box, Image, Text, VStack, } from '@chakra-ui/react';
+import { Flex, Image, Text, VStack, } from '@chakra-ui/react';
 import { EmptyLayout, } from '../layouts';
 
 const page404 = () => {

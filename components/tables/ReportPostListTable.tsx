@@ -1,5 +1,6 @@
 // react
-import { Badge, Box, Table, TableContainer, Tbody, Td, Th, Thead, Tr, VStack, Link, } from '@chakra-ui/react';
+import { Badge, Box, Table, TableContainer, Tbody, Td, Th, Thead, Tr, VStack, Link, Icon, } from '@chakra-ui/react';
+import { MdOpenInNew, } from 'react-icons/md';
 import Pagination from './Pagination';
 
 // etc
@@ -56,8 +57,10 @@ const ReportPostListTable = ({
               <Link
                 as={NextLink}
                 href={reportLinkHref.replaceAll('{{reportId}}', reportPost.id).replaceAll('{{postId}}', reportPost.post.id)}
+                display='flex'
+                alignItems='center'
               >
-                {reportPost.post.title}
+                {reportPost.post.title}<Icon as={MdOpenInNew} marginLeft='0.2rem'/>
               </Link>
             </Td>
             <Td>{reportPost.reporter.nickname}</Td>

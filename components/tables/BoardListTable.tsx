@@ -1,10 +1,11 @@
 // react
-import { VStack, Box, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Badge, Link, } from '@chakra-ui/react';
+import { VStack, Box, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Badge, Link, Icon, } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import Pagination from './Pagination';
 
 // etc
 import { BoardList, } from '../../interfaces';
+import { MdOpenInNew, } from 'react-icons/md';
 
 type Props = {
   boardList: BoardList,
@@ -42,7 +43,7 @@ const BoardListTable = ({
             <Td>{board.id}</Td>
             <Td>
               <Link as={NextLink} href={boardLinkHref.replaceAll('{{boardId}}', '' + board.id)}>
-                {board.title}
+                {board.title}<Icon as={MdOpenInNew} marginLeft='0.2rem'/>
               </Link>
             </Td>
             <Td>{board.description}</Td>

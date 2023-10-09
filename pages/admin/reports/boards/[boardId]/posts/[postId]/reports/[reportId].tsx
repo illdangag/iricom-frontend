@@ -91,7 +91,9 @@ const AdminReportsBoardsBoardIdReportsPage = (props: Props) => {
             <PostView
               post={postReport.post}
               isShowVote={false}
-              isShowFooter={false}
+              isShowShare={false}
+              isShowReport={false}
+              isShowBan={false}
             />
           </CardBody>
         </Card>

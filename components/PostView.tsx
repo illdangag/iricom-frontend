@@ -1,7 +1,7 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
-import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
+import { Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, MdBlock, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 import { PostReportAlert, } from './alerts';
 
@@ -21,8 +21,10 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
 
 type Props = {
   post: Post,
-  isShowVote?: boolean,
-  isShowFooter?: boolean,
+  isShowVote: boolean,
+  isShowShare: boolean,
+  isShowReport: boolean,
+  isShowBan: boolean,
   onChange?: (post: Post) => void,
 }
 
@@ -33,10 +35,14 @@ enum ViewState {
 
 const PostView = ({
   post,
+  isShowVote = false,
+  isShowShare = false,
+  isShowReport = false,
+  isShowBan = false,
   onChange = () => {},
-  isShowVote = true,
-  isShowFooter = true,
 }: Props) => {
+  const isShowFooter: boolean = isShowShare || isShowBan || isShowBan;
+
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
@@ -161,24 +167,30 @@ const PostView = ({
           </Button>
         </ButtonGroup>
       </Flex>}
-      {isShowFooter && <Flex justifyContent='flex-end' marginTop='1rem'>
-        <ButtonGroup variant='outline'>
-          <Button
+      {isShowFooter && <HStack justifyContent='flex-end' marginTop='1rem'>
+        <ButtonGroup variant='outline' size='xs'>
+          {isShowBan && <Button
+            leftIcon={<MdBlock/>}
+          >
+            차단
+          </Button>}
+        </ButtonGroup>
+        <Spacer/>
+        <ButtonGroup variant='outline' size='xs'>
+          {isShowShare && <Button
             leftIcon={<MdShare/>}
-            size='xs'
             onClick={onClickShareButton}
           >
             공유
-          </Button>
-          <Button
+          </Button>}
+          {isShowReport && <Button
             leftIcon={<MdOutlineReport/>}
-            size='xs'
             onClick={onClickReportButton}
           >
             신고
-          </Button>
+          </Button>}
         </ButtonGroup>
-      </Flex>}
+      </HStack>}
       <PostReportAlert
         post={post}
         isOpen={isOpenReport}

@@ -1,6 +1,5 @@
 // react
 import { useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, VStack, } from '@chakra-ui/react';
 
@@ -27,21 +26,19 @@ type Props = {
 };
 
 const BoardsPostsPage = (props: Props) => {
-  const router = useRouter();
   const iricomAPI = useIricomAPI();
-
-  const boardId: string = router.query.boardId as string;
-  const postId: string = router.query.postId as string;
 
   const board: Board = Object.assign(new Board(), props.board);
   const [post, setPost,] = useState<Post | null>(props.post);
   const [commentList, setCommentList,] = useState<Comment[] | null>(Object.assign(new CommentList(), props.commentList).comments);
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const boardId: string = board.id;
+  const postId: string = post.id;
 
   useEffect(() => {
     setAccount(props.account);
-  }, [router.isReady,]);
+  }, []);
 
   const initCommentList = (boardId: string, postId: string) => {
     void iricomAPI.getCommentList(boardId, postId)
@@ -107,7 +104,14 @@ const BoardsPostsPage = (props: Props) => {
           borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
-            <PostView post={post} onChange={onChangePostView}/>
+            <PostView
+              post={post}
+              onChange={onChangePostView}
+              isShowVote={true}
+              isShowShare={true}
+              isShowReport={true}
+              isShowBan={board.boardAdmin ? board.boardAdmin : false}
+            />
           </CardBody>
         </Card>}
         {commentList && commentList.length > 0 && <Card
@@ -162,19 +166,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     iricomAPI.getBoard(tokenInfo, boardId),
     iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH),
     iricomAPI.getCommentList(tokenInfo, boardId, postId),
+    iricomAPI.getMyAccount(tokenInfo),
   ];
-  if (tokenInfo !== null) {
-    apiRequestList.push(iricomAPI.getMyAccount(tokenInfo));
-  }
 
-  const responseList: any[] = await Promise.all(apiRequestList);
-  const board: Board = responseList[0] as Board;
-  const post: Post = responseList[1] as Post;
-  const commentList: CommentList = responseList[2] as CommentList;
-  let account: Account = null;
-  if (tokenInfo !== null) {
-    account = responseList[3] as Account;
-  }
+  const responseList: any[] = await Promise.allSettled(apiRequestList);
+
+  const board: Board = responseList[0].value as Board;
+  const post: Post = responseList[1].value as Post;
+  const commentList: CommentList = responseList[2].value as CommentList;
+  const account: Account | null = responseList[3].status === 'fulfilled' ? responseList[3].value as Account : null;
 
   return {
     props: {
