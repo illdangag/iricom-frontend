@@ -8,6 +8,7 @@ import BoardAdminCreateAlert from './BoardAdminCreateAlert';
 import BoardAdminDeleteAlert from './BoardAdminDeleteAlert';
 import PostDeleteAlert from './PostDeleteAlert';
 import PostReportAlert from './PostReportAlert';
+import PostBanAlert from './PostBanAlert';
 
 export { ConfirmCancelAlert, InvalidPostAlert, NotExistBoardAlert, PostPublishAlert, RequireAccountDetailAlert, RequireLoginAlert,
-  BoardAdminCreateAlert, BoardAdminDeleteAlert, PostDeleteAlert, PostReportAlert, };
+  BoardAdminCreateAlert, BoardAdminDeleteAlert, PostDeleteAlert, PostReportAlert, PostBanAlert, };

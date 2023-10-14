@@ -1,9 +1,9 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, Alert, AlertIcon, AlertDescription, } from '@chakra-ui/react';
 import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, MdBlock, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
-import { PostReportAlert, } from './alerts';
+import { PostReportAlert, PostBanAlert, } from './alerts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -11,6 +11,7 @@ import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLogi
 
 // etc
 import { NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
+import { BORDER_RADIUS, } from '../constants/style';
 import { getFormattedDateTime, getTokenInfo, } from '../utils';
 import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
@@ -50,6 +51,7 @@ const PostView = ({
 
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
   const [isOpenReport, setOpenReport,] = useState<boolean>(false);
+  const [isOpenBan, setOpenBan,] = useState<boolean>(false);
 
   const onClickUpvote = async () => {
     setViewState(ViewState.REQUEST);
@@ -119,8 +121,16 @@ const PostView = ({
     }
   };
 
+  const onClickBanButton = async () => {
+    setOpenBan(true);
+  };
+
   const onCloseReport = async () => {
     setOpenReport(false);
+  };
+
+  const onCloseBan = async () => {
+    setOpenBan(false);
   };
 
   return (
@@ -139,12 +149,16 @@ const PostView = ({
             </VStack>
           </Flex>
         </Flex>
-        <Box padding='0.5rem'>
-          <MarkdownPreview
+        <Box padding='0.5rem' marginBottom='0.5rem'>
+          {post.content && <MarkdownPreview
             source={post.content}
             data-color-mode='light'
             style={{ backgroundColor: '#ffffff00', }}
-          />
+          />}
+          {post.ban && <Alert status='error' borderRadius={BORDER_RADIUS}>
+            <AlertIcon/>
+            <AlertDescription>차단된 게시물입니다.</AlertDescription>
+          </Alert>}
         </Box>
       </Box>
       {isShowVote && <Flex justifyContent='center'>
@@ -169,8 +183,9 @@ const PostView = ({
       </Flex>}
       {isShowFooter && <HStack justifyContent='flex-end' marginTop='1rem'>
         <ButtonGroup variant='outline' size='xs'>
-          {isShowBan && <Button
+          {isShowBan && !post.ban && <Button
             leftIcon={<MdBlock/>}
+            onClick={onClickBanButton}
           >
             차단
           </Button>}
@@ -195,6 +210,11 @@ const PostView = ({
         post={post}
         isOpen={isOpenReport}
         onClose={onCloseReport}
+      />
+      <PostBanAlert
+        post={post}
+        isOpen={isOpenBan}
+        onClose={onCloseBan}
       />
     </>
   );

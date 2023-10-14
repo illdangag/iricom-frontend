@@ -1,7 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Alert, AlertIcon, AlertTitle, Card, CardBody, Divider, VStack, } from '@chakra-ui/react';
+import { Alert, AlertIcon, Card, CardBody, Divider, VStack, AlertDescription, } from '@chakra-ui/react';
 
 import { PageBody, } from '../../../../layouts';
 import MainLayout from '../../../../layouts/MainLayout';
@@ -126,7 +126,8 @@ const BoardsPostsPage = (props: Props) => {
             </VStack>
           </CardBody>
         </Card>}
-        {post && post.allowComment && <Card
+
+        {!post.ban && post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
           width='100%'
@@ -137,6 +138,7 @@ const BoardsPostsPage = (props: Props) => {
             <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
           </CardBody>
         </Card>}
+
         {post && !post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
@@ -147,7 +149,7 @@ const BoardsPostsPage = (props: Props) => {
           <CardBody>
             <Alert status='warning' borderRadius='.5rem'>
               <AlertIcon/>
-              <AlertTitle>댓글을 허용하지 않는 게시물입니다.</AlertTitle>
+              <AlertDescription>댓글을 허용하지 않는 게시물입니다.</AlertDescription>
             </Alert>
           </CardBody>
         </Card>}

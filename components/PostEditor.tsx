@@ -85,6 +85,7 @@ const PostEditor = ({
 
   const savePost = async (): Promise<Post> => {
     const postId: string | null = defaultValue ? defaultValue.id : null;
+
     if (postId === null) {
       return await iricomAPI.createPost(boardId, title, content, postType, !disabledComment);
     } else {

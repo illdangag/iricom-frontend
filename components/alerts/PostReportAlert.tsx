@@ -1,5 +1,5 @@
 // react
-import React, { ChangeEventHandler, MouseEventHandler, useRef, useState, } from 'react';
+import { ChangeEventHandler, MouseEventHandler, useRef, useState, } from 'react';
 import { useIricomAPI, } from '../../hooks';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, FormControl, FormLabel, Select, Textarea, useToast, } from '@chakra-ui/react';
 // etc
@@ -51,6 +51,8 @@ const PostReportAlert = ({
         status: 'success',
         duration: 3000,
       });
+      setReportType(ReportType.HATE);
+      setReason('');
     } catch (error) {
       const iricomError: IricomError = error as IricomError;
       toast({
@@ -61,8 +63,6 @@ const PostReportAlert = ({
     } finally {
       setState(ComponentState.IDLE);
       onClose();
-      setReportType(ReportType.HATE);
-      setReason('');
     }
   };
 
@@ -102,7 +102,7 @@ const PostReportAlert = ({
             <Button
               variant='ghost'
               ref={closeRef}
-              disabled={state === ComponentState.REQUEST}
+              isDisabled={state === ComponentState.REQUEST}
               onClick={onClose}
             >
               취소

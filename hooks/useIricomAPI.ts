@@ -24,6 +24,7 @@ type IricomAPI = {
   votePost: (boardId: string, postId: string, type: VoteType) => Promise<Post>,
   deletePost: (boardId: string, postId: string) => Promise<Post>,
   reportPost: (boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
+  banPost: (boardId: string, postId: string, reason: string) => Promise<Post>,
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
@@ -117,19 +118,19 @@ function useIricomAPI (): IricomAPI {
       }
     },
 
-    createPost: async (boardId: string, title: string, content: string, postType: PostType, isAllowComment: boolean): Promise<Post> => {
+    createPost: async (boardId: string, title: string, content: string, postType: PostType, allowComment: boolean): Promise<Post> => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        return await iricomAPI.createPost(tokenInfo, boardId, title, content, postType, isAllowComment);
+        return await iricomAPI.createPost(tokenInfo, boardId, title, content, postType, allowComment);
       } catch (error) {
         throw defaultErrorHandler(error);
       }
     },
 
-    updatePost: async (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null): Promise<Post> => {
+    updatePost: async (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, allowComment: boolean | null): Promise<Post> => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
-        return await iricomAPI.updatePost(tokenInfo, boardId, postId, title, content, postType, isAllowComment);
+        return await iricomAPI.updatePost(tokenInfo, boardId, postId, title, content, postType, allowComment);
       } catch (error) {
         throw defaultErrorHandler(error);
       }
@@ -217,6 +218,16 @@ function useIricomAPI (): IricomAPI {
 
       try {
         return await iricomAPI.reportPost(tokenInfo, boardId, postId, type, reason);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    banPost: async (boardId: string, postId: string, reason: string): Promise<Post> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+
+      try {
+        return await iricomAPI.banPost(tokenInfo, boardId, postId, reason);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

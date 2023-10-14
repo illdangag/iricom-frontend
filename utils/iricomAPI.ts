@@ -40,6 +40,7 @@ type IricomAPIList = {
   deletePost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
   reportPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
   getPostReport: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reportId: string) => Promise<PostReport>,
+  banPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string) => Promise<Post>,
 
   // 댓글
   getCommentList: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<CommentList>,
@@ -436,7 +437,7 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  createPost: async (tokenInfo: TokenInfo | null, boardId: string, title: string, content: string, postType: PostType, isAllowComment: boolean): Promise<Post> => {
+  createPost: async (tokenInfo: TokenInfo | null, boardId: string, title: string, content: string, postType: PostType, allowComment: boolean): Promise<Post> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/boards/${boardId}/posts`,
       method: 'POST',
@@ -444,7 +445,7 @@ const IricomAPI: IricomAPIList = {
         title,
         content,
         type: postType,
-        isAllowComment,
+        allowComment,
       },
     };
     setToken(config, tokenInfo);
@@ -458,7 +459,7 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  updatePost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null): Promise<Post> => {
+  updatePost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, allowComment: boolean | null): Promise<Post> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}`,
       method: 'PATCH',
@@ -475,8 +476,8 @@ const IricomAPI: IricomAPIList = {
     if (postType) {
       config.data.type = postType;
     }
-    if (isAllowComment) {
-      config.data.isAllowComment = isAllowComment;
+    if (allowComment !== null) {
+      config.data.allowComment = allowComment;
     }
 
     try {
@@ -552,6 +553,25 @@ const IricomAPI: IricomAPIList = {
 
     try {
       const response: AxiosResponse<PostReport> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  banPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string): Promise<Post> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/ban/post/boards/${boardId}/posts/${postId}`,
+      method: 'POST',
+      data: {
+        reason,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
       console.error(error);
