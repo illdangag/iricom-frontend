@@ -165,18 +165,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const postId: string = context.query.postId as string;
 
   const apiRequestList: any[] = [
+    iricomAPI.getMyAccount(tokenInfo),
     iricomAPI.getBoard(tokenInfo, boardId),
     iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH),
     iricomAPI.getCommentList(tokenInfo, boardId, postId),
-    iricomAPI.getMyAccount(tokenInfo),
   ];
 
   const responseList: any[] = await Promise.allSettled(apiRequestList);
 
-  const board: Board = responseList[0].value as Board;
-  const post: Post = responseList[1].value as Post;
-  const commentList: CommentList = responseList[2].value as CommentList;
-  const account: Account | null = responseList[3].status === 'fulfilled' ? responseList[3].value as Account : null;
+  const account: Account | null = responseList[0].status === 'fulfilled' ? responseList[0].value as Account : null;
+
+  const board: Board = responseList[1].value as Board;
+  const post: Post = responseList[2].value as Post;
+
+  let commentList: CommentList;
+  if (responseList[3].status === 'fulfilled') {
+    commentList = responseList[3].value as CommentList;
+  } else { // status === 'reject'
+    commentList = new CommentList();
+  }
 
   return {
     props: {
