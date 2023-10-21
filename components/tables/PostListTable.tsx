@@ -56,7 +56,7 @@ const PostListTable = ({
             <HStack>
               <Text>
                 <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
-                  {post.title}
+                  {!post.ban ? `${post.title}` : <Badge colorScheme='red' fontSize='0.8rem'>차단된 게시물입니다</Badge>}
                 </LinkOverlay>
               </Text>
               {isShowPostState && (

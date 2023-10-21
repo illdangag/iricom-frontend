@@ -138,7 +138,7 @@ const PostView = ({
       <Box>
         <Flex flexDirection='column'>
           <Flex flexDirection='row' justifyContent='space-between'>
-            <Heading size='lg' fontWeight='medium'>{post.title}</Heading>
+            {!post.ban && <Heading size='lg' fontWeight='medium'>{post.title}</Heading>}
           </Flex>
           <Flex marginTop='1rem'>
             <Text fontSize='0.8rem'>{post.account.nickname}</Text>
