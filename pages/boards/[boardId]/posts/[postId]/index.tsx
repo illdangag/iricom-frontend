@@ -3,8 +3,8 @@ import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { Alert, AlertIcon, Card, CardBody, Divider, VStack, AlertDescription, } from '@chakra-ui/react';
 
-import { PageBody, } from '../../../../../layouts';
-import MainLayout from '../../../../../layouts/MainLayout';
+import { MainLayout, PageBody, } from '../../../../../layouts';
+import { CommentDeleteAlert, } from '../../../../../components/alerts';
 import { BoardTitle, CommentEditor, CommentView, PostView, } from '../../../../../components';
 import { useIricomAPI, } from '../../../../../hooks';
 
@@ -114,6 +114,7 @@ const BoardsPostsPage = (props: Props) => {
             />
           </CardBody>
         </Card>}
+        {/* 댓글 목록*/}
         {commentList && commentList.length > 0 && <Card
           marginTop='1rem'
           width='100%'
@@ -121,12 +122,15 @@ const BoardsPostsPage = (props: Props) => {
           borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
-            <VStack align='stretch' spacing='1rem'>
-              {getCommentListElement(commentList)}
-            </VStack>
+            <CommentArea
+              board={board}
+              post={post}
+              commentList={commentList}
+              onChange={onChangeCommentView}
+            />
           </CardBody>
         </Card>}
-
+        {/* 댓글 입력 */}
         {!post.ban && post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
@@ -135,10 +139,13 @@ const BoardsPostsPage = (props: Props) => {
           borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
-            <CommentEditor boardId={boardId} postId={postId} onChange={onChangeCommentView}/>
+            <CommentEditor
+              boardId={boardId}
+              postId={postId}
+              onChange={onChangeCommentView}
+            />
           </CardBody>
         </Card>}
-
         {post && !post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
@@ -174,7 +181,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const responseList: any[] = await Promise.allSettled(apiRequestList);
 
   const account: Account | null = responseList[0].status === 'fulfilled' ? responseList[0].value as Account : null;
-
   const board: Board = responseList[1].value as Board;
   const post: Post = responseList[2].value as Post;
 
@@ -196,3 +202,69 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default BoardsPostsPage;
+
+type CommentAreaProp = {
+  board: Board,
+  post: Post,
+  commentList: Comment[],
+  onChange: (comment: Comment) => void,
+};
+const CommentArea = ({
+  board,
+  post,
+  commentList,
+  onChange,
+}: CommentAreaProp) => {
+  const [isOpenCommentDeleteAlert, setOpenCommentDeleteAlert, ] = useState<boolean>(false);
+  const [deleteComment, setDeleteComment, ] = useState<Comment | null>(null);
+
+  const onClickDelete = (event, comment) => {
+    setDeleteComment(comment);
+    setOpenCommentDeleteAlert(true);
+  };
+
+  const onCloseCommentDeleteAlert = () => {
+    setOpenCommentDeleteAlert(false);
+  };
+
+  const getCommentListElement = (commentList: Comment[]) => {
+    const boardId = board.id;
+    const postId = post.id;
+
+    const elementList: JSX.Element[] = [];
+    for (let index = 0; index < commentList.length; index++) {
+      const comment: Comment = commentList[index];
+      elementList.push(<CommentView
+        key={index}
+        boardId={boardId}
+        postId={postId}
+        comment={comment}
+        allowNestedComment={true}
+        onChange={onChange}
+        onClickDelete={onClickDelete}
+      />);
+
+      if (index < commentList.length - 1) {
+        elementList.push(<Divider key={`divider-${index}`}/>);
+      }
+    }
+    return elementList;
+  };
+
+  return <>
+    <VStack
+      align='stretch'
+      spacing='1rem'
+    >
+      {getCommentListElement(commentList)}
+      {deleteComment && <CommentDeleteAlert
+        isOpen={isOpenCommentDeleteAlert}
+        boardId={board.id}
+        postId={post.id}
+        comment={deleteComment}
+        onClose={onCloseCommentDeleteAlert}
+        onChange={onChange}
+      />}
+    </VStack>
+  </>;
+};

@@ -29,6 +29,7 @@ type IricomAPI = {
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
   voteComment: (boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
+  deleteComment: (boardId: string, postId: string, commentId: string) => Promise<Comment>,
 
   getAccountList: (skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
 
@@ -199,6 +200,20 @@ function useIricomAPI (): IricomAPI {
 
       try {
         return await iricomAPI.voteComment(tokenInfo, boardId, postId, commentId, type);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    deleteComment: async (boardId: string, postId: string, commentId: string): Promise<Comment> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+
+      if (tokenInfo === null) {
+        throw new NotExistTokenError();
+      }
+
+      try {
+        return await iricomAPI.deleteComment(tokenInfo, boardId, postId, commentId);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

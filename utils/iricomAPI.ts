@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+import axios, { Axios, AxiosRequestConfig, AxiosResponse, } from 'axios';
 import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import process from 'process';
 
@@ -46,6 +46,7 @@ type IricomAPIList = {
   getCommentList: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<CommentList>,
   createComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
   voteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
+  deleteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string) => Promise<Comment>,
 
 }
 
@@ -79,7 +80,6 @@ const IricomAPI: IricomAPIList = {
       const expiredDate: Date = new Date((new Date()).getTime() + (Number(response.data.expires_in) * 1000));
       return new TokenInfo(token, refreshToken, expiredDate);
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -95,7 +95,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -120,7 +119,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -142,7 +140,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -158,7 +155,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<PostReport> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       return error;
     }
   },
@@ -188,7 +184,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -214,7 +209,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -232,7 +226,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -255,7 +248,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -274,7 +266,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -296,7 +287,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -314,7 +304,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -336,7 +325,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -358,7 +346,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -384,7 +371,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -410,7 +396,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -432,7 +417,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -454,7 +438,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -484,7 +467,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -500,7 +482,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -519,7 +500,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -535,7 +515,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -555,7 +534,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<PostReport> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -574,7 +552,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Post> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -596,7 +573,6 @@ const IricomAPI: IricomAPIList = {
       Object.assign(result, response.data);
       return result;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -619,7 +595,6 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Comment> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
       throw error;
     }
   },
@@ -638,7 +613,21 @@ const IricomAPI: IricomAPIList = {
       const response: AxiosResponse<Comment> = await axios.request(config);
       return response.data;
     } catch (error) {
-      console.error(error);
+      throw error;
+    }
+  },
+
+  deleteComment: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string): Promise<Comment> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/boards/${boardId}/posts/${postId}/comments/${commentId}`,
+      method: 'DELETE',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Comment> = await axios.request(config);
+      return response.data;
+    } catch (error) {
       throw error;
     }
   },

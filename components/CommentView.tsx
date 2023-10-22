@@ -1,6 +1,6 @@
 // react
-import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { useState, MouseEvent, } from 'react';
+import { Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // store
@@ -18,6 +18,7 @@ type Props = {
   comment: Comment,
   allowNestedComment?: boolean,
   onChange?: (comment: Comment) => void,
+  onClickDelete?: (event: MouseEvent<HTMLButtonElement>, comment: Comment) => void,
 }
 
 enum ViewState {
@@ -31,6 +32,7 @@ const CommentView = ({
   comment,
   allowNestedComment = false,
   onChange = () => {},
+  onClickDelete = () => {},
 }: Props) => {
   const iricomAPI = useIricomAPI();
   const toast = useToast();
@@ -119,10 +121,13 @@ const CommentView = ({
           <Spacer/>
           {account && account.id === comment.account.id && <ButtonGroup size='xs' variant='outline' justifyContent='flex-end'>
             <IconButton variant='ghost' aria-label='edit' icon={<MdEdit/>}/>
-            <IconButton variant='ghost' aria-label='delete' icon={<MdDeleteOutline/>}/>
+            <IconButton variant='ghost' aria-label='delete' icon={<MdDeleteOutline/>} onClick={(event) => onClickDelete(event, comment)}/>
           </ButtonGroup>}
         </HStack>
         <Text fontSize='.8rem' wordBreak='break-word'>{comment.content}</Text>
+        {comment.deleted && <Box padding='0' margin='0'>
+          <Badge colorScheme='red' fontSize='0.8rem'>삭제된 댓글입니다</Badge>
+        </Box>}
         <HStack>
           {allowNestedComment && <Button size='xs' onClick={onClickReReply}>답글</Button>}
           <Spacer/>

@@ -54,6 +54,7 @@ export class IricomError extends Error {
   private _code: string;
   static messageMap = {
     '04000006': '이미 \'좋아요\' 또는 \'싫어요\'한 게시물입니다.',
+    '05000000': '존재하지 않는 댓글입니다.',
     '05000005': '이미 \'좋아요\' 또는 \'싫어요\'한 댓글입니다.',
     '06000001': '이미 신고한 게시물입니다.',
   };
