@@ -3,19 +3,19 @@ import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
 
-import { MainLayout, PageBody, } from '../../layouts';
-import { NoContent, PostListTable, BoardTitle, } from '../../components';
-import { RequireAccountDetailAlert, } from '../../components/alerts';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { NoContent, PostListTable, BoardTitle, } from '@root/components';
+import { RequireAccountDetailAlert, } from '@root/components/alerts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, Board, PostList, PostType, TokenInfo, } from '../../interfaces';
-import { BORDER_RADIUS, } from '../../constants/style';
-import iricomAPI from '../../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../../utils';
+import { Account, Board, PostList, PostType, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import iricomAPI from '@root/utils/iricomAPI';
+import { getTokenInfoByCookies, } from '@root/utils';
 
 const PAGE_LIMIT: number = 10;
 const NOTIFICATION_PAGE_LIMIT: number = 5;

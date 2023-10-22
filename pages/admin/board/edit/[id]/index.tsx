@@ -4,20 +4,20 @@ import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, useToast, VStack, } from '@chakra-ui/react';
 
-import { MainLayout, PageBody, } from '../../../../layouts';
-import { NotExistBoardAlert, } from '../../../../components/alerts';
-import { PageTitle, } from '../../../../components';
-import { useIricomAPI, } from '../../../../hooks';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { NotExistBoardAlert, } from '@root/components/alerts';
+import { PageTitle, } from '@root/components';
+import { useIricomAPI, } from '@root/hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, TokenInfo, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
-import { getTokenInfoByCookies, } from '../../../../utils';
-import iricomAPI from '../../../../utils/iricomAPI';
+import { Account, AccountAuth, Board, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
   INVALID,

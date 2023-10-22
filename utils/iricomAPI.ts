@@ -1,5 +1,8 @@
-import axios, { Axios, AxiosRequestConfig, AxiosResponse, } from 'axios';
-import { Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList, PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+import {
+  Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList,
+  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType,
+} from '../interfaces';
 import process from 'process';
 
 const backendProperties: BackendProperties = process.env.backend as unknown as BackendProperties;
@@ -47,7 +50,6 @@ type IricomAPIList = {
   createComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
   voteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
   deleteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string) => Promise<Comment>,
-
 }
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -103,8 +105,7 @@ const IricomAPI: IricomAPIList = {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/accounts/`,
       method: 'PATCH',
-      data: {
-      },
+      data: {},
     };
     setToken(config, tokenInfo);
 

@@ -51,28 +51,37 @@ const PostListTable = ({
         <HStack justifyContent='space-between'>
           <Flex
             flexDirection={{ base: 'column', md: 'row', }}
-            justifyContent='start'
           >
-            <HStack>
-              <Text>
+            <Flex
+              flexDirection='row'
+              alignItems='center'
+              height='2rem'
+            >
+              {!post.ban && <Text marginRight='0.5rem'>
                 <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
-                  {!post.ban ? `${post.title}` : <Badge colorScheme='red' fontSize='0.8rem'>차단된 게시물입니다</Badge>}
+                  {post.title}
                 </LinkOverlay>
-              </Text>
+              </Text>}
+              {post.ban && <Badge colorScheme='red' fontSize='0.8rem' marginRight='0.5rem'>
+                <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
+                  차단된 게시물입니다
+                </LinkOverlay>
+              </Badge>}
               {isShowPostState && (
                 <HStack>
                   {post.publish && <Badge colorScheme='blue'>발행</Badge>}
                   {post.hasTemporary && <Badge colorScheme='gray'>임시저장</Badge>}
                 </HStack>
               )}
-            </HStack>
+            </Flex>
             <Flex
               flexDirection='row'
               alignItems='center'
-              marginLeft={{ base: '0', md: '0.5rem', }}
-              marginTop={{ base: '0.2rem', md: '0', }}
             >
-              <HStack>
+              <HStack
+                marginLeft={{ base: '0', md: '0.5rem', }}
+                marginTop={{ base: '0.2rem', md: '0', }}
+              >
                 <Badge><HStack><MdThumbUpOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.upvote}</Text></HStack></Badge>
                 <Badge><HStack><MdThumbDownOffAlt size='.8rem'/><Text fontSize='.8rem'>{post.downvote}</Text></HStack></Badge>
                 <Badge><HStack><MdOutlineModeComment size='.8rem'/><Text fontSize='.8rem'>{post.commentCount}</Text></HStack></Badge>

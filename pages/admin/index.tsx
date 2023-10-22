@@ -4,18 +4,18 @@ import { GetServerSideProps, } from 'next/types';
 import NextLink from 'next/link';
 import { Card, CardBody, Divider, Heading, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 
-import { MainLayout, PageBody, } from '../../layouts';
-import { PageTitle, } from '../../components';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { PageTitle, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { BORDER_RADIUS, } from '../../constants/style';
-import iricomAPI from '../../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../../utils';
-import { Account, AccountAuth, TokenInfo, } from '../../interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import iricomAPI from '@root/utils/iricomAPI';
+import { getTokenInfoByCookies, } from '@root/utils';
+import { Account, AccountAuth, TokenInfo, } from '@root/interfaces';
 
 type Props = {
   account: Account | null,

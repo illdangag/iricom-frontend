@@ -1,23 +1,23 @@
 // react
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
+import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, } from '@chakra-ui/react';
 
-import { MainLayout, PageBody, } from '../../../../layouts';
-import { BoardTitle, PostEditor, } from '../../../../components';
-import { NotExistBoardAlert, } from '../../../../components/alerts';
-import { useIricomAPI, } from '../../../../hooks';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { BoardTitle, PostEditor, } from '@root/components';
+import { NotExistBoardAlert, } from '@root/components/alerts';
+import { useIricomAPI, } from '@root/hooks';
 
 // store
 import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, Post, PostState, TokenInfo, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
-import { GetServerSideProps, } from 'next/types';
-import { getTokenInfoByCookies, } from '../../../../utils';
-import iricomAPI from '../../../../utils/iricomAPI';
+import { Account, AccountAuth, Board, Post, PostState, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account | null,

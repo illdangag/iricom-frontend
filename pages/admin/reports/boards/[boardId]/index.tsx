@@ -2,18 +2,18 @@
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, VStack, } from '@chakra-ui/react';
-import { MainLayout, PageBody, } from '../../../../../layouts';
-import { NoContent, PageTitle, ReportPostListTable, } from '../../../../../components';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { NoContent, PageTitle, ReportPostListTable, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, PostReportList, TokenInfo, } from '../../../../../interfaces';
-import iricomAPI from '../../../../../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../../../../../utils';
-import { BORDER_RADIUS, } from '../../../../../constants/style';
+import { Account, AccountAuth, Board, PostReportList, TokenInfo, } from '@root/interfaces';
+import iricomAPI from '@root/utils/iricomAPI';
+import { getTokenInfoByCookies, } from '@root/utils';
+import { BORDER_RADIUS, } from '@root/constants/style';
 
 type Props = {
   account: Account,

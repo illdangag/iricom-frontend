@@ -3,20 +3,20 @@ import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { Alert, AlertIcon, Card, CardBody, Divider, VStack, AlertDescription, } from '@chakra-ui/react';
 
-import { MainLayout, PageBody, } from '../../../../../layouts';
-import { CommentDeleteAlert, } from '../../../../../components/alerts';
-import { BoardTitle, CommentEditor, CommentView, PostView, } from '../../../../../components';
-import { useIricomAPI, } from '../../../../../hooks';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { CommentDeleteAlert, } from '@root/components/alerts';
+import { BoardTitle, CommentEditor, CommentView, PostView, } from '@root/components';
+import { useIricomAPI, } from '@root/hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, Board, Comment, CommentList, Post, PostState, TokenInfo, } from '../../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../../constants/style';
-import iricomAPI from '../../../../../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../../../../../utils';
+import { Account, Board, Comment, CommentList, Post, PostState, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import iricomAPI from '@root/utils/iricomAPI';
+import { getTokenInfoByCookies, } from '@root/utils';
 
 type Props = {
   account: Account | null,
@@ -73,25 +73,6 @@ const BoardsPostsPage = (props: Props) => {
       }
     }
     return commentList;
-  };
-
-  const getCommentListElement = (commentList: Comment[]) => {
-    const elementList: JSX.Element[] = [];
-    for (let index = 0; index < commentList.length; index++) {
-      const comment: Comment = commentList[index];
-      elementList.push(<CommentView
-        key={index}
-        boardId={boardId}
-        postId={postId}
-        comment={comment}
-        allowNestedComment={true}
-        onChange={onChangeCommentView}
-      />);
-      if (index < commentList.length - 1) {
-        elementList.push(<Divider key={`divider-${index}`}/>);
-      }
-    }
-    return elementList;
   };
 
   return (

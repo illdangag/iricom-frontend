@@ -4,9 +4,9 @@ import {
   AlertDialog, AlertDialogOverlay, AlertDialogHeader, AlertDialogBody, AlertDialogContent, AlertDialogFooter,
   Text, Box, ButtonGroup, Button, useToast,
 } from '@chakra-ui/react';
-import { useIricomAPI, } from '../../hooks';
+import { useIricomAPI, } from '@root/hooks';
 // etc
-import { Comment, CommentList, IricomError, IricomErrorResponse, } from '../../interfaces';
+import { Comment, } from '../../interfaces';
 
 enum State {
   IDLE,

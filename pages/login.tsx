@@ -4,10 +4,12 @@ import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Image, Spacer, useToast, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
-import EmptyLayout from '../layouts/EmptyLayout';
-import { useGoogleAuth, } from '../hooks';
-import { TokenInfo, } from '../interfaces';
-import { getTokenInfoByCookies, } from '../utils';
+import { EmptyLayout, } from '@root/layouts';
+import { useGoogleAuth, } from '@root/hooks';
+
+// etc
+import { TokenInfo, } from '@root/interfaces';
+import { getTokenInfoByCookies, } from '@root/utils';
 
 enum PageState {
   READY,

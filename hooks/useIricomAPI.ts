@@ -1,5 +1,8 @@
 // etc
-import { Account, AccountList, Board, BoardAdmin, BoardList, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostList, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import {
+  Account, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostReport, PostState,
+  PostType, ReportType, TokenInfo, VoteType,
+} from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
@@ -7,16 +10,12 @@ import { BrowserStorage, getTokenInfo, } from '../utils';
 
 type IricomAPI = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
-  getMyPostList: (skip: number, limit: number) => Promise<PostList>,
   updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
-  getBoardListByBoardAdmin: (skip: number, limit: number) => Promise<BoardList>,
 
-  getBoardList: (skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
   updateBoard: (board: Board) => Promise<Board>,
 
-  getPostList: (boardId: string, skip: number, limit: number, type: PostType | null) => Promise<PostList>,
   getPost: (boardId: string, postId: string, postState: PostState | null) => Promise<Post>,
   createPost: (boardId: string, title: string, content: string, type: PostType,  isAllowComment: boolean) => Promise<Post>,
   updatePost: (boardId: string, postId: string, title: string | null, content: string | null, postType: PostType | null, isAllowComment: boolean | null) => Promise<Post>,
@@ -31,9 +30,6 @@ type IricomAPI = {
   voteComment: (boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
   deleteComment: (boardId: string, postId: string, commentId: string) => Promise<Comment>,
 
-  getAccountList: (skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
-
-  getBoardAdminInfo: (boardId: string) => Promise<BoardAdmin>,
   createBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
   deleteBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
 }
@@ -51,33 +47,6 @@ function useIricomAPI (): IricomAPI {
     getMyAccount: async (tokenInfo: TokenInfo) => {
       try {
         return await iricomAPI.getMyAccount(tokenInfo);
-      } catch (error) {
-        throw defaultErrorHandler(error);
-      }
-    },
-
-    getMyPostList: async (skip: number, limit: number): Promise<PostList> => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      try {
-        return await iricomAPI.getMyPostList(tokenInfo, skip, limit);
-      } catch (error) {
-        throw defaultErrorHandler(error);
-      }
-    },
-
-    getBoardListByBoardAdmin: async (skip: number, limit: number): Promise<BoardList> => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      try {
-        return await iricomAPI.getBoardListByBoardAdmin(tokenInfo, skip, limit);
-      } catch (error) {
-        throw defaultErrorHandler(error);
-      }
-    },
-
-    getBoardList: async (skip: number = 0, limit: number = 20, enabled: boolean | null = null): Promise<BoardList> => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      try {
-        return await iricomAPI.getBoardList(tokenInfo, skip, limit, enabled);
       } catch (error) {
         throw defaultErrorHandler(error);
       }
@@ -109,16 +78,6 @@ function useIricomAPI (): IricomAPI {
         throw defaultErrorHandler(error);
       }
     },
-
-    getPostList: async (boardId: string, skip: number = 0, limit: number = 20, type: PostType | null): Promise<PostList> => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      try {
-        return await iricomAPI.getPostList(tokenInfo, boardId, skip, limit, type);
-      } catch (error) {
-        throw defaultErrorHandler(error);
-      }
-    },
-
     createPost: async (boardId: string, title: string, content: string, postType: PostType, allowComment: boolean): Promise<Post> => {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
@@ -243,24 +202,6 @@ function useIricomAPI (): IricomAPI {
 
       try {
         return await iricomAPI.banPost(tokenInfo, boardId, postId, reason);
-      } catch (error) {
-        throw defaultErrorHandler(error);
-      }
-    },
-
-    getAccountList: async (skip: number, limit: number, keyword: string | null): Promise<AccountList> => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      try {
-        return await iricomAPI.getAccountList(tokenInfo, skip, limit, keyword);
-      } catch (error) {
-        throw defaultErrorHandler(error);
-      }
-    },
-
-    getBoardAdminInfo: async (boardId: string): Promise<BoardAdmin> => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      try {
-        return await iricomAPI.getBoardAdminInfo(tokenInfo, boardId);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

@@ -5,19 +5,19 @@ import { GetServerSideProps, } from 'next/types';
 import { Button, Card, CardBody, Heading, HStack, ListItem, Text, UnorderedList, VStack, InputGroup, InputLeftElement, Input, InputRightElement, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
 
-import { MainLayout, PageBody, } from '../../../../layouts';
-import { AccountListTable, PageTitle, } from '../../../../components';
-import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '../../../../components/alerts';
+import { MainLayout, PageBody, } from '@root/layouts';
+import { AccountListTable, PageTitle, } from '@root/components';
+import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '@root/components/alerts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountList, AccountAuth, BoardAdmin, TokenInfo, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
-import { getTokenInfoByCookies, } from '../../../../utils';
-import iricomAPI from '../../../../utils/iricomAPI';
+import { Account, AccountList, AccountAuth, BoardAdmin, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iricomAPI from '@root/utils/iricomAPI';
 const PAGE_LIMIT: number = 5;
 
 type Props = {

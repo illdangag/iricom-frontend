@@ -4,8 +4,8 @@ import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Container, Flex, Heading, Image, Input, Spacer, Stack, useToast, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 
-import { EmptyLayout, } from '../../layouts';
-import { useEmailAuth, } from '../../hooks';
+import { EmptyLayout, } from '@root/layouts';
+import { useEmailAuth, } from '@root/hooks';
 
 enum PageState {
   READY,

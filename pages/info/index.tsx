@@ -5,18 +5,18 @@ import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
 
-import { PageBody, MainLayout, } from '../../layouts';
-import { PageTitle, PostListTable, } from '../../components';
+import { PageBody, MainLayout, } from '@root/layouts';
+import { PageTitle, PostListTable, } from '@root/components';
 
 // store
 import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, PostList, TokenInfo, } from '../../interfaces';
-import { BORDER_RADIUS, } from '../../constants/style';
-import iricomAPI from '../../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../../utils';
+import { Account, AccountAuth, PostList, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import iricomAPI from '@root/utils/iricomAPI';
+import { getTokenInfoByCookies, } from '@root/utils';
 
 const PAGE_LIMIT: number = 1;
 

@@ -4,20 +4,20 @@ import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, useToast, VStack, } from '@chakra-ui/react';
 
-import { PageBody, } from '../../../layouts';
-import MainLayout from '../../../layouts/MainLayout';
-import useIricomAPI from '../../../hooks/useIricomAPI';
+import { PageBody, } from '@root/layouts';
+import MainLayout from '@root/layouts/MainLayout';
+import useIricomAPI from '@root/hooks/useIricomAPI';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, TokenInfo, } from '../../../interfaces';
-import { BORDER_RADIUS, } from '../../../constants/style';
-import { PageTitle, } from '../../../components';
-import { getTokenInfoByCookies, } from '../../../utils';
-import iricomAPI from '../../../utils/iricomAPI';
+import { Account, AccountAuth, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import { PageTitle, } from '@root/components';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
   READY,

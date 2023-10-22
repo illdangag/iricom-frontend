@@ -4,19 +4,19 @@ import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
 import { VStack, Card, CardBody, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
 
-import { BoardView, NoContent, PageTitle, } from '../../../../components';
-import { PageBody, } from '../../../../layouts';
-import MainLayout from '../../../../layouts/MainLayout';
+import { BoardView, NoContent, PageTitle, } from '@root/components';
+import { PageBody, } from '@root/layouts';
+import MainLayout from '@root/layouts/MainLayout';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
-import { getTokenInfoByCookies, } from '../../../../utils';
-import iricomAPI from '../../../../utils/iricomAPI';
+import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, } from '@root/constants/style';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account | null,

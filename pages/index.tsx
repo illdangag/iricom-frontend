@@ -2,16 +2,18 @@
 import { useEffect, } from 'react';
 import { GetServerSideProps, GetServerSidePropsResult, } from 'next/types';
 import { Card, CardBody, VStack, } from '@chakra-ui/react';
-import { MainLayout, PageBody, } from '../layouts';
-import BoardPostPreview from '../components/BoardPostPreview';
+import { MainLayout, PageBody, } from '@root/layouts';
+import BoardPostPreview from '@root/components/BoardPostPreview';
+
 // etc
-import { Account, Board, PostList, PostType, TokenInfo, } from '../interfaces';
-import { BORDER_RADIUS, MAX_WIDTH, } from '../constants/style';
-import iricomAPI from '../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../utils';
+import { Account, Board, PostList, PostType, TokenInfo, } from '@root/interfaces';
+import { BORDER_RADIUS, MAX_WIDTH, } from '@root/constants/style';
+import iricomAPI from '@root/utils/iricomAPI';
+import { getTokenInfoByCookies, } from '@root/utils';
+
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../recoil';
+import { myAccountAtom, } from '@root/recoil';
 
 type BoardPostList = {
   board: Board,
