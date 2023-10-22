@@ -3,20 +3,20 @@ import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { Alert, AlertIcon, Card, CardBody, Divider, VStack, AlertDescription, } from '@chakra-ui/react';
 
-import { PageBody, } from '../../../../layouts';
-import MainLayout from '../../../../layouts/MainLayout';
-import { BoardTitle, CommentEditor, CommentView, PostView, } from '../../../../components';
-import { useIricomAPI, } from '../../../../hooks';
+import { PageBody, } from '../../../../../layouts';
+import MainLayout from '../../../../../layouts/MainLayout';
+import { BoardTitle, CommentEditor, CommentView, PostView, } from '../../../../../components';
+import { useIricomAPI, } from '../../../../../hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../../../../recoil';
+import { myAccountAtom, } from '../../../../../recoil';
 
 // etc
-import { Account, Board, Comment, CommentList, Post, PostState, TokenInfo, } from '../../../../interfaces';
-import { BORDER_RADIUS, } from '../../../../constants/style';
-import iricomAPI from '../../../../utils/iricomAPI';
-import { getTokenInfoByCookies, } from '../../../../utils';
+import { Account, Board, Comment, CommentList, Post, PostState, TokenInfo, } from '../../../../../interfaces';
+import { BORDER_RADIUS, } from '../../../../../constants/style';
+import iricomAPI from '../../../../../utils/iricomAPI';
+import { getTokenInfoByCookies, } from '../../../../../utils';
 
 type Props = {
   account: Account | null,
