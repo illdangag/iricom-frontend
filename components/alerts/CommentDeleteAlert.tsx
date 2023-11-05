@@ -1,8 +1,8 @@
 // react
 import { useRef, useState, } from 'react';
 import {
-  AlertDialog, AlertDialogOverlay, AlertDialogHeader, AlertDialogBody, AlertDialogContent, AlertDialogFooter,
-  Text, Box, ButtonGroup, Button, useToast,
+  AlertDialog, AlertDialogOverlay, AlertDialogHeader, AlertDialogBody, AlertDialogContent, AlertDialogFooter, Text, Box, ButtonGroup,
+  Button, useToast,
 } from '@chakra-ui/react';
 import { useIricomAPI, } from '@root/hooks';
 // etc

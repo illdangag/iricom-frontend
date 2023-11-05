@@ -74,6 +74,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const boardList: Board[] = (await iricomAPI.getBoardList(tokenInfo, 0, 20, true)).boards;
   const boardPostListList: BoardPostList[] = [];
+
   for (const board of boardList) {
     const postList: PostList = await iricomAPI.getPostList(tokenInfo, board.id, 0, 5, PostType.POST);
     boardPostListList.push({
@@ -81,6 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       postList: postList,
     } as BoardPostList);
   }
+
   result.props.boardPostListList = JSON.parse(JSON.stringify(boardPostListList));
 
   return result;

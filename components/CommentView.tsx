@@ -1,6 +1,8 @@
 // react
 import { useState, MouseEvent, } from 'react';
-import { Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import {
+  Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack,
+} from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricomAPI, } from '../hooks';
 // store
@@ -102,7 +104,14 @@ const CommentView = ({
     const elementList: JSX.Element[] = [];
     for (let index = 0; index < commentList.length; index++) {
       const comment: Comment = commentList[index];
-      elementList.push(<CommentView key={index} boardId={boardId} postId={postId} comment={comment} onChange={onChange}/>);
+      elementList.push(<CommentView
+        key={index}
+        boardId={boardId}
+        postId={postId}
+        comment={comment}
+        onChange={onChange}
+        onClickDelete={(event) => onClickDelete(event, comment)}
+      />);
       if (index < commentList.length - 1) {
         elementList.push(<Divider key={`divider-${index}`}/>);
       }
@@ -121,7 +130,12 @@ const CommentView = ({
           <Spacer/>
           {account && account.id === comment.account.id && <ButtonGroup size='xs' variant='outline' justifyContent='flex-end'>
             <IconButton variant='ghost' aria-label='edit' icon={<MdEdit/>}/>
-            <IconButton variant='ghost' aria-label='delete' icon={<MdDeleteOutline/>} onClick={(event) => onClickDelete(event, comment)}/>
+            {!comment.deleted && <IconButton
+              variant='ghost'
+              aria-label='delete'
+              icon={<MdDeleteOutline/>}
+              onClick={(event) => onClickDelete(event, comment)}
+            />}
           </ButtonGroup>}
         </HStack>
         <Text fontSize='.8rem' wordBreak='break-word'>{comment.content}</Text>
