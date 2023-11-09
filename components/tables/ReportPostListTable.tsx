@@ -6,7 +6,6 @@ import Pagination from './Pagination';
 // etc
 import { PostReportList, ReportType, } from '../../interfaces';
 import { getFormattedDateTime, } from '../../utils';
-import NextLink from 'next/link';
 
 type Props = {
   reportPostList: PostReportList,
@@ -55,7 +54,6 @@ const ReportPostListTable = ({
             <Td>{getTypeElement(reportPost.type)}</Td>
             <Td>
               <Link
-                as={NextLink}
                 href={reportLinkHref.replaceAll('{{reportId}}', reportPost.id).replaceAll('{{postId}}', reportPost.post.id)}
                 display='flex'
                 alignItems='center'

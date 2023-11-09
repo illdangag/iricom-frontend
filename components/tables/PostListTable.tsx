@@ -1,7 +1,6 @@
 // react
 import { useState, } from 'react';
-import NextLink from 'next/link';
-import { Badge, Button, Divider, Flex, HStack, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
+import { Badge, Button, Divider, Flex, HStack, LinkBox, LinkOverlay, Text, VStack, Link, } from '@chakra-ui/react';
 import { MdOutlineModeComment, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import Pagination from './Pagination';
 // etc
@@ -58,12 +57,12 @@ const PostListTable = ({
               height='2rem'
             >
               {!post.ban && <Text marginRight='0.5rem'>
-                <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
+                <LinkOverlay href={`/boards/${post.boardId}/posts/${post.id}`}>
                   {post.title}
                 </LinkOverlay>
               </Text>}
               {post.ban && <Badge colorScheme='red' fontSize='0.8rem' marginRight='0.5rem'>
-                <LinkOverlay as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
+                <LinkOverlay href={`/boards/${post.boardId}/posts/${post.id}`}>
                   차단된 게시물입니다
                 </LinkOverlay>
               </Badge>}
@@ -90,9 +89,9 @@ const PostListTable = ({
           </Flex>
           {isShowEditButton && (
             <HStack marginLeft='auto'>
-              <NextLink href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
+              <Link href={`/boards/${post.boardId}/posts/${post.id}/edit`}>
                 <Button size='xs' variant='outline'>수정</Button>
-              </NextLink>
+              </Link>
               <Button size='xs' colorScheme='red' variant='outline' onClick={() => onClickDelete(post)}>삭제</Button>
             </HStack>
           )}

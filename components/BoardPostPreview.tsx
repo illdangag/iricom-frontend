@@ -1,5 +1,4 @@
 // react
-import NextLink from 'next/link';
 import { Heading, LinkBox, LinkOverlay, Alert, Text, Flex, VStack, } from '@chakra-ui/react';
 // etc
 import { Board, PostList, } from '../interfaces';
@@ -21,7 +20,7 @@ const BoardPostPreview = ({
       <LinkBox marginBottom='1rem'>
         <Flex>
           <Heading size='md' fontWeight='semibold'>
-            <LinkOverlay as={NextLink} href={`/boards/${board.id}`}>
+            <LinkOverlay href={`/boards/${board.id}`}>
               {board.title}
             </LinkOverlay>
           </Heading>

@@ -1,6 +1,5 @@
 // react
 import { ButtonGroup, HStack, Button, LinkOverlay, } from '@chakra-ui/react';
-import NextLink from 'next/link';
 // etc
 import { ListResponse, } from '../../interfaces';
 
@@ -23,7 +22,7 @@ const Pagination = ({
         key={index}
         variant={pagination === page ? 'solid' : 'outline'}
       >
-        <LinkOverlay as={NextLink} href={pageLinkHref.replaceAll('{{page}}', '' + pagination)}>
+        <LinkOverlay href={pageLinkHref.replaceAll('{{page}}', '' + pagination)}>
           {pagination}
         </LinkOverlay>
       </Button>)}
