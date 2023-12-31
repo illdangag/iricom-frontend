@@ -18,7 +18,7 @@ import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
 
-const PAGE_LIMIT: number = 1;
+const PAGE_LIMIT: number = 10;
 
 type Props = {
   account: Account,

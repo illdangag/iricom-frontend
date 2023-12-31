@@ -44,6 +44,14 @@ const PostListTable = ({
     onChangePost();
   };
 
+  const getPostLinkURL = (post: Post): string => {
+    if (post.publish) {
+      return `/boards/${post.boardId}/posts/${post.id}`;
+    } else {
+      return `/boards/${post.boardId}/posts/${post.id}/edit`;
+    }
+  };
+
   const getPostItem = (post: Post, key: string) => (
     <LinkBox key={key}>
       <VStack align='stretch' spacing='0.2rem'>
@@ -57,12 +65,12 @@ const PostListTable = ({
               height='2rem'
             >
               {!post.ban && <Text marginRight='0.5rem'>
-                <LinkOverlay href={`/boards/${post.boardId}/posts/${post.id}`}>
+                <LinkOverlay href={getPostLinkURL(post)}>
                   {post.title}
                 </LinkOverlay>
               </Text>}
               {post.ban && <Badge colorScheme='red' fontSize='0.8rem' marginRight='0.5rem'>
-                <LinkOverlay href={`/boards/${post.boardId}/posts/${post.id}`}>
+                <LinkOverlay href={getPostLinkURL(post)}>
                   차단된 게시물입니다
                 </LinkOverlay>
               </Badge>}
