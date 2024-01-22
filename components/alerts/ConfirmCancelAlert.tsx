@@ -1,6 +1,7 @@
 // react
 import { useRef, } from 'react';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Text, } from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay,
+  Button, ButtonGroup, Text, } from '@chakra-ui/react';
 
 type Props = {
   title?: string,

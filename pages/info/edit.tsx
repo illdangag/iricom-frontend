@@ -33,6 +33,9 @@ type Props = {
 
 const InfoEditPage = (props: Props) => {
   const router = useRouter();
+
+  const { redirect, } = router.query;
+
   const iricomAPI = useIricomAPI();
   const toast = useToast();
 
@@ -72,7 +75,12 @@ const InfoEditPage = (props: Props) => {
         status: 'success',
         duration: 3000,
       });
-      void router.push('/info');
+
+      if (typeof redirect === 'string') {
+        void router.replace(decodeURIComponent(redirect));
+      } else {
+        void router.push('/info');
+      }
     } catch (error) {
       const iricomError: IricomError = error as IricomError;
       const message: string = iricomError.message;
@@ -83,6 +91,8 @@ const InfoEditPage = (props: Props) => {
       });
       setPageState(PageState.FAIL);
     }
+
+
   };
 
   return (

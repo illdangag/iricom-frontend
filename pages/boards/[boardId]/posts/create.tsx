@@ -6,8 +6,7 @@ import { Card, CardBody, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { BoardTitle, PostEditor, } from '@root/components';
-import { NotExistBoardAlert, } from '@root/components/alerts';
-import { useIricomAPI, } from '@root/hooks';
+import { NotExistBoardAlert, UnregisteredAccountAlert, } from '@root/components/alerts';
 
 // store
 import { useRecoilState, } from 'recoil';
@@ -20,15 +19,16 @@ import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
-  account: Account | null,
+  account: Account | null
+  board: Board,
 }
 
 const PostCreatePage = (props: Props) => {
   const router = useRouter();
-  const iricomAPI = useIricomAPI();
 
-  const [board, setBoard,] = useState<Board | null>(null);
+  const board: Board = Object.assign(new Board(), props.board);
   const [isShowNotExistBoardAlert, setShowNotExistBoardAlert,] = useState<boolean>(false);
+  const [isShowUnregisteredAccountAlert, setShowUnregisteredAccountAlert,] = useState<boolean>(true);
 
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
 
@@ -38,23 +38,15 @@ const PostCreatePage = (props: Props) => {
     }
 
     setAccount(props.account);
-
-    const boardId: string = router.query.boardId as string;
-
-    if (boardId) {
-      void iricomAPI.getBoard(boardId)
-        .then(board => {
-          setBoard(board);
-        })
-        .catch(() => {
-          setBoard(null);
-          setShowNotExistBoardAlert(true);
-        });
-    }
   }, [router.isReady,]);
 
   const onCloseNotExistBoardAlert = () => {
     setShowNotExistBoardAlert(false);
+  };
+
+  const onCloseUnregisteredAccountAlert = () => {
+    setShowUnregisteredAccountAlert(false);
+    void router.back();
   };
 
   const onRequest = (postState: PostState, post: Post) => {
@@ -86,6 +78,11 @@ const PostCreatePage = (props: Props) => {
         </Card>
       </PageBody>
       <NotExistBoardAlert isOpen={isShowNotExistBoardAlert} onClose={onCloseNotExistBoardAlert}/>
+      <UnregisteredAccountAlert
+        isOpen={isShowUnregisteredAccountAlert}
+        onClose={onCloseUnregisteredAccountAlert}
+        redirectURL={`/boards/${board.id}/posts/create`}
+      />
     </MainLayout>
   );
 };
@@ -104,9 +101,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } else {
+
+    const resultList: [Account, Board] = await Promise.all([
+      iricomAPI.getMyAccount(tokenInfo),
+      iricomAPI.getBoard(tokenInfo, boardId),
+    ]);
+
     return {
       props: {
-        account: await iricomAPI.getMyAccount(tokenInfo),
+        account: resultList[0],
+        board: JSON.parse(JSON.stringify(resultList[1])),
       },
     };
   }
