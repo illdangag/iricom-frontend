@@ -27,8 +27,9 @@ const PostCreatePage = (props: Props) => {
   const router = useRouter();
 
   const board: Board = Object.assign(new Board(), props.board);
+
   const [isShowNotExistBoardAlert, setShowNotExistBoardAlert,] = useState<boolean>(false);
-  const [isShowUnregisteredAccountAlert, setShowUnregisteredAccountAlert,] = useState<boolean>(true);
+  const [isShowUnregisteredAccountAlert, setShowUnregisteredAccountAlert,] = useState<boolean>(false);
 
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
 
@@ -38,6 +39,10 @@ const PostCreatePage = (props: Props) => {
     }
 
     setAccount(props.account);
+
+    if (props.account.auth === AccountAuth.UNREGISTERED_ACCOUNT) {
+      setShowUnregisteredAccountAlert(true);
+    }
   }, [router.isReady,]);
 
   const onCloseNotExistBoardAlert = () => {
