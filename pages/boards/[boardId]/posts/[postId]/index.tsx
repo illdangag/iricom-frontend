@@ -190,6 +190,7 @@ type CommentAreaProp = {
   commentList: Comment[],
   onChange: (comment: Comment) => void,
 };
+
 const CommentArea = ({
   board,
   post,

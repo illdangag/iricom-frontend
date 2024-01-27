@@ -1,12 +1,12 @@
 // reacts
 import { useEffect, } from 'react';
-import { GetServerSideProps, GetServerSidePropsResult, } from 'next/types';
+import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
 import BoardPostPreview from '@root/components/BoardPostPreview';
 
 // etc
-import { Account, Board, PostList, PostType, TokenInfo, } from '@root/interfaces';
+import { Account, Board, BoardList, PostList, PostType, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, MAX_WIDTH, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
@@ -60,22 +60,22 @@ const IndexPage = (props: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const result: GetServerSidePropsResult<any> = {
-    props: {},
+  const props: Props = {
+    account: null,
+    boardPostListList: [],
   };
 
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
 
   if (tokenInfo !== null) {
-    result.props.account = await iricomAPI.getMyAccount(tokenInfo);
-  } else {
-    result.props.account = null;
+    props.account = await iricomAPI.getMyAccount(tokenInfo);
   }
 
-  const boardList: Board[] = (await iricomAPI.getBoardList(tokenInfo, 0, 20, true)).boards;
+  const boardList: BoardList = await iricomAPI.getBoardList(tokenInfo, 0, 20, true);
+
   const boardPostListList: BoardPostList[] = [];
 
-  for (const board of boardList) {
+  for (const board of boardList.boards) {
     const postList: PostList = await iricomAPI.getPostList(tokenInfo, board.id, 0, 5, PostType.POST);
     boardPostListList.push({
       board: board,
@@ -83,9 +83,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     } as BoardPostList);
   }
 
-  result.props.boardPostListList = JSON.parse(JSON.stringify(boardPostListList));
+  props.boardPostListList = boardPostListList;
 
-  return result;
+  return {
+    props: JSON.parse(JSON.stringify(props)),
+  };
 };
 
 export default IndexPage;

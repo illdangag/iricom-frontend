@@ -3,7 +3,8 @@ import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
+import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text,
+  VStack, } from '@chakra-ui/react';
 
 import { PageBody, MainLayout, } from '@root/layouts';
 import { PageTitle, PostListTable, } from '@root/components';
@@ -22,7 +23,7 @@ const PAGE_LIMIT: number = 10;
 
 type Props = {
   account: Account,
-  postList: any,
+  postList: PostList,
   page: number,
 };
 
@@ -129,4 +130,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default InfoPage;
-

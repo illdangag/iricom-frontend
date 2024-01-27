@@ -91,8 +91,6 @@ const InfoEditPage = (props: Props) => {
       });
       setPageState(PageState.FAIL);
     }
-
-
   };
 
   return (
@@ -139,7 +137,9 @@ const InfoEditPage = (props: Props) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
 
-  const props : any = {};
+  const props: Props = {
+    account: null,
+  };
 
   if (tokenInfo === null) {
     return {

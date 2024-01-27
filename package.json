@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "env-cmd -f .env.local next -p 3000",
