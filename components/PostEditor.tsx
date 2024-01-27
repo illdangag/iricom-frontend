@@ -1,7 +1,7 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, VStack, } from '@chakra-ui/react';
-import { useIricomAPI, } from '../hooks';
+import { useIricom, } from '../hooks';
 
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -34,7 +34,7 @@ const PostEditor = ({
   boardId = '',
   onRequest = () => {},
 }: Props) => {
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const [editorState, setEditorState,] = useState<EditorState>(EditorState.INVALID);
   const [title, setTitle,] = useState<string>(defaultValue ? defaultValue.title : '');

@@ -2,7 +2,7 @@
 import { useState, } from 'react';
 import { Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, Alert, AlertIcon, AlertDescription, } from '@chakra-ui/react';
 import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, MdBlock, } from 'react-icons/md';
-import { useIricomAPI, } from '../hooks';
+import { useIricom, } from '../hooks';
 import { PostReportAlert, PostBanAlert, } from './alerts';
 
 // store
@@ -44,7 +44,7 @@ const PostView = ({
 }: Props) => {
   const isShowFooter: boolean = isShowShare || isShowBan || isShowBan;
 
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
   const toast = useToast();
 
   const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(requireLoginPopupAtom);

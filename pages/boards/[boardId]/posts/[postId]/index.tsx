@@ -6,7 +6,7 @@ import { Alert, AlertIcon, Card, CardBody, Divider, VStack, AlertDescription, } 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { CommentDeleteAlert, } from '@root/components/alerts';
 import { BoardTitle, CommentEditor, CommentView, PostView, } from '@root/components';
-import { useIricomAPI, } from '@root/hooks';
+import { useIricom, } from '@root/hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -26,7 +26,7 @@ type Props = {
 };
 
 const BoardsPostsPage = (props: Props) => {
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const board: Board = Object.assign(new Board(), props.board);
   const [post, setPost,] = useState<Post | null>(props.post);

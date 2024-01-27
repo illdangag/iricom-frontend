@@ -2,7 +2,7 @@
 import { useRef, useState, useEffect, } from 'react';
 import { AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody,
   AlertDialogFooter, Text, ButtonGroup, Button, } from '@chakra-ui/react';
-import { useIricomAPI, } from '../../hooks';
+import { useIricom, } from '../../hooks';
 // etc
 import { Post, } from '../../interfaces';
 
@@ -26,7 +26,7 @@ const PostDeleteAlert = ({
   post = null,
 }: Props) => {
   const closeRef = useRef();
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const [state, setState,] = useState<State>(State.INVALID);
 

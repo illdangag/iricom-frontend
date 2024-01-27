@@ -6,7 +6,7 @@ import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperTe
 
 import { PageBody, } from '@root/layouts';
 import MainLayout from '@root/layouts/MainLayout';
-import useIricomAPI from '@root/hooks/useIricomAPI';
+import useIricom from '@root/hooks/useIricom';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -34,7 +34,7 @@ type Props = {
 const AdminBoardCreatePage = (props: Props) => {
   const router = useRouter();
   const toast = useToast();
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
   const [title, setTitle,] = useState<string>('');

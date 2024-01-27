@@ -2,7 +2,7 @@
 import { ChangeEvent, ChangeEventHandler, useRef, useState, } from 'react';
 import { AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, ButtonGroup, Button,
   useToast, FormControl, FormLabel, Textarea, } from '@chakra-ui/react';
-import { useIricomAPI, } from '../../hooks';
+import { useIricom, } from '../../hooks';
 
 // etc
 import { IricomError, Post, } from '../../interfaces';
@@ -24,7 +24,7 @@ const PostBanAlert = ({
   post,
 }: Props) => {
   const closeRef = useRef();
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
   const toast = useToast();
 
   const [state, setState,] = useState<ComponentState>(ComponentState.IDLE);

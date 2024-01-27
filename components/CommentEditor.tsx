@@ -1,7 +1,7 @@
 // react
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { Box, Button, HStack, Textarea, } from '@chakra-ui/react';
-import { useIricomAPI, } from '../hooks';
+import { useIricom, } from '../hooks';
 // store
 import { useSetRecoilState, } from 'recoil';
 import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
@@ -29,7 +29,7 @@ const CommentEditor = ({
   autoFocus = false,
   onChange = () => {},
 }: Props) => {
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const setRequireLoginPopup = useSetRecoilState<RequireLoginPopup>(requireLoginPopupAtom);
 

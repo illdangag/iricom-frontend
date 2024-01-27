@@ -8,7 +8,7 @@ import iricomAPI from '../utils/iricomAPI';
 // store
 import { BrowserStorage, getTokenInfo, } from '../utils';
 
-type IricomAPI = {
+type Iricom = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
 
@@ -34,7 +34,7 @@ type IricomAPI = {
   deleteBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
 }
 
-function useIricomAPI (): IricomAPI {
+function useIricom (): Iricom {
   axios.defaults.withCredentials = false;
 
   const defaultErrorHandler = (error: AxiosError): IricomError => {
@@ -43,7 +43,7 @@ function useIricomAPI (): IricomAPI {
     return new IricomError(httpStatusCode, iricomErrorResponse.code, iricomErrorResponse.message);
   };
 
-  const iricomApi: IricomAPI = {
+  const iricomApi: Iricom = {
     getMyAccount: async (tokenInfo: TokenInfo) => {
       try {
         return await iricomAPI.getMyAccount(tokenInfo);
@@ -229,4 +229,4 @@ function useIricomAPI (): IricomAPI {
   return iricomApi;
 }
 
-export default useIricomAPI;
+export default useIricom;

@@ -1,5 +1,5 @@
 import useEmailAuth from './useEmailAuth';
 import useGoogleAuth from './useGoogleAuth';
-import useIricomAPI from './useIricomAPI';
+import useIricom from './useIricom';
 
-export { useEmailAuth, useGoogleAuth, useIricomAPI, };
+export { useEmailAuth, useGoogleAuth, useIricom, };

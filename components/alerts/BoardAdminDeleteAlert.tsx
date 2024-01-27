@@ -1,7 +1,7 @@
 // react
 import { useEffect, useRef, useState, } from 'react';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Text, } from '@chakra-ui/react';
-import { useIricomAPI, } from '../../hooks';
+import { useIricom, } from '../../hooks';
 // etc
 import { Account, Board, BoardAdmin, } from '../../interfaces';
 
@@ -29,7 +29,7 @@ const BoardAdminDeleteAlert = ({
   account = null,
 }: Props) => {
   const cancelRef = useRef();
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const [state, setState,] = useState<State>(State.INVALID);
 

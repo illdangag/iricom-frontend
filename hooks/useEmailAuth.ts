@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { useIricomAPI, } from './index';
+import { useIricom, } from './index';
 // etc
 import { FirebaseProperties, TokenInfo, Account, } from '../interfaces';
 import { FirebaseApp, FirebaseOptions, initializeApp, } from 'firebase/app';
@@ -13,7 +13,7 @@ import { myAccountAtom, } from '../recoil';
 type State = 'ready' | 'request' | 'success' | 'fail';
 
 function useEmailAuth (): [State, (email: string, password: string,) => Promise<void>] {
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const firebaseProperties: FirebaseProperties = process.env.firebase as unknown as FirebaseProperties;
   const setMyAccount = useSetRecoilState<Account | null>(myAccountAtom);

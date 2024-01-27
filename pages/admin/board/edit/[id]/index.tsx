@@ -7,7 +7,7 @@ import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperTe
 import { MainLayout, PageBody, } from '@root/layouts';
 import { NotExistBoardAlert, } from '@root/components/alerts';
 import { PageTitle, } from '@root/components';
-import { useIricomAPI, } from '@root/hooks';
+import { useIricom, } from '@root/hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -35,7 +35,7 @@ type Props = {
 const AdminBoardEditIdPage = (props: Props) => {
   const router = useRouter();
   const toast = useToast();
-  const iriconAPI = useIricomAPI();
+  const iriconAPI = useIricom();
 
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [board, setBoard,] = useState<Board | null>(null);

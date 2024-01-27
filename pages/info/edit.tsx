@@ -7,7 +7,7 @@ import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, For
 import { PageBody, } from '@root/layouts';
 import MainLayout from '@root/layouts/MainLayout';
 import { PageTitle, } from '@root/components';
-import { useIricomAPI, } from '@root/hooks';
+import { useIricom, } from '@root/hooks';
 
 // store
 import { useRecoilState, } from 'recoil';
@@ -36,7 +36,7 @@ const InfoEditPage = (props: Props) => {
 
   const { redirect, } = router.query;
 
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
   const toast = useToast();
 
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);

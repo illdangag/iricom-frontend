@@ -4,7 +4,7 @@ import {
   Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack,
 } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
-import { useIricomAPI, } from '../hooks';
+import { useIricom, } from '../hooks';
 // store
 import { useRecoilValue, useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../recoil';
@@ -36,7 +36,7 @@ const CommentView = ({
   onChange = () => {},
   onClickDelete = () => {},
 }: Props) => {
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
   const toast = useToast();
 
   const account: Account | null = useRecoilValue<Account | null>(myAccountAtom);

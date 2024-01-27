@@ -8,7 +8,7 @@ import { PageBody, MainLayout, } from '@root/layouts';
 import { PostEditor, } from '@root/components';
 import BoarderHeader from '@root/components/BoardTitle';
 import { InvalidPostAlert, PostPublishAlert, } from '@root/components/alerts';
-import { useIricomAPI, } from '@root/hooks';
+import { useIricom, } from '@root/hooks';
 
 // store
 import { useRecoilState, } from 'recoil';
@@ -26,7 +26,7 @@ type Props = {
 
 const BoardsPostsEditPage = (props: Props) => {
   const router = useRouter();
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
 
   const boardId: string = router.query.boardId as string;
   const postId: string = router.query.postId as string;

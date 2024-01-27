@@ -4,7 +4,7 @@ import {
   AlertDialog, AlertDialogOverlay, AlertDialogHeader, AlertDialogBody, AlertDialogContent, AlertDialogFooter, Text, Box, ButtonGroup,
   Button, useToast,
 } from '@chakra-ui/react';
-import { useIricomAPI, } from '@root/hooks';
+import { useIricom, } from '@root/hooks';
 // etc
 import { Comment, } from '../../interfaces';
 
@@ -31,7 +31,7 @@ const CommentDeleteAlert = ({
   onChange = () => {},
 }: Props) => {
   const closeRef = useRef();
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
   const toast = useToast();
 
   const [state, setState,] = useState<State>(State.IDLE);

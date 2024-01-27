@@ -1,6 +1,6 @@
 // react
 import { ChangeEventHandler, MouseEventHandler, useRef, useState, } from 'react';
-import { useIricomAPI, } from '../../hooks';
+import { useIricom, } from '../../hooks';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, FormControl, FormLabel, Select, Textarea, useToast, } from '@chakra-ui/react';
 // etc
 import { IricomError, Post, ReportType, } from '../../interfaces';
@@ -21,7 +21,7 @@ const PostReportAlert = ({
   onClose = () => {},
   post,
 }: Props) => {
-  const iricomAPI = useIricomAPI();
+  const iricomAPI = useIricom();
   const closeRef = useRef();
   const toast = useToast();
 
