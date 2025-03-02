@@ -91,7 +91,7 @@ const BoardsPostsPage = (props: Props) => {
               isShowVote={true}
               isShowShare={true}
               isShowReport={true}
-              isShowBan={board.boardAdmin ? board.boardAdmin : false}
+              isShowBlock={board.boardAdmin ? board.boardAdmin : false}
             />
           </CardBody>
         </Card>}
@@ -112,7 +112,7 @@ const BoardsPostsPage = (props: Props) => {
           </CardBody>
         </Card>}
         {/* 댓글 입력 */}
-        {!post.ban && post.allowComment && <Card
+        {!post.blocked && post.allowComment && <Card
           marginTop='1rem'
           marginBottom='1rem'
           width='100%'

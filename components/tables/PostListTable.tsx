@@ -64,12 +64,12 @@ const PostListTable = ({
               alignItems='center'
               height='2rem'
             >
-              {!post.ban && <Text marginRight='0.5rem'>
+              {!post.blocked && <Text marginRight='0.5rem'>
                 <LinkOverlay href={getPostLinkURL(post)}>
                   {post.title}
                 </LinkOverlay>
               </Text>}
-              {post.ban && <Badge colorScheme='red' fontSize='0.8rem' marginRight='0.5rem'>
+              {post.blocked && <Badge colorScheme='red' fontSize='0.8rem' marginRight='0.5rem'>
                 <LinkOverlay href={getPostLinkURL(post)}>
                   차단된 게시물입니다
                 </LinkOverlay>

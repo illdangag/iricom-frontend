@@ -540,7 +540,6 @@ const IricomAPI: IricomAPIList = {
   },
 
   blockPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string): Promise<Post> => {
-    debugger;
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/block/post/boards/${boardId}/posts/${postId}`,
       method: 'POST',

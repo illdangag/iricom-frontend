@@ -93,7 +93,7 @@ const AdminReportsBoardsBoardIdReportsPage = (props: Props) => {
               isShowVote={false}
               isShowShare={false}
               isShowReport={false}
-              isShowBan={false}
+              isShowBlock={false}
             />
           </CardBody>
         </Card>

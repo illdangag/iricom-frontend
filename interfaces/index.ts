@@ -54,13 +54,14 @@ export class IricomError extends Error {
   private _code: string;
   static messageMap = {
     '04000006': '이미 \'좋아요\' 또는 \'싫어요\'한 게시물입니다.',
+    '04000010': '이미 차단된 게시물입니다.',
     '05000000': '존재하지 않는 댓글입니다.',
     '05000005': '이미 \'좋아요\' 또는 \'싫어요\'한 댓글입니다.',
     '06000001': '이미 신고한 게시물입니다.',
   };
 
   constructor (httpStatusCode: number, code: string, message: string) {
-    super(IricomError.messageMap[code] ? IricomError.messageMap[code] : `${message}(${code})`);
+    super(IricomError.messageMap[code] ? IricomError.messageMap[code] : `${message} (${code})`);
     this._httpStatusCode = httpStatusCode;
     this._code = code;
   }
@@ -189,7 +190,7 @@ export type Post = {
   hasTemporary: boolean,
   boardId: string,
   report: boolean,
-  ban: boolean,
+  blocked: boolean,
   deleted: boolean,
 }
 

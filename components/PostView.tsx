@@ -10,7 +10,7 @@ import { useSetRecoilState, } from 'recoil';
 import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
 
 // etc
-import { NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
+import { IricomError, NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
 import { BORDER_RADIUS, } from '../constants/style';
 import { getFormattedDateTime, getTokenInfo, } from '../utils';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -25,7 +25,7 @@ type Props = {
   isShowVote: boolean,
   isShowShare: boolean,
   isShowReport: boolean,
-  isShowBan: boolean,
+  isShowBlock: boolean,
   onChange?: (post: Post) => void,
 }
 
@@ -39,10 +39,10 @@ const PostView = ({
   isShowVote = false,
   isShowShare = false,
   isShowReport = false,
-  isShowBan = false,
+  isShowBlock = false,
   onChange = () => {},
 }: Props) => {
-  const isShowFooter: boolean = isShowShare || isShowBan || isShowBan;
+  const isShowFooter: boolean = isShowShare || isShowReport || isShowBlock;
 
   const iricomAPI = useIricom();
   const toast = useToast();
@@ -60,13 +60,12 @@ const PostView = ({
       const votedPost: Post = await iricomAPI.votePost(post.boardId, post.id, VoteType.UP);
       onChange(votedPost);
     } catch (error) {
-      if (!(error instanceof NotExistTokenError)) {
-        toast({
-          title: '이미 \'좋아요\'한 게시물입니다.',
-          status: 'warning',
-          duration: 3000,
-        });
-      }
+      const iricomError: IricomError = error as IricomError;
+      toast({
+        title: iricomError.message,
+        status: 'warning',
+        duration: 3000,
+      });
     } finally {
       setViewState(ViewState.IDLE);
     }
@@ -138,7 +137,7 @@ const PostView = ({
       <Box>
         <Flex flexDirection='column'>
           <Flex flexDirection='row' justifyContent='space-between'>
-            {!post.ban && <Heading size='lg' fontWeight='medium'>{post.title}</Heading>}
+            {!post.blocked && <Heading size='lg' fontWeight='medium'>{post.title}</Heading>}
           </Flex>
           <Flex marginTop='1rem'>
             <Text fontSize='0.8rem'>{post.account.nickname}</Text>
@@ -155,7 +154,7 @@ const PostView = ({
             data-color-mode='light'
             style={{ backgroundColor: '#ffffff00', }}
           />}
-          {post.ban && <Alert status='error' borderRadius={BORDER_RADIUS}>
+          {post.blocked && <Alert status='error' borderRadius={BORDER_RADIUS}>
             <AlertIcon/>
             <AlertDescription>차단된 게시물입니다.</AlertDescription>
           </Alert>}
@@ -183,7 +182,7 @@ const PostView = ({
       </Flex>}
       {isShowFooter && <HStack justifyContent='flex-end' marginTop='1rem'>
         <ButtonGroup variant='outline' size='xs'>
-          {isShowBan && !post.ban && <Button
+          {isShowBlock && !post.blocked && <Button
             leftIcon={<MdBlock/>}
             onClick={onClickBanButton}
           >
