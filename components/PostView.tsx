@@ -3,7 +3,7 @@ import { useState, } from 'react';
 import { Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, Alert, AlertIcon, AlertDescription, } from '@chakra-ui/react';
 import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, MdBlock, } from 'react-icons/md';
 import { useIricom, } from '../hooks';
-import { PostReportAlert, PostBanAlert, } from './alerts';
+import { PostReportAlert, PostBlockAlert, } from './alerts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -211,7 +211,7 @@ const PostView = ({
         isOpen={isOpenReport}
         onClose={onCloseReport}
       />
-      <PostBanAlert
+      <PostBlockAlert
         post={post}
         isOpen={isOpenBan}
         onClose={onCloseBan}

@@ -8,10 +8,10 @@ import BoardAdminCreateAlert from './BoardAdminCreateAlert';
 import BoardAdminDeleteAlert from './BoardAdminDeleteAlert';
 import PostDeleteAlert from './PostDeleteAlert';
 import PostReportAlert from './PostReportAlert';
-import PostBanAlert from './PostBanAlert';
+import PostBlockAlert from './PostBlockAlert';
 import CommentDeleteAlert from './CommentDeleteAlert';
 import UnregisteredAccountAlert from './UnregisteredAccountAlert';
 
 export { ConfirmCancelAlert, InvalidPostAlert, NotExistBoardAlert, PostPublishAlert, RequireAccountDetailAlert,
-  RequireLoginAlert, BoardAdminCreateAlert, BoardAdminDeleteAlert, PostDeleteAlert, PostReportAlert, PostBanAlert,
+  RequireLoginAlert, BoardAdminCreateAlert, BoardAdminDeleteAlert, PostDeleteAlert, PostReportAlert, PostBlockAlert,
   CommentDeleteAlert, UnregisteredAccountAlert, };

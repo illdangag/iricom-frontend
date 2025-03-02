@@ -43,7 +43,7 @@ type IricomAPIList = {
   deletePost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
   reportPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
   getPostReport: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reportId: string) => Promise<PostReport>,
-  banPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string) => Promise<Post>,
+  blockPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string) => Promise<Post>,
 
   // 댓글
   getCommentList: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<CommentList>,
@@ -539,9 +539,10 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  banPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string): Promise<Post> => {
+  blockPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string): Promise<Post> => {
+    debugger;
     const config: AxiosRequestConfig = {
-      url: `${backendProperties.host}/v1/ban/post/boards/${boardId}/posts/${postId}`,
+      url: `${backendProperties.host}/v1/block/post/boards/${boardId}/posts/${postId}`,
       method: 'POST',
       data: {
         reason,

@@ -18,7 +18,7 @@ type Props = {
   onClose?: () => void,
 }
 
-const PostBanAlert = ({
+const PostBlockAlert = ({
   isOpen = false,
   onClose = () => {},
   post,
@@ -39,7 +39,7 @@ const PostBanAlert = ({
     setState(ComponentState.REQUEST);
 
     try {
-      await iricomAPI.banPost(post.boardId, post.id, reason);
+      await iricomAPI.blockPost(post.boardId, post.id, reason);
       toast({
         title: '게시물을 차단 하였습니다.',
         status: 'success',
@@ -96,4 +96,4 @@ const PostBanAlert = ({
   </AlertDialog>;
 };
 
-export default PostBanAlert;
+export default PostBlockAlert;
