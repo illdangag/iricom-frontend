@@ -47,6 +47,7 @@ type IricomAPIList = {
   reportPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
   getPostReport: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reportId: string) => Promise<PostReport>,
   blockPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string, reason: string) => Promise<Post>,
+  unblockPost: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<Post>,
 
   // 댓글
   getCommentList: (tokenInfo: TokenInfo | null, boardId: string, postId: string) => Promise<CommentList>,
@@ -565,6 +566,21 @@ const IricomAPI: IricomAPIList = {
       data: {
         reason,
       },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Post> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  unblockPost: async (tokenInfo: TokenInfo | null, boardId: string, postId: string): Promise<Post> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/block/post/boards/${boardId}/posts/${postId}`,
+      method: 'DELETE',
     };
     setToken(config, tokenInfo);
 

@@ -1,16 +1,16 @@
 // react
 import { useState, } from 'react';
-import { Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, Alert, AlertIcon, AlertDescription, } from '@chakra-ui/react';
-import { MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, MdBlock, } from 'react-icons/md';
+import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { MdBlock, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricom, } from '../hooks';
-import { PostReportAlert, PostBlockAlert, } from './alerts';
+import { PostBlockAlert, PostReportAlert, PostUnblockAlert, } from './alerts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
 import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
 
 // etc
-import { IricomError, NotExistTokenError, Post, TokenInfo, VoteType, } from '../interfaces';
+import { IricomError, NotExistTokenError, Post, PostState, TokenInfo, VoteType, } from '../interfaces';
 import { BORDER_RADIUS, } from '../constants/style';
 import { getFormattedDateTime, getTokenInfo, } from '../utils';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -51,7 +51,8 @@ const PostView = ({
 
   const [viewState, setViewState,] = useState<ViewState>(ViewState.IDLE);
   const [isOpenReport, setOpenReport,] = useState<boolean>(false);
-  const [isOpenBan, setOpenBan,] = useState<boolean>(false);
+  const [isOpenBlock, setOpenBlock,] = useState<boolean>(false);
+  const [isOpenUnblock, setOpenUnblock,] = useState<boolean>(false);
 
   const onClickUpvote = async () => {
     setViewState(ViewState.REQUEST);
@@ -120,16 +121,48 @@ const PostView = ({
     }
   };
 
-  const onClickBanButton = async () => {
-    setOpenBan(true);
+  const onClickBlockButton = () => {
+    setOpenBlock(true);
   };
 
-  const onCloseReport = async () => {
+  const onClickUnBlockButton = () => {
+    setOpenUnblock(true);
+  };
+
+  const onCloseReport = () => {
     setOpenReport(false);
   };
 
-  const onCloseBan = async () => {
-    setOpenBan(false);
+  const onCloseBlock = async () => {
+    setOpenBlock(false);
+
+    try {
+      const refreshPost = await iricomAPI.getPost(post.boardId, post.id, PostState.PUBLISH);
+      onChange(refreshPost);
+    } catch (error) {
+      const iricomError: IricomError = error as IricomError;
+      toast({
+        title: iricomError.message,
+        status: 'warning',
+        duration: 3000,
+      });
+    }
+  };
+
+  const onCloseUnblock = async () => {
+    setOpenUnblock(false);
+
+    try {
+      const refreshPost = await iricomAPI.getPost(post.boardId, post.id, PostState.PUBLISH);
+      onChange(refreshPost);
+    } catch (error) {
+      const iricomError: IricomError = error as IricomError;
+      toast({
+        title: iricomError.message,
+        status: 'warning',
+        duration: 3000,
+      });
+    }
   };
 
   return (
@@ -184,9 +217,15 @@ const PostView = ({
         <ButtonGroup variant='outline' size='xs'>
           {isShowBlock && !post.blocked && <Button
             leftIcon={<MdBlock/>}
-            onClick={onClickBanButton}
+            onClick={onClickBlockButton}
           >
             차단
+          </Button>}
+          {isShowBlock && post.blocked && <Button
+            leftIcon={<MdBlock/>}
+            onClick={onClickUnBlockButton}
+          >
+            차단 해제
           </Button>}
         </ButtonGroup>
         <Spacer/>
@@ -205,16 +244,9 @@ const PostView = ({
           </Button>}
         </ButtonGroup>
       </HStack>}
-      <PostReportAlert
-        post={post}
-        isOpen={isOpenReport}
-        onClose={onCloseReport}
-      />
-      <PostBlockAlert
-        post={post}
-        isOpen={isOpenBan}
-        onClose={onCloseBan}
-      />
+      <PostReportAlert post={post} isOpen={isOpenReport} onClose={onCloseReport}/>
+      <PostBlockAlert post={post} isOpen={isOpenBlock} onClose={onCloseBlock}/>
+      <PostUnblockAlert post={post} isOpen={isOpenUnblock} onClose={onCloseUnblock}/>
     </>
   );
 };

@@ -24,6 +24,7 @@ type Iricom = {
   deletePost: (boardId: string, postId: string) => Promise<Post>,
   reportPost: (boardId: string, postId: string, type: ReportType, reason: string) => Promise<PostReport>,
   blockPost: (boardId: string, postId: string, reason: string) => Promise<Post>,
+  unblockPost: (boardId: string, postId: string) => Promise<Post>,
 
   getCommentList: (boardId: string, postId: string) => Promise<CommentList>,
   createComment: (boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
@@ -203,6 +204,16 @@ function useIricom (): Iricom {
 
       try {
         return await iricomAPI.blockPost(tokenInfo, boardId, postId, reason);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    unblockPost: async (boardId: string, postId: string): Promise<Post> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+
+      try {
+        return await iricomAPI.unblockPost(tokenInfo, boardId, postId);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

@@ -1,11 +1,12 @@
 // react
-import { ChangeEvent, ChangeEventHandler, useRef, useState, } from 'react';
+import { useRef, useState, } from 'react';
 import { AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, ButtonGroup, Button,
-  useToast, FormControl, FormLabel, Textarea, } from '@chakra-ui/react';
-import { useIricom, } from '../../hooks';
+  useToast,
+} from '@chakra-ui/react';
+import { useIricom, } from '@root/hooks';
 
 // etc
-import { IricomError, Post, } from '../../interfaces';
+import { IricomError, Post, } from '@root/interfaces';
 
 enum ComponentState {
   IDLE = 'IDLE',
@@ -18,7 +19,7 @@ type Props = {
   onClose?: () => void,
 }
 
-const PostBlockAlert = ({
+const PostUnblockAlert = ({
   isOpen = false,
   onClose = () => {},
   post,
@@ -28,24 +29,17 @@ const PostBlockAlert = ({
   const toast = useToast();
 
   const [state, setState,] = useState<ComponentState>(ComponentState.IDLE);
-  const [reason, setReason,] = useState<string>('');
 
-  const onChangeReason: ChangeEventHandler<HTMLTextAreaElement> = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const value: string = event.target.value;
-    setReason(value);
-  };
-
-  const onClickBlock = async () => {
+  const onClickUnblock = async () => {
     setState(ComponentState.REQUEST);
 
     try {
-      await iricomAPI.blockPost(post.boardId, post.id, reason);
+      await iricomAPI.unblockPost(post.boardId, post.id);
       toast({
-        title: '게시물을 차단 하였습니다.',
+        title: '게시물을 차단 해제 하였습니다.',
         status: 'success',
         duration: 3000,
       });
-      setReason('');
     } catch (error) {
       const iricomError: IricomError = error as IricomError;
       toast({
@@ -62,16 +56,8 @@ const PostBlockAlert = ({
   return <AlertDialog leastDestructiveRef={closeRef} isOpen={isOpen} onClose={onClose}>
     <AlertDialogOverlay/>
     <AlertDialogContent>
-      <AlertDialogHeader>게시물 차단</AlertDialogHeader>
+      <AlertDialogHeader>게시물 차단 해제</AlertDialogHeader>
       <AlertDialogBody>
-        <FormControl>
-          <FormLabel>사유</FormLabel>
-          <Textarea
-            value={reason}
-            onChange={onChangeReason}
-            disabled={state === ComponentState.REQUEST}
-          />
-        </FormControl>
       </AlertDialogBody>
       <AlertDialogFooter>
         <ButtonGroup>
@@ -84,11 +70,10 @@ const PostBlockAlert = ({
             취소
           </Button>
           <Button
-            isDisabled={reason.length === 0}
             isLoading={state === ComponentState.REQUEST}
-            onClick={onClickBlock}
+            onClick={onClickUnblock}
           >
-            차단
+            차단 해제
           </Button>
         </ButtonGroup>
       </AlertDialogFooter>
@@ -96,4 +81,4 @@ const PostBlockAlert = ({
   </AlertDialog>;
 };
 
-export default PostBlockAlert;
+export default PostUnblockAlert;
