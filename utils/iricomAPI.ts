@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import {
   Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList,
-  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType,
+  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo,
 } from '../interfaces';
 import process from 'process';
 
@@ -11,6 +11,9 @@ const firebaseProperties: FirebaseProperties = process.env.firebase as unknown a
 type IricomAPIList = {
   // 토큰
   refreshToken: (tokenInfo: TokenInfo) => Promise<TokenInfo>,
+
+  // 서버
+  getServerInfo: () => Promise<IricomServerInfo>,
 
   // 내 정보
   getMyAccount: (tokenInfo: TokenInfo | null) => Promise<Account>,
@@ -81,6 +84,22 @@ const IricomAPI: IricomAPIList = {
       const refreshToken: string = response.data.refresh_token;
       const expiredDate: Date = new Date((new Date()).getTime() + (Number(response.data.expires_in) * 1000));
       return new TokenInfo(token, refreshToken, expiredDate);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getServerInfo: async (): Promise<IricomServerInfo> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}`,
+      method: 'GET',
+      data: {},
+    };
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const iricomServerInfo = new IricomServerInfo();
+      Object.assign(iricomServerInfo, response.data);
+      return iricomServerInfo;
     } catch (error) {
       throw error;
     }

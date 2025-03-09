@@ -15,13 +15,17 @@ import { myAccountAtom, } from '@root/recoil';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
-import { Account, AccountAuth, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, IricomServerInfo, TokenInfo, } from '@root/interfaces';
 
 type Props = {
   account: Account | null,
+  iricomServerInfo: IricomServerInfo,
 }
 
 const AdminPage = (props: Props) => {
+  // eslint-disable-next-line no-console
+  console.table(props.iricomServerInfo);
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
@@ -101,6 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const iricomServerInfo: IricomServerInfo = await iricomAPI.getServerInfo();
   const account: Account = await iricomAPI.getMyAccount(tokenInfo);
   const auth: AccountAuth = account.auth;
 
@@ -113,6 +118,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       account,
+      iricomServerInfo: JSON.parse(JSON.stringify(iricomServerInfo)),
     },
   };
 };

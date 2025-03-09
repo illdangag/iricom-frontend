@@ -9,6 +9,15 @@ export type BackendProperties = {
 }
 
 // frontend
+export class IricomServerInfo {
+  public branch: string;
+  public commit: string;
+  public tags: string;
+  public version: string;
+  public timestamp: Date;
+  public profile: string;
+}
+
 export class TokenInfo {
   public token: string;
   public refreshToken: string;
