@@ -12,6 +12,7 @@ import PostView from './PostView';
 import PageTitle from './PageTitle';
 import BoardListTable from '././tables/BoardListTable';
 import ReportPostListTable from './tables/ReportPostListTable';
+import PersonalMessageListTable from './tables/PersonalMessageListTable';
 
 export { BoardTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
-  NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, ReportPostListTable, };
+  NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, ReportPostListTable, PersonalMessageListTable, };

@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import {
   Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList,
-  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo,
+  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList,
 } from '../interfaces';
 import process from 'process';
 
@@ -54,6 +54,10 @@ type IricomAPIList = {
   createComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, content: string, referenceCommentId: string | null) => Promise<Comment>,
   voteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string, type: VoteType) => Promise<Comment>,
   deleteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string) => Promise<Comment>,
+
+  // 개인 쪽지
+  getReceivePersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
+  getSendPersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
 }
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -663,6 +667,48 @@ const IricomAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Comment> = await axios.request(config);
       return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getReceivePersonalMessageList: async (tokenInfo: TokenInfo, skip: number, limit: number): Promise<PersonalMessageList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/personal/messages/receive`,
+      method: 'GET',
+      params: {
+        skip: skip,
+        limit: limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: PersonalMessageList = new PersonalMessageList();
+      Object.assign(result, response.data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getSendPersonalMessageList: async (tokenInfo: TokenInfo, skip: number, limit: number): Promise<PersonalMessageList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/personal/messages/send`,
+      method: 'GET',
+      params: {
+        skip: skip,
+        limit: limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Object> = await axios.request(config);
+      const result: PersonalMessageList = new PersonalMessageList();
+      Object.assign(result, response.data);
+      return result;
     } catch (error) {
       throw error;
     }
