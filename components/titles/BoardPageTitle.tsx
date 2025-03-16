@@ -2,14 +2,14 @@
 import { Box, Button, Heading, HStack, Link, Text, } from '@chakra-ui/react';
 import { MdCreate, } from 'react-icons/md';
 // etc
-import { Board, } from '../interfaces';
+import { Board, } from '../../interfaces';
 
 type Props = {
   board: Board,
   isShowCreateButton?: boolean,
 }
 
-const BoarderHeader = ({
+const BoarderPageHeader = ({
   board,
   isShowCreateButton = false,
 }: Props) => {
@@ -39,4 +39,4 @@ const BoarderHeader = ({
   );
 };
 
-export default BoarderHeader;
+export default BoarderPageHeader;

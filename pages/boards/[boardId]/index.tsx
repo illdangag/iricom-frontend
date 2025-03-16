@@ -4,7 +4,7 @@ import { GetServerSideProps, } from 'next/types';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
-import { NoContent, PostListTable, BoardTitle, } from '@root/components';
+import { NoContent, PostListTable, BoardPageTitle, } from '@root/components';
 import { RequireAccountDetailAlert, } from '@root/components/alerts';
 
 // store
@@ -51,7 +51,7 @@ const BoardsPage = (props: Props) => {
   return (
     <MainLayout>
       <PageBody>
-        {board && <BoardTitle board={board} isShowCreateButton={true}/>}
+        {board && <BoardPageTitle board={board} isShowCreateButton={true}/>}
         <VStack align='stretch'>
           {notificationList && notificationList.total > 0 && <Card
             shadow={{ base: 'none', md: 'sm', }}

@@ -5,7 +5,7 @@ import { Alert, AlertIcon, Card, CardBody, Divider, VStack, AlertDescription, } 
 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { CommentDeleteAlert, } from '@root/components/alerts';
-import { BoardTitle, CommentEditor, CommentView, PostView, } from '@root/components';
+import { BoardPageTitle, CommentEditor, CommentView, PostView, } from '@root/components';
 import { useIricom, } from '@root/hooks';
 
 // store
@@ -78,7 +78,7 @@ const BoardsPostsPage = (props: Props) => {
   return (
     <MainLayout>
       <PageBody>
-        {board && <BoardTitle board={board}/>}
+        {board && <BoardPageTitle board={board}/>}
         {post && <Card
           width='100%'
           shadow={{ base: 'none', md: 'sm', }}

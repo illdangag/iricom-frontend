@@ -4,14 +4,14 @@ import { GetServerSideProps, } from 'next/types';
 import { Tabs, TabList, Tab, TabPanels, TabPanel, Card, CardBody, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
-import { PageTitle, PersonalMessageListTable, } from '@root/components';
+import { PersonalMessageListTable, PersonalMessagePageTitle, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, PersonalMessageList, TokenInfo, } from '@root/interfaces';
+import { Account, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
@@ -22,7 +22,7 @@ type Props = {
   sendMessageList: PersonalMessageList,
 };
 
-const MessagePage = (props: Props) => {
+const PersonalMessagePage = (props: Props) => {
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const receiveMessageList = Object.assign(new PersonalMessageList(), props.receiveMessageList);
   const sendMessageList = Object.assign(new PersonalMessageList(), props.sendMessageList);
@@ -33,7 +33,7 @@ const MessagePage = (props: Props) => {
 
   return <MainLayout>
     <PageBody>
-      <PageTitle title='쪽지함'/>
+      <PersonalMessagePageTitle/>
       <Card
         shadow={{ base: 'none', md: 'sm', }}
         borderRadius={{ base: '0', md: BORDER_RADIUS, }}
@@ -69,12 +69,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
-
   const receiveMessageList: PersonalMessageList = await iricomAPI.getReceivePersonalMessageList(tokenInfo, 0, 20);
   const sendMessageList: PersonalMessageList = await iricomAPI.getSendPersonalMessageList(tokenInfo, 0, 20);
   return {
@@ -86,4 +80,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default MessagePage;
+export default PersonalMessagePage;

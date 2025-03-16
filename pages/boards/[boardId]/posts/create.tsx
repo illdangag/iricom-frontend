@@ -5,7 +5,7 @@ import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
-import { BoardTitle, PostEditor, } from '@root/components';
+import { BoardPageTitle, PostEditor, } from '@root/components';
 import { NotExistBoardAlert, UnregisteredAccountAlert, } from '@root/components/alerts';
 
 // store
@@ -66,7 +66,7 @@ const PostCreatePage = (props: Props) => {
     <MainLayout>
       <PageBody>
         {/* 게시판 헤더 */}
-        {board && <BoardTitle board={board} isShowCreateButton={false}/>}
+        {board && <BoardPageTitle board={board} isShowCreateButton={false}/>}
         {/* 게시물 에디터 */}
         <Card
           shadow={{ base: 'none', md: 'sm', }}
