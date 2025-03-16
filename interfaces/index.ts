@@ -257,6 +257,7 @@ export type PersonalMessage = {
   createDate: number,
   updateDate: number,
   title: string,
+  message: string|null,
   receivedConfirm: boolean,
 }
 

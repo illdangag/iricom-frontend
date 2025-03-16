@@ -14,7 +14,8 @@ import BoardListTable from '././tables/BoardListTable';
 import ReportPostListTable from './tables/ReportPostListTable';
 import PersonalMessageListTable from './tables/PersonalMessageListTable';
 import PersonalMessagePageTitle from './titles/PersonalMessagePageTitle';
+import PersonalMessageEditor from './PersonalMessageEditor';
 
 export { BoardPageTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
   NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, ReportPostListTable, PersonalMessageListTable,
-  PersonalMessagePageTitle, };
+  PersonalMessagePageTitle, PersonalMessageEditor, };

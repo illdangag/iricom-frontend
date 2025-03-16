@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import {
   Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList,
-  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList,
+  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList, PersonalMessage,
 } from '../interfaces';
 import process from 'process';
 
@@ -28,6 +28,7 @@ type IricomAPIList = {
 
   // 계정
   getAccountList: (tokenInfo: TokenInfo | null, skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
+  getAccount: (tokenInfo: TokenInfo | null, accountId: string) => Promise<Account>,
 
   // 게시판
   getBoardList: (tokenInfo: TokenInfo | null, skip: number, limit: number, enabled: boolean | null) => Promise<BoardList>,
@@ -58,6 +59,7 @@ type IricomAPIList = {
   // 개인 쪽지
   getReceivePersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
   getSendPersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
+  sendPersonalMessage: (tokenInfo: TokenInfo, receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
 }
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -400,6 +402,21 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
+  getAccount: async (tokenInfo: TokenInfo | null, accountId: string): Promise<Account> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/accounts/${accountId}`,
+      method: 'GET',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Account> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getPostList: async (tokenInfo: TokenInfo | null, boardId: string, skip: number = 0, limit: number = 20, type: PostType | null): Promise<PostList> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/boards/${boardId}/posts`,
@@ -709,6 +726,26 @@ const IricomAPI: IricomAPIList = {
       const result: PersonalMessageList = new PersonalMessageList();
       Object.assign(result, response.data);
       return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  sendPersonalMessage: async (tokenInfo: TokenInfo, receiveAccountId: string, title: string, message: string): Promise<PersonalMessage> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/personal/messages`,
+      method: 'POST',
+      data: {
+        title: title,
+        message: message,
+        receiveAccountId: receiveAccountId,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PersonalMessage> = await axios.request(config);
+      return response.data;
     } catch (error) {
       throw error;
     }

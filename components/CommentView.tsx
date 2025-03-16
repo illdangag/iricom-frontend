@@ -1,7 +1,7 @@
 // react
 import { useState, MouseEvent, } from 'react';
 import {
-  Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack,
+  Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Link, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack,
 } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricom, } from '../hooks';
@@ -124,7 +124,16 @@ const CommentView = ({
       <VStack alignItems='stretch'>
         <HStack>
           <VStack alignItems='stretch'>
-            <Text fontSize='.8rem'>{comment.account.nickname}</Text>
+            <Box>
+              <Menu size='sm'>
+                <MenuButton as={Text} fontSize='.8rem'>{comment.account.nickname}</MenuButton>
+                <MenuList fontSize='0.8rem'>
+                  <Link href={`/message/create?to=${comment.account.id}`} _hover={{ textDecoration: 'none', }}>
+                    <MenuItem>쪽지 보내기</MenuItem>
+                  </Link>
+                </MenuList>
+              </Menu>
+            </Box>
             <Text fontSize='.6rem'>{getFormattedDateTime(comment.createDate)}</Text>
           </VStack>
           <Spacer/>

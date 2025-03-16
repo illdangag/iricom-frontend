@@ -2,15 +2,12 @@
 import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
-
 import { MainLayout, PageBody, } from '@root/layouts';
 import { NoContent, PostListTable, BoardPageTitle, } from '@root/components';
 import { RequireAccountDetailAlert, } from '@root/components/alerts';
-
 // store
 import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '@root/recoil';
-
 // etc
 import { Account, Board, PostList, PostType, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';

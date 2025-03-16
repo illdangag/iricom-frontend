@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Flex, Heading, HStack, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Flex, Heading, HStack, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, Link, } from '@chakra-ui/react';
 import { MdBlock, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricom, } from '../hooks';
 import { PostBlockAlert, PostReportAlert, PostUnblockAlert, } from './alerts';
@@ -256,7 +256,9 @@ const PostViewHeader = ({
           <Menu size='sm'>
             <MenuButton as={Text} fontSize='0.8rem'>{post.account.nickname}</MenuButton>
             <MenuList fontSize='0.8rem'>
-              <MenuItem>쪽지 보내기</MenuItem>
+              <Link href={`/message/create?to=${post.account.id}`} _hover={{ textDecoration: 'none', }}>
+                <MenuItem>쪽지 보내기</MenuItem>
+              </Link>
             </MenuList>
           </Menu>
         </Box>

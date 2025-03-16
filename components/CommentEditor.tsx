@@ -1,12 +1,12 @@
 // react
 import { ChangeEvent, useState, useEffect, } from 'react';
 import { Box, Button, HStack, Textarea, } from '@chakra-ui/react';
-import { useIricom, } from '../hooks';
+import { useIricom, } from '@root/hooks';
 // store
 import { useSetRecoilState, } from 'recoil';
-import requireLoginPopupAtom, { RequireLoginPopup, } from '../recoil/requireLoginPopup';
+import requireLoginPopupAtom, { RequireLoginPopup, } from '@root/recoil/requireLoginPopup';
 // etc
-import { NotExistTokenError, Comment, } from '../interfaces';
+import { NotExistTokenError, Comment, } from '@root/interfaces';
 
 enum EditorState {
   INVALID,
