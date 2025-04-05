@@ -41,7 +41,7 @@ export function getFormattedDateTime (time: number): string {
   let hour: number = targetDate.getHours();
   const minute: number = targetDate.getMinutes();
 
-  return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute}`;
+  return `${year}-${month >= 10 ? month : '0' + month}-${date >= 10 ? date : '0' + date} ${hour >= 10 ? hour : '0' + hour}:${minute >= 10 ? minute : '0' + minute}`;
 }
 
 export function getTokenInfoByCookies (context: GetServerSidePropsContext): Promise<TokenInfo | null> {
