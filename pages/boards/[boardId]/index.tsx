@@ -12,7 +12,7 @@ import { myAccountAtom, } from '@root/recoil';
 import { Account, Board, PostList, PostType, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { getTokenInfoByCookies, parseInt, } from '@root/utils';
 
 const PAGE_LIMIT: number = 10;
 const NOTIFICATION_PAGE_LIMIT: number = 5;
@@ -22,13 +22,11 @@ type Props = {
   board: Board,
   postList: PostList,
   notificationList: PostList,
-  page: number,
   boardId: string,
 };
 
 const BoardsPage = (props: Props) => {
   const boardId: string = props.boardId;
-  const page: number = props.page;
   const board = Object.assign(new Board(), props.board as Board);
   const postList = Object.assign(new PostList(), props.postList as PostList);
   const notificationList = Object.assign(new PostList(), props.notificationList as PostList);
@@ -71,7 +69,7 @@ const BoardsPage = (props: Props) => {
             <CardBody>
               <PostListTable
                 postList={postList}
-                page={page}
+                page={postList.currentPage}
                 isShowPostState={false}
                 pageLinkHref={`/boards/${boardId}?page={{page}}`}
               />
@@ -99,9 +97,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;
 
-  const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
-  const skip: number = PAGE_LIMIT * (page - 1);
+  const page: number = parseInt(pageQuery, 1);
   const limit: number = PAGE_LIMIT;
+  const skip: number = limit * (page - 1);
 
   const resultList = await Promise.all([
     iricomAPI.getBoard(tokenInfo, boardId),
@@ -117,7 +115,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       account,
       boardId,
-      page,
       board: JSON.parse(JSON.stringify(board)),
       postList: JSON.parse(JSON.stringify(postList)),
       notificationList: JSON.parse(JSON.stringify(notificationList)),

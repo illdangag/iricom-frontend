@@ -88,3 +88,23 @@ export function getTokenInfo (): Promise<TokenInfo | null> {
     }
   });
 }
+
+export function parseInt (value: string, defaultValue: number): number {
+  const result: number = Number.parseInt(value);
+
+  if (Number.isNaN(result)) {
+    return defaultValue;
+  } else {
+    return result;
+  }
+}
+
+export function parseEnum (value: string, enumType: object, defaultValue: any) {
+  const keyList: string[] = Object.keys(enumType);
+  for (let key of keyList) {
+    if (enumType[key] === value) {
+      return enumType[key];
+    }
+  }
+  return defaultValue;
+}
