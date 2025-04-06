@@ -1,7 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Tabs, TabList, Tab, TabPanels, TabPanel, Card, CardBody, } from '@chakra-ui/react';
+import { Card, CardBody, HStack, VStack, Button, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { PersonalMessageListTable, PersonalMessagePageTitle, } from '@root/components';
@@ -35,14 +35,21 @@ const PersonalMessagePage = (props: Props) => {
   const receiveMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.receiveMessageList);
   const sendMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.sendMessageList);
   const tab: PAGE_TAB = props.tab;
-  console.log(tab);
 
   useEffect(() => {
     setAccount(props.account);
   }, []);
 
-  const onChangeTab = (index: number) => {
-    window.location.href = `?receive_page=${receiveMessageList.currentPage}&send_page=${sendMessageList.currentPage}&tab=${index === 0 ? PAGE_TAB.RECEIVE : PAGE_TAB.SEND}`;
+  const getGetParameter = (receivePage: string, sendPage: string, tab: PAGE_TAB): string => {
+    return `?receive_page=${receivePage}&send_page=${sendPage}&tab=${tab}`;
+  };
+
+  const onClickReceiveButton = () => {
+    window.location.href = getGetParameter('' + receiveMessageList.currentPage, '' + sendMessageList.currentPage, PAGE_TAB.RECEIVE);
+  };
+
+  const onClickSendButton = () => {
+    window.location.href = getGetParameter('' + receiveMessageList.currentPage, '' + sendMessageList.currentPage, PAGE_TAB.SEND);
   };
 
   return <MainLayout>
@@ -53,33 +60,34 @@ const PersonalMessagePage = (props: Props) => {
         borderRadius={{ base: '0', md: BORDER_RADIUS, }}
       >
         <CardBody>
-          <Tabs
-            variant='line'
-            size='sm'
-            defaultIndex={tab === PAGE_TAB.SEND ? 1 : 0}
-            onChange={onChangeTab}
-          >
-            <TabList>
-              <Tab>받은 쪽지</Tab>
-              <Tab>보낸 쪽지</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                <PersonalMessageListTable
-                  personalMessageList={receiveMessageList}
-                  page={receiveMessageList.currentPage}
-                  pageLinkHref={`?receive_page={{page}}&send_page=${sendMessageList.currentPage}&tab=${tab}`}
-                />
-              </TabPanel>
-              <TabPanel>
-                <PersonalMessageListTable
-                  personalMessageList={sendMessageList}
-                  page={sendMessageList.currentPage}
-                  pageLinkHref={`?receive_page=${receiveMessageList.currentPage}&send_page={{page}}&tab=${tab}`}
-                />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+          <VStack alignItems='stretch'>
+            <HStack justifyContent='flex-start' gap='0.5rem' paddingBottom='0.5rem'>
+              <Button
+                size='sm' variant='link'
+                colorScheme={tab === PAGE_TAB.RECEIVE ? 'blue' : 'gray'}
+                onClick={onClickReceiveButton}
+              >
+                받은 쪽지
+              </Button>
+              <Button
+                size='sm' variant='link'
+                colorScheme={tab === PAGE_TAB.SEND ? 'blue' : 'gray'}
+                onClick={onClickSendButton}
+              >
+                보낸 쪽지
+              </Button>
+            </HStack>
+            {tab === PAGE_TAB.RECEIVE && <PersonalMessageListTable
+              personalMessageList={receiveMessageList}
+              page={receiveMessageList.currentPage}
+              pageLinkHref={getGetParameter('{{page}}', '' + sendMessageList.currentPage, tab)}
+            />}
+            {tab === PAGE_TAB.SEND && <PersonalMessageListTable
+              personalMessageList={sendMessageList}
+              page={sendMessageList.currentPage}
+              pageLinkHref={getGetParameter('' + receiveMessageList.currentPage, '{{page}}', tab)}
+            />}
+          </VStack>
         </CardBody>
       </Card>
     </PageBody>

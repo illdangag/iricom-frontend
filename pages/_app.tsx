@@ -1,8 +1,12 @@
 // react
 import './global.scss';
 import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
+
 // store
 import { RecoilRoot, } from 'recoil';
+
+// theme
+import { cardTheme, } from '@root/themes';
 
 const theme = extendTheme({
   fonts: {
@@ -24,6 +28,7 @@ const theme = extendTheme({
     '2xl': '96rem', // 1536px
   },
   components: {
+    Card: cardTheme,
     Button: {
       variants: {
         solid: {
