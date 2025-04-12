@@ -60,6 +60,7 @@ type IricomAPIList = {
   getReceivePersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
   getSendPersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
   sendPersonalMessage: (tokenInfo: TokenInfo, receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
+  getReceivePersonalMessage: (tokenInfo: TokenInfo, personalMessageId: string) => Promise<PersonalMessage>,
 }
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -740,6 +741,21 @@ const IricomAPI: IricomAPIList = {
         message: message,
         receiveAccountId: receiveAccountId,
       },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PersonalMessage> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getReceivePersonalMessage: async (tokenInfo: TokenInfo, personalMessageId: string): Promise<PersonalMessage> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/personal/messages/receive/${personalMessageId}`,
+      method: 'GET',
     };
     setToken(config, tokenInfo);
 

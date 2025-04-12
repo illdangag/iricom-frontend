@@ -1,6 +1,5 @@
 // react
-import { Button, HStack, Link, } from '@chakra-ui/react';
-import { MdEditNote, } from 'react-icons/md';
+import { HStack, } from '@chakra-ui/react';
 import PageTitle from './PageTitle';
 
 // etc

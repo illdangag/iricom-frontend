@@ -45,7 +45,6 @@ const PersonalMessageCreatePage = (props: Props) => {
   }, [router.isReady,]);
 
   const onChangePersonalMessage = async (personalMessage: PersonalMessage) => {
-    console.log(toAccount, personalMessage);
     setPageState(PageState.REQUEST);
     void await iricomAPI.sendPersonalMessage(toAccount.id, personalMessage.title, personalMessage.message);
     window.location.href = '/message';

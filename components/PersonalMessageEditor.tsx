@@ -34,6 +34,8 @@ const PersonalMessageEditor = ({
       title: title,
       message: message,
       receivedConfirm: false,
+      sendAccount: null,
+      receiveAccount: null,
     };
     onChange(personalMessage);
   };

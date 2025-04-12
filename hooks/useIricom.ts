@@ -246,7 +246,7 @@ function useIricom (): Iricom {
       } catch (error) {
         throw defaultErrorHandler(error);
       }
-    }
+    },
   };
 
   return iricomApi;
