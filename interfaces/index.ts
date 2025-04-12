@@ -251,3 +251,18 @@ export type PostReport = {
 export class PostReportList extends ListResponse {
   public reports: PostReport[];
 }
+
+export type PersonalMessage = {
+  id: string,
+  createDate: number,
+  updateDate: number,
+  title: string,
+  message: string|null,
+  receivedConfirm: boolean,
+  sendAccount: Account,
+  receiveAccount: Account,
+}
+
+export class PersonalMessageList extends ListResponse {
+  public personalMessages: PersonalMessage[];
+}

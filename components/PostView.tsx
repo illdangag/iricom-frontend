@@ -1,6 +1,6 @@
 // react
 import { useState, } from 'react';
-import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Flex, Heading, HStack, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Flex, Heading, HStack, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, Link, Divider, } from '@chakra-ui/react';
 import { MdBlock, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
 import { useIricom, } from '../hooks';
 import { PostBlockAlert, PostReportAlert, PostUnblockAlert, } from './alerts';
@@ -168,19 +168,8 @@ const PostView = ({
   return (
     <>
       <Box>
-        <Flex flexDirection='column'>
-          <Flex flexDirection='row' justifyContent='space-between'>
-            {!post.blocked && <Heading size='lg' fontWeight='medium'>{post.title}</Heading>}
-          </Flex>
-          <Flex marginTop='1rem'>
-            <Text fontSize='0.8rem'>{post.account.nickname}</Text>
-            <Spacer/>
-            <VStack alignItems='flex-end' spacing='0.2rem'>
-              <Text fontSize='0.8rem'>{getFormattedDateTime(post.createDate)}</Text>
-              <Text fontSize='0.8rem'>조회수: {post.viewCount}</Text>
-            </VStack>
-          </Flex>
-        </Flex>
+        <PostViewHeader post={post}/>
+        <Divider marginTop='0.8rem' marginBottom='0.8rem'/>
         <Box padding='0.5rem' marginBottom='0.5rem'>
           {post.content && <MarkdownPreview
             source={post.content}
@@ -249,6 +238,37 @@ const PostView = ({
       <PostUnblockAlert post={post} isOpen={isOpenUnblock} onClose={onCloseUnblock}/>
     </>
   );
+};
+
+type HeaderProps = {
+  post: Post,
+}
+
+const PostViewHeader = ({
+  post,
+}: HeaderProps) => {
+  return <Flex flexDirection='column'>
+    <Flex flexDirection='row' justifyContent='space-between'>
+      {!post.blocked && <Heading size='lg' fontWeight='medium'>{post.title}</Heading>}
+    </Flex>
+    <Flex marginTop='1rem'>
+      <Box>
+        <Menu size='sm'>
+          <MenuButton as={Text} fontSize='0.8rem' cursor='pointer'>{post.account.nickname}</MenuButton>
+          <MenuList fontSize='0.8rem'>
+            <Link href={`/message/create?to=${post.account.id}`} _hover={{ textDecoration: 'none', }}>
+              <MenuItem>쪽지 보내기</MenuItem>
+            </Link>
+          </MenuList>
+        </Menu>
+      </Box>
+      <Spacer/>
+      <VStack alignItems='flex-end' spacing='0.2rem'>
+        <Text fontSize='0.8rem'>{getFormattedDateTime(post.createDate)}</Text>
+        <Text fontSize='0.8rem'>조회수: {post.viewCount}</Text>
+      </VStack>
+    </Flex>
+  </Flex>;
 };
 
 export default PostView;

@@ -71,6 +71,11 @@ const Header = ({
           내 정보
         </MenuItem>
       </NextLink>
+      <NextLink href='/message'>
+        <MenuItem>
+          쪽지함
+        </MenuItem>
+      </NextLink>
       <MenuItem fontSize='1rem' onClick={onClickSignOut}>
         로그아웃
       </MenuItem>
@@ -90,6 +95,11 @@ const Header = ({
           내 정보
         </MenuItem>
       </NextLink>
+      <NextLink href='/message'>
+        <MenuItem>
+          쪽지함
+        </MenuItem>
+      </NextLink>
       <MenuItem fontSize='1rem' onClick={onClickSignOut}>
         로그아웃
       </MenuItem>
@@ -102,6 +112,11 @@ const Header = ({
       <NextLink href='/info'>
         <MenuItem>
           내 정보
+        </MenuItem>
+      </NextLink>
+      <NextLink href='/message'>
+        <MenuItem>
+          쪽지함
         </MenuItem>
       </NextLink>
       <MenuItem fontSize='1rem' onClick={onClickSignOut}>

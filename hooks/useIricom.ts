@@ -1,6 +1,6 @@
 // etc
 import {
-  Account, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, Post, PostReport, PostState,
+  Account, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, Post, PostReport, PostState,
   PostType, ReportType, TokenInfo, VoteType,
 } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
@@ -33,6 +33,8 @@ type Iricom = {
 
   createBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
   deleteBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
+
+  sendPersonalMessage: (receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
 }
 
 function useIricom (): Iricom {
@@ -232,6 +234,15 @@ function useIricom (): Iricom {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.deleteBoardAdmin(tokenInfo, boardId, accountId);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    sendPersonalMessage: async (receiveAccountId: string, title: string, message: string):Promise<PersonalMessage> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.sendPersonalMessage(tokenInfo, receiveAccountId, title, message);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

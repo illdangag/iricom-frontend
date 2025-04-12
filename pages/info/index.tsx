@@ -3,16 +3,12 @@ import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text,
-  VStack, } from '@chakra-ui/react';
-
+import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { PageBody, MainLayout, } from '@root/layouts';
 import { PageTitle, PostListTable, } from '@root/components';
-
 // store
 import { useRecoilState, } from 'recoil';
 import { myAccountAtom, } from '@root/recoil';
-
 // etc
 import { Account, AccountAuth, PostList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
