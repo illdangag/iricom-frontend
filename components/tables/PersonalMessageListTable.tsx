@@ -10,12 +10,20 @@ type Props = {
   personalMessageList: PersonalMessageList,
   page: number,
   pageLinkHref?: string,
+  isShowNewBadge?: boolean,
+  isShowSendAccount?: boolean,
+  isShowReceiveAccount?: boolean,
+  isShowReceivedConfirm?: boolean,
 }
 
 const PersonalMessageListTable = ({
   personalMessageList,
   page,
   pageLinkHref = '?page={{page}}',
+  isShowNewBadge = false,
+  isShowSendAccount = false,
+  isShowReceiveAccount = false,
+  isShowReceivedConfirm = false,
 }: Props) => {
   return <VStack alignItems='stretch'>
     <TableContainer>
@@ -24,13 +32,19 @@ const PersonalMessageListTable = ({
           <Tr>
             <Th width='5rem'>날짜</Th>
             <Th>제목</Th>
+            {isShowSendAccount && <Th width='8rem'>보낸 사람</Th>}
+            {isShowReceiveAccount && <Th width='8rem'>받은 사람</Th>}
+            {isShowReceivedConfirm && <Th width='5rem'>수신 여부</Th>}
           </Tr>
         </Thead>
         <Tbody>
           {personalMessageList.personalMessages.map((message) => {
             return <Tr key={'pm_' + message.id}>
               <Td>{getFormattedDateTime(message.createDate)}</Td>
-              <Td>{message.title}{message.receivedConfirm ? '' : <Badge fontSize='0.5rem' variant='outline' colorScheme='red' marginLeft='0.2rem'>NEW</Badge>}</Td>
+              <Td>{message.title}{isShowNewBadge && !message.receivedConfirm && <Badge fontSize='0.5rem' variant='outline' colorScheme='red' marginLeft='0.2rem'>NEW</Badge>}</Td>
+              {isShowSendAccount && <Td>{message.receiveAccount.nickname}</Td>}
+              {isShowReceiveAccount && <Td>{message.receiveAccount.nickname}</Td>}
+              {isShowReceivedConfirm && <Td>{message.receivedConfirm ? '읽음' : '읽지 않음'}</Td>}
             </Tr>;
           })}
         </Tbody>

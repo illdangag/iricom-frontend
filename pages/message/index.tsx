@@ -81,11 +81,15 @@ const PersonalMessagePage = (props: Props) => {
               personalMessageList={receiveMessageList}
               page={receiveMessageList.currentPage}
               pageLinkHref={getGetParameter('{{page}}', '' + sendMessageList.currentPage, tab)}
+              isShowNewBadge={true}
+              isShowSendAccount={true}
             />}
             {tab === PAGE_TAB.SEND && <PersonalMessageListTable
               personalMessageList={sendMessageList}
               page={sendMessageList.currentPage}
               pageLinkHref={getGetParameter('' + receiveMessageList.currentPage, '{{page}}', tab)}
+              isShowReceiveAccount={true}
+              isShowReceivedConfirm={true}
             />}
           </VStack>
         </CardBody>

@@ -259,6 +259,8 @@ export type PersonalMessage = {
   title: string,
   message: string|null,
   receivedConfirm: boolean,
+  sendAccount: Account,
+  receiveAccount: Account,
 }
 
 export class PersonalMessageList extends ListResponse {
