@@ -42,7 +42,7 @@ const PersonalMessageListTable = ({
             return <Tr key={'pm_' + message.id}>
               <Td>{getFormattedDateTime(message.createDate)}</Td>
               <Td>
-                <Link href={`/message/${message.id}`}>
+                <Link href={`/message/${message.id}?type=${isShowSendAccount ? 'receive' : 'send'}`}>
                   {message.title}{isShowNewBadge && !message.receivedConfirm && <Badge fontSize='0.5rem' variant='outline' colorScheme='red' marginLeft='0.2rem'>NEW</Badge>}
                 </Link>
               </Td>
