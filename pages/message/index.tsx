@@ -123,9 +123,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const sendLimit: number = PAGE_LIMIT;
   const sendSkip: number = sendLimit * (sendPage - 1);
 
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  const receiveMessageList: PersonalMessageList = await iricomAPI.getReceivePersonalMessageList(tokenInfo, receiveSkip, receiveLimit);
-  const sendMessageList: PersonalMessageList = await iricomAPI.getSendPersonalMessageList(tokenInfo, sendSkip, sendLimit);
+  const apiRequestList: Promise<any>[] = [
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, receiveSkip, receiveLimit),
+    iricomAPI.getSendPersonalMessageList(tokenInfo, sendSkip, sendLimit),
+  ];
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled(apiRequestList);
+  const isAllSuccess: boolean = responseList.findIndex((item) => item.status !== 'fulfilled') === -1;
+  if (!isAllSuccess) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const accountResponse: PromiseFulfilledResult<Account> = responseList[0] as PromiseFulfilledResult<Account>;
+  const receiveMessageResponse: PromiseFulfilledResult<PersonalMessageList> = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+  const sendMessageResponse: PromiseFulfilledResult<PersonalMessageList> = responseList[2] as PromiseFulfilledResult<PersonalMessageList>;
+
+  const account: Account = accountResponse.value;
+  const receiveMessageList: PersonalMessageList = receiveMessageResponse.value;
+  const sendMessageList: PersonalMessageList = sendMessageResponse.value;
+
   return {
     props: {
       tab: pageTab,
