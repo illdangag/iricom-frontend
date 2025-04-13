@@ -2,7 +2,7 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Button, Card, CardBody, Flex, Heading, Link, Menu, MenuButton, MenuItem, MenuList, Avatar, Text, } from '@chakra-ui/react';
+import { Avatar, Box, Button, Card, CardBody, Flex, Heading, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
 // etc
 import { Account, AccountAuth, TokenInfo, } from '../interfaces';
 import { MAX_WIDTH, } from '../constants/style';
@@ -18,6 +18,7 @@ type Props = {
 enum HeaderState {
   NONE = 'NONE',
   NOT_LOGIN = 'NOT_LOGIN',
+  UNREGISTERED_ACCOUNT = 'UNREGISTERED_ACCOUNT',
   ACCOUNT = 'ACCOUNT',
   BOARD_ADMIN = 'BOARD_ADMIN',
   SYSTEM_ADMIN = 'SYSTEM_ADMIN',
@@ -34,7 +35,9 @@ const Header = ({
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (storageTokenInfo === null) {
       setState(HeaderState.NOT_LOGIN);
-    } else if (account === null || account.auth === AccountAuth.ACCOUNT) {
+    } else if (account === null || account.auth === AccountAuth.UNREGISTERED_ACCOUNT) {
+      setState(HeaderState.UNREGISTERED_ACCOUNT);
+    } else if (account.auth === AccountAuth.ACCOUNT) {
       setState(HeaderState.ACCOUNT);
     } else if (account.auth === AccountAuth.BOARD_ADMIN) {
       setState(HeaderState.BOARD_ADMIN);
@@ -125,6 +128,20 @@ const Header = ({
     </MenuList>
   </Menu>;
 
+  const unregisteredAccountMenu = <Menu>
+    {loginButton}
+    <MenuList>
+      <NextLink href='/info'>
+        <MenuItem>
+          내 정보
+        </MenuItem>
+      </NextLink>
+      <MenuItem fontSize='1rem' onClick={onClickSignOut}>
+        로그아웃
+      </MenuItem>
+    </MenuList>
+  </Menu>;
+
   const getRightElement = (): JSX.Element => {
     if (state === HeaderState.NOT_LOGIN) {
       return <Link as={NextLink} href='/login'>
@@ -134,6 +151,8 @@ const Header = ({
       return systemAdminMenu;
     } else if (state === HeaderState.BOARD_ADMIN) {
       return boardAdminMenu;
+    } else if (state === HeaderState.UNREGISTERED_ACCOUNT) {
+      return unregisteredAccountMenu;
     } else {
       return accountMenu;
     }
