@@ -2,7 +2,8 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Avatar, Box, Button, Card, CardBody, Flex, Heading, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
+import { Avatar, Box, Button, Card, CardBody, Flex, Heading, Link, Menu, MenuButton, MenuItem, MenuList, Text, Icon, HStack, } from '@chakra-ui/react';
+import { MdOutlineNotifications, } from 'react-icons/md';
 // etc
 import { Account, AccountAuth, TokenInfo, } from '../interfaces';
 import { MAX_WIDTH, } from '../constants/style';
@@ -158,6 +159,15 @@ const Header = ({
     }
   };
 
+  const newPersonalMessageButton = <Link as={NextLink} href='/message'>
+    <Button variant='ghost' size='sm' marginRight='0.2rem' padding='0'>
+      <Box position='relative'>
+        <Icon as={MdOutlineNotifications} boxSize='6'/>
+        <Box width='0.4rem' height='0.4rem' borderRadius='0.4rem' backgroundColor='red' position='absolute' right='0' top='0'/>
+      </Box>
+    </Button>
+  </Link>;
+
   return (
     <Box backgroundColor='white'>
       <Card shadow='none' borderRadius='0' maxWidth={MAX_WIDTH} marginLeft='auto' marginRight='auto'>
@@ -166,9 +176,10 @@ const Header = ({
             <Link as={NextLink} marginRight='auto' href='/' _hover={{ textDecoration: 'none', }}>
               <Heading color='gray.700' size='md'>{title}</Heading>
             </Link>
-            <Box marginLeft='0.4rem'>
+            <HStack marginLeft='0.4rem'>
+              {newPersonalMessageButton}
               {getRightElement()}
-            </Box>
+            </HStack>
           </Flex>
         </CardBody>
       </Card>
