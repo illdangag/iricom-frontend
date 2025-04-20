@@ -2,15 +2,16 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Avatar, Box, Button, Card, CardBody, Flex, Heading, Link, Menu, MenuButton, MenuItem, MenuList, Text, Icon, HStack, } from '@chakra-ui/react';
+import { Avatar, Box, Button, Card, CardBody, Flex, Heading, HStack, Icon, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
 import { MdOutlineNotifications, } from 'react-icons/md';
 // etc
-import { Account, AccountAuth, TokenInfo, } from '../interfaces';
+import { Account, AccountAuth, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '../interfaces';
 import { MAX_WIDTH, } from '../constants/style';
 // store
 import { BrowserStorage, } from '../utils';
 import { useRecoilState, } from 'recoil';
 import { myAccountAtom, } from '../recoil';
+import { useIricom, } from '@root/hooks';
 
 type Props = {
   title?: string,
@@ -31,6 +32,9 @@ const Header = ({
   const router = useRouter();
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
+  const [unreadPersonalMessageList, setUnreadPersonalMessageList,] = useState<PersonalMessageList | null>(null);
+
+  const iricomAPI = useIricom();
 
   useEffect(() => {
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
@@ -44,6 +48,14 @@ const Header = ({
       setState(HeaderState.BOARD_ADMIN);
     } else if (account.auth === AccountAuth.SYSTEM_ADMIN) {
       setState(HeaderState.SYSTEM_ADMIN);
+    }
+
+    if (account) {
+      void iricomAPI.getReceivePersonalMessageList(PersonalMessageStatus.UNREAD, 0, 1)
+        .then(personalMessageList => {
+          console.log(personalMessageList);
+          setUnreadPersonalMessageList(personalMessageList);
+        });
     }
   }, [account,]);
 
@@ -177,7 +189,7 @@ const Header = ({
               <Heading color='gray.700' size='md'>{title}</Heading>
             </Link>
             <HStack marginLeft='0.4rem'>
-              {newPersonalMessageButton}
+              {unreadPersonalMessageList && unreadPersonalMessageList.total > 0 && newPersonalMessageButton}
               {getRightElement()}
             </HStack>
           </Flex>

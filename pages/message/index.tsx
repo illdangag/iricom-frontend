@@ -1,7 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Card, CardBody, HStack, VStack, Button, } from '@chakra-ui/react';
+import { Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { PersonalMessageListTable, PersonalMessagePageTitle, } from '@root/components';
@@ -11,8 +11,8 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, PersonalMessageList, TokenInfo, } from '@root/interfaces';
-import { getTokenInfoByCookies, parseInt, parseEnum, } from '@root/utils';
+import { Account, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
+import { getTokenInfoByCookies, parseEnum, parseInt, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
 
@@ -125,7 +125,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const apiRequestList: Promise<any>[] = [
     iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, receiveSkip, receiveLimit),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.ALL, receiveSkip, receiveLimit),
     iricomAPI.getSendPersonalMessageList(tokenInfo, sendSkip, sendLimit),
   ];
 

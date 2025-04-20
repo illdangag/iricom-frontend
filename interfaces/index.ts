@@ -263,6 +263,11 @@ export type PersonalMessage = {
   receiveAccount: Account,
 }
 
+export enum PersonalMessageStatus {
+  ALL = 'all',
+  UNREAD = 'unread',
+}
+
 export class PersonalMessageList extends ListResponse {
   public personalMessages: PersonalMessage[];
 }
