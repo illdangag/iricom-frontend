@@ -14,9 +14,9 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { getAccountAndUnreadPersonalMessageList, getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
@@ -157,18 +157,32 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+  const boardId: string = context.query.id as string;
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
+    iricomAPI.getBoard(tokenInfo, boardId),
+  ]);
+
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+  const boardResponse = responseList[2] as PromiseFulfilledResult<Board>;
+
+  const account: Account = accountResponse.value;
+  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+  const board: Board = boardResponse.value;
+
   if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };
   }
 
-  const boardId: string = context.query.id as string;
-  const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
   return {
     props: {
       account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       board: JSON.parse(JSON.stringify(board)),
     },
   };

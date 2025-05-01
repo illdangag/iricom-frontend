@@ -2,16 +2,16 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { Card, CardBody, VStack, List, ListItem, Text, } from '@chakra-ui/react';
-import { PersonalMessagePageTitle, PersonalMessageEditor, } from '@root/components';
+import { Card, CardBody, List, ListItem, Text, VStack, } from '@chakra-ui/react';
+import { PersonalMessageEditor, PersonalMessagePageTitle, } from '@root/components';
 import { MainLayout, PageBody, } from '@root/layouts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { TokenInfo, Account, PersonalMessage, } from '@root/interfaces';
+import { Account, PersonalMessage, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
 import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
@@ -19,6 +19,7 @@ import { useIricom, } from '@root/hooks';
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   toAccount: Account,
 };
 
@@ -28,11 +29,15 @@ enum PageState {
 }
 
 const PersonalMessageCreatePage = (props: Props) => {
+  const account: Account | null = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+  const toAccount: Account = props.toAccount;
+
   const router = useRouter();
   const iricomAPI = useIricom();
 
-  const toAccount: Account = props.toAccount;
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [ pageState, setPageState, ] = useState<PageState>(PageState.IDLE);
 
@@ -41,7 +46,8 @@ const PersonalMessageCreatePage = (props: Props) => {
       return;
     }
 
-    setAccount(props.account);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
   }, [router.isReady,]);
 
   const onChangePersonalMessage = async (personalMessage: PersonalMessage) => {
@@ -92,7 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const toQuery: string | undefined = context.query.to as string;
-  const to: string = toQuery ? toQuery : '';
+  const to: string = toQuery || '';
 
   if (!to) {
     return {
@@ -100,12 +106,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const account = await iricomAPI.getMyAccount(tokenInfo);
-  const toAccount = await iricomAPI.getAccount(tokenInfo, to);
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
+    iricomAPI.getAccount(tokenInfo, to),
+  ]);
+
+  if (responseList[0].status === 'rejected') {
+    return {
+      notFound: true,
+    };
+  }
+
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const personalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+  const toAccountResponse = responseList[2] as PromiseFulfilledResult<Account>;
+
+  const account = accountResponse.value;
+  const personalMessageList = personalMessageListResponse.value;
+  const toAccount = toAccountResponse.value;
 
   return {
     props: {
       account: account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(personalMessageList)),
       toAccount: toAccount,
     },
   };

@@ -1,5 +1,6 @@
 // react
 import { useEffect, } from 'react';
+import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, VStack, Tag, Box, FormControl, FormLabel, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -7,28 +8,38 @@ import { PageTitle, PostView, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, PostReport, ReportType, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, PersonalMessageList, PersonalMessageStatus, PostReport, PostReportList, ReportType, TokenInfo, } from '@root/interfaces';
 import iricomAPI from '@root/utils/iricomAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
 import { BORDER_RADIUS, } from '@root/constants/style';
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   postReport: PostReport,
 };
 
 const AdminReportsBoardsBoardIdReportsPage = (props: Props) => {
   const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const postReport: PostReport = props.postReport;
 
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
     setAccount(account);
-  }, []);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const getTypeElement = (type: ReportType) => {
     switch (type) {
@@ -111,23 +122,40 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  const auth: AccountAuth = account.auth;
-  if (auth !== AccountAuth.SYSTEM_ADMIN && auth !== AccountAuth.BOARD_ADMIN) {
+  const boardId: string = context.query.boardId as string;
+  const postId: string = context.query.postId as string;
+  const reportId: string = context.query.reportId as string;
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
+    iricomAPI.getPostReport(tokenInfo, boardId, postId, reportId),
+  ]);
+
+  if (responseList[0].status === 'rejected') {
     return {
       notFound: true,
     };
   }
 
-  const boardId: string = context.query.boardId as string;
-  const postId: string = context.query.postId as string;
-  const reportId: string = context.query.reportId as string;
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+  const postReportResult = responseList[2] as PromiseFulfilledResult<PostReport>;
 
-  const postReport: PostReport = await iricomAPI.getPostReport(tokenInfo, boardId, postId, reportId);
+  const account: Account = accountResponse.value;
+  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+  const postReport: PostReport = postReportResult.value;
+
+  if (account.auth !== AccountAuth.SYSTEM_ADMIN && account.auth !== AccountAuth.BOARD_ADMIN) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
       account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       postReport,
     },
   };

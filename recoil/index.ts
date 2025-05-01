@@ -1,10 +1,15 @@
 import { atom, } from 'recoil';
 import { v4, } from 'uuid';
-import { Account, } from '../interfaces';
+import { Account, PersonalMessageList, } from '../interfaces';
 
 const myAccountAtom = atom<Account | null>({
   key: 'myAccountAtom/' + v4(),
   default: null,
 });
 
-export { myAccountAtom, };
+const unreadPersonalMessageListAtom = atom<PersonalMessageList | null>({
+  key: 'unreadPersonalMessageListAtom/' + v4(),
+  default: null,
+});
+
+export { myAccountAtom, unreadPersonalMessageListAtom, };

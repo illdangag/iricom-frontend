@@ -1,5 +1,6 @@
 // react
 import { useEffect, } from 'react';
+import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -7,16 +8,17 @@ import { NoContent, PageTitle, ReportPostListTable, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, PostReportList, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, AccountList, Board, BoardAdmin, PersonalMessageList, PersonalMessageStatus, PostReport, PostReportList, TokenInfo, } from '@root/interfaces';
 import iricomAPI from '@root/utils/iricomAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
 import { BORDER_RADIUS, } from '@root/constants/style';
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   postReportList: PostReportList,
   page: number,
   board: Board,
@@ -24,15 +26,24 @@ type Props = {
 
 const AdminReportsBoardsBoardIdPage = (props: Props) => {
   const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const postReportList: PostReportList = Object.assign(new PostReportList(), props.postReportList);
   const page: number = props.page;
   const board: Board = Object.assign(new Board(), props.board);
 
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
     setAccount(account);
-  }, []);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   return <MainLayout>
     <PageBody>
@@ -73,33 +84,40 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
   }
-
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  const auth: AccountAuth = account.auth;
-  if (auth !== AccountAuth.SYSTEM_ADMIN && auth !== AccountAuth.BOARD_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
-
   const PAGE_LIMIT: number = 5;
-
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;
   const page: number = pageQuery ? Number.parseInt(pageQuery, 10) : 1;
   const skip: number = PAGE_LIMIT * (page - 1);
   const limit: number = PAGE_LIMIT;
 
-  const resultList = await Promise.all([
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getBoard(tokenInfo, boardId),
     iricomAPI.getReportedPostList(tokenInfo, boardId, skip, limit, null, null),
   ]);
-  const board: Board = resultList[0];
-  const postReportList: PostReportList = resultList[1];
+
+  if (responseList[0].status === 'rejected') {
+    return {
+      notFound: true,
+    };
+  }
+
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+  const boardResponse = responseList[2] as PromiseFulfilledResult<Board>;
+  const postReportListRseponse = responseList[3] as PromiseFulfilledResult<PostReportList>;
+
+  const account: Account = accountResponse.value;
+  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+  const board: Board = boardResponse.value;
+  const postReportList: PostReportList = postReportListRseponse.value;
 
   return {
     props: {
       account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       postReportList: JSON.parse(JSON.stringify(postReportList)),
       page,
       board: JSON.parse(JSON.stringify(board)),

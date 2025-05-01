@@ -5,13 +5,12 @@ import NextLink from 'next/link';
 import { Avatar, Box, Button, Card, CardBody, Flex, Heading, HStack, Icon, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
 import { MdOutlineNotifications, } from 'react-icons/md';
 // etc
-import { Account, AccountAuth, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '../interfaces';
-import { MAX_WIDTH, } from '../constants/style';
+import { Account, AccountAuth, PersonalMessageList, TokenInfo, } from '@root/interfaces';
+import { MAX_WIDTH, } from '@root/constants/style';
 // store
-import { BrowserStorage, } from '../utils';
-import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../recoil';
-import { useIricom, } from '@root/hooks';
+import { BrowserStorage, } from '@root/utils';
+import { useRecoilState, useRecoilValue, } from 'recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 type Props = {
   title?: string,
@@ -32,9 +31,7 @@ const Header = ({
   const router = useRouter();
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
-  const [unreadPersonalMessageList, setUnreadPersonalMessageList,] = useState<PersonalMessageList | null>(null);
-
-  const iricomAPI = useIricom();
+  const unreadPersonalMessageList = useRecoilValue<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
@@ -48,14 +45,6 @@ const Header = ({
       setState(HeaderState.BOARD_ADMIN);
     } else if (account.auth === AccountAuth.SYSTEM_ADMIN) {
       setState(HeaderState.SYSTEM_ADMIN);
-    }
-
-    if (account) {
-      void iricomAPI.getReceivePersonalMessageList(PersonalMessageStatus.UNREAD, 0, 1)
-        .then(personalMessageList => {
-          console.log(personalMessageList);
-          setUnreadPersonalMessageList(personalMessageList);
-        });
     }
   }, [account,]);
 

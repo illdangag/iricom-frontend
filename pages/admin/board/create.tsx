@@ -10,13 +10,13 @@ import useIricom from '@root/hooks/useIricom';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import { PageTitle, } from '@root/components';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { getAccountAndUnreadPersonalMessageList, getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
@@ -28,11 +28,16 @@ enum PageState {
 }
 
 type Props = {
-  account: Account | null,
+  account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
 }
 
 const AdminBoardCreatePage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+
   const router = useRouter();
+
   const toast = useToast();
   const iricomAPI = useIricom();
 
@@ -42,10 +47,16 @@ const AdminBoardCreatePage = (props: Props) => {
   const [enabled, setEnabled,] = useState<boolean>(false);
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    setAccount(props.account);
-  }, []);
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -138,7 +149,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
+  ]);
+
+  if (responseList[0].status === 'rejected') {
+    return {
+      notFound: true,
+    };
+  }
+
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+
+  const account: Account = accountResponse.value;
+  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+
   if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
@@ -148,6 +175,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
     },
   };
 };

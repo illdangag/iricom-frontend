@@ -1,5 +1,6 @@
 // react
 import React, { useEffect, } from 'react';
+import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
@@ -9,25 +10,37 @@ import { BoardView, NoContent, PageTitle, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, BoardList, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { getAccountAndUnreadPersonalMessageList, getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   boardList: BoardList,
 }
 
 const AdminBoardAdminPage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    setAccount(props.account);
-  }, []);
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];
@@ -76,12 +89,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const response: any[] = await Promise.all([
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
     iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getBoardList(tokenInfo, 0, 20, null),
   ]);
-  const account: Account = response[0] as Account;
-  const boardList: BoardList = response[1] as BoardList;
+
+  if (responseList[0].status === 'rejected') {
+    return {
+      notFound: true,
+    };
+  }
+
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+  const boardListResponse = responseList[2] as PromiseFulfilledResult<BoardList>;
+
+  const account: Account = accountResponse.value;
+  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+  const boardList: BoardList = boardListResponse.value;
 
   if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
@@ -92,6 +118,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       boardList: JSON.parse(JSON.stringify(boardList)),
     },
   };
