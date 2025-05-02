@@ -6,14 +6,14 @@ import { MainLayout, PageBody, } from '@root/layouts';
 import BoardPostPreview from '@root/components/BoardPostPreview';
 
 // etc
-import { Account, Board, BoardList, PostList, PostType, TokenInfo, } from '@root/interfaces';
+import { Account, Board, BoardList, PersonalMessageList, PostList, PostType, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, MAX_WIDTH, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 type BoardPostList = {
   board: Board,
@@ -21,16 +21,22 @@ type BoardPostList = {
 }
 
 type Props = {
-  boardPostListList: BoardPostList[],
   account: Account | null,
+  unreadPersonalMessageList: PersonalMessageList,
+  boardPostListList: BoardPostList[],
 }
 
 const IndexPage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const boardPostListList: BoardPostList[] = props.boardPostListList;
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    setAccount(props.account);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
   }, []);
 
   return (
@@ -60,19 +66,9 @@ const IndexPage = (props: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const props: Props = {
-    account: null,
-    boardPostListList: [],
-  };
-
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
 
-  if (tokenInfo !== null) {
-    props.account = await iricomAPI.getMyAccount(tokenInfo);
-  }
-
   const boardList: BoardList = await iricomAPI.getBoardList(tokenInfo, 0, 20, true);
-
   const boardPostListList: BoardPostList[] = [];
 
   for (const board of boardList.boards) {
@@ -83,10 +79,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     } as BoardPostList);
   }
 
-  props.boardPostListList = boardPostListList;
-
   return {
-    props: JSON.parse(JSON.stringify(props)),
+    props: {
+      boardPostListList: JSON.parse(JSON.stringify(boardPostListList)),
+    },
   };
 };
 

@@ -10,34 +10,41 @@ import { useIricom, } from '@root/hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, Board, Comment, CommentList, Post, PostState, TokenInfo, } from '@root/interfaces';
+import { Account, Board, Comment, CommentList, IricomGetServerSideProps, PersonalMessageList, Post, PostState, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
-import { getTokenInfoByCookies, } from '@root/utils';
 
 type Props = {
   account: Account | null,
+  unreadPersonalMessageList: PersonalMessageList,
   board: Board,
   post: Post,
   commentList: CommentList,
 };
 
 const BoardsPostsPage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+  const board: Board = Object.assign(new Board(), props.board);
+
   const iricomAPI = useIricom();
 
-  const board: Board = Object.assign(new Board(), props.board);
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
+
   const [post, setPost,] = useState<Post | null>(props.post);
   const [commentList, setCommentList,] = useState<Comment[] | null>(Object.assign(new CommentList(), props.commentList).comments);
 
-  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+
   const boardId: string = board.id;
   const postId: string = post.id;
 
   useEffect(() => {
-    setAccount(props.account);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
   }, []);
 
   const initCommentList = (boardId: string, postId: string) => {
@@ -146,14 +153,13 @@ const BoardsPostsPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   const boardId: string = context.query.boardId as string;
   const postId: string = context.query.postId as string;
 
   const apiRequestList: any[] = [
-    iricomAPI.getMyAccount(tokenInfo),
     iricomAPI.getBoard(tokenInfo, boardId),
     iricomAPI.getPost(tokenInfo, boardId, postId, PostState.PUBLISH),
     iricomAPI.getCommentList(tokenInfo, boardId, postId),
@@ -161,20 +167,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const responseList: any[] = await Promise.allSettled(apiRequestList);
 
-  const account: Account | null = responseList[0].status === 'fulfilled' ? responseList[0].value as Account : null;
-  const board: Board = responseList[1].value as Board;
-  const post: Post = responseList[2].value as Post;
+  const board: Board = responseList[0].value as Board;
+  const post: Post = responseList[1].value as Post;
 
   let commentList: CommentList;
-  if (responseList[3].status === 'fulfilled') {
-    commentList = responseList[3].value as CommentList;
+  if (responseList[2].status === 'fulfilled') {
+    commentList = responseList[2].value as CommentList;
   } else { // status === 'reject'
     commentList = new CommentList();
   }
 
   return {
     props: {
-      account: account,
       board: JSON.parse(JSON.stringify(board)),
       post: JSON.parse(JSON.stringify(post)),
       commentList: JSON.parse(JSON.stringify(commentList)),

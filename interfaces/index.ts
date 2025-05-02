@@ -1,3 +1,7 @@
+import { IncomingMessage, } from 'node:http';
+import { GetServerSidePropsContext, } from 'next/types';
+import { NextApiRequestCookies, } from 'next/dist/server/api-utils';
+
 export type FirebaseProperties = {
   projectId: string,
   apiKey: string,
@@ -270,4 +274,14 @@ export enum PersonalMessageStatus {
 
 export class PersonalMessageList extends ListResponse {
   public personalMessages: PersonalMessage[];
+}
+
+export type IricomGetServerSideProps = GetServerSidePropsContext & {
+  req: IncomingMessage & {
+    cookies: NextApiRequestCookies,
+    data: {
+      account: Account | null,
+      tokenInfo: TokenInfo | null,
+    },
+  }
 }

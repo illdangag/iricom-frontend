@@ -11,8 +11,7 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, PersonalMessage, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { Account, IricomGetServerSideProps, PersonalMessage, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import { useIricom, } from '@root/hooks';
@@ -88,8 +87,8 @@ const PersonalMessageCreatePage = (props: Props) => {
   </MainLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   if (!tokenInfo) {
     return {
@@ -107,8 +106,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
-    iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getAccount(tokenInfo, to),
   ]);
 
@@ -118,18 +115,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
-  const personalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
-  const toAccountResponse = responseList[2] as PromiseFulfilledResult<Account>;
-
-  const account = accountResponse.value;
-  const personalMessageList = personalMessageListResponse.value;
+  const toAccountResponse = responseList[0] as PromiseFulfilledResult<Account>;
   const toAccount = toAccountResponse.value;
 
   return {
     props: {
-      account: account,
-      unreadPersonalMessageList: JSON.parse(JSON.stringify(personalMessageList)),
       toAccount: toAccount,
     },
   };

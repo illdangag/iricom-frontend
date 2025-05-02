@@ -1,8 +1,8 @@
 // react
-import React, { ChangeEvent, useEffect, useState, KeyboardEvent, } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { Button, Card, CardBody, Heading, HStack, ListItem, Text, UnorderedList, VStack, InputGroup, InputLeftElement, Input, InputRightElement, } from '@chakra-ui/react';
+import { Button, Card, CardBody, Heading, HStack, Input, InputGroup, InputLeftElement, InputRightElement, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
 import { MainLayout, PageBody, } from '@root/layouts';
 import { AccountListTable, PageTitle, } from '@root/components';
@@ -13,10 +13,10 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountList, AccountAuth, BoardAdmin, TokenInfo, PersonalMessageList, PersonalMessageStatus, } from '@root/interfaces';
+import { Account, AccountAuth, AccountList, BoardAdmin, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
+
 const PAGE_LIMIT: number = 5;
 
 type Props = {
@@ -199,10 +199,11 @@ const AdminBoardAdminEditPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };
@@ -217,38 +218,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const boardId: string = context.query.boardId as string;
 
   const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
-    iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getBoardAdminInfo(tokenInfo, boardId),
     iricomAPI.getAccountList(tokenInfo, accountSkip, accountLimit, accountKeyword),
   ]);
 
-  if (responseList[0].status === 'rejected') {
-    return {
-      notFound: true,
-    };
-  }
+  const boardAdminInfoResponse = responseList[0] as PromiseFulfilledResult<BoardAdmin>;
+  const accountListResponse = responseList[1] as PromiseFulfilledResult<AccountList>;
 
-  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
-  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
-  const boardAdminInfoResponse = responseList[2] as PromiseFulfilledResult<BoardAdmin>;
-  const accountListResponse = responseList[3] as PromiseFulfilledResult<AccountList>;
-
-  const account: Account = accountResponse.value;
-  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
   const boardAdmin: BoardAdmin = boardAdminInfoResponse.value;
   const accountList: AccountList = accountListResponse.value;
 
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
-
   return {
     props: {
-      account,
-      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       boardId,
       boardAdmin: JSON.parse(JSON.stringify(boardAdmin)),
       accountList: JSON.parse(JSON.stringify(accountList)),

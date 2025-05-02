@@ -14,9 +14,8 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, BoardList, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, BoardList, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getAccountAndUnreadPersonalMessageList, getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
@@ -86,49 +85,25 @@ const AdminBoardEditPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
-      props: {},
-      redirect: {
-        statusCode: 307,
-        destination: '/login?success=/admin/board/edit',
-      },
+      notFound: true,
     };
   }
 
   const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
-    iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getBoardList(tokenInfo, 0, 20, null),
   ]);
 
-  if (responseList[0].status === 'rejected') {
-    return {
-      notFound: true,
-    };
-  }
-
-  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
-  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
-  const boardListResponse = responseList[2] as PromiseFulfilledResult<BoardList>;
-
-  const account: Account = accountResponse.value;
-  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+  const boardListResponse = responseList[0] as PromiseFulfilledResult<BoardList>;
   const boardList: BoardList = boardListResponse.value;
-
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
-      account,
-      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       boardList: boardList.boards,
     },
   };

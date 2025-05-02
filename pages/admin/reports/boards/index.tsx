@@ -2,17 +2,16 @@
 import { useEffect, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { VStack, Card, CardBody, Text, CardHeader, } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
-import { PageTitle, BoardListTable, } from '@root/components';
+import { BoardListTable, PageTitle, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, BoardList, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { Account, AccountAuth, BoardList, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
 
@@ -73,10 +72,11 @@ const AdminReportsBoardsPage = (props: Props) => {
   </MainLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN && account.auth !== AccountAuth.BOARD_ADMIN) {
     return {
       notFound: true,
     };
@@ -89,35 +89,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const limit: number = PAGE_LIMIT;
 
   const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
-    iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getBoardListByBoardAdmin(tokenInfo, skip, limit),
   ]);
 
-  if (responseList[0].status === 'rejected') {
-    return {
-      notFound: true,
-    };
-  }
-
-  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
-  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
-  const boardListResponse = responseList[2] as PromiseFulfilledResult<BoardList>;
-
-  const account: Account = accountResponse.value;
-  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
+  const boardListResponse = responseList[0] as PromiseFulfilledResult<BoardList>;
   const boardList: BoardList = boardListResponse.value;
-
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN && account.auth !== AccountAuth.BOARD_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
-      account,
-      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       boardList: JSON.parse(JSON.stringify(boardList)),
       page,
     },

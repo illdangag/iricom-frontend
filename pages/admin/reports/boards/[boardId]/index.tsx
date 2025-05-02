@@ -11,9 +11,8 @@ import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, AccountList, Board, BoardAdmin, PersonalMessageList, PersonalMessageStatus, PostReport, PostReportList, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, IricomGetServerSideProps, PersonalMessageList, PostReportList, TokenInfo, } from '@root/interfaces';
 import iricomAPI from '@root/utils/iricomAPI';
-import { getTokenInfoByCookies, } from '@root/utils';
 import { BORDER_RADIUS, } from '@root/constants/style';
 
 type Props = {
@@ -76,14 +75,16 @@ const AdminReportsBoardsBoardIdPage = (props: Props) => {
   </MainLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN && account.auth !== AccountAuth.BOARD_ADMIN) {
     return {
       notFound: true,
     };
   }
+
   const PAGE_LIMIT: number = 5;
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;
@@ -92,32 +93,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const limit: number = PAGE_LIMIT;
 
   const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
-    iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
     iricomAPI.getBoard(tokenInfo, boardId),
     iricomAPI.getReportedPostList(tokenInfo, boardId, skip, limit, null, null),
   ]);
 
-  if (responseList[0].status === 'rejected') {
-    return {
-      notFound: true,
-    };
-  }
+  const boardResponse = responseList[0] as PromiseFulfilledResult<Board>;
+  const postReportListRseponse = responseList[1] as PromiseFulfilledResult<PostReportList>;
 
-  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
-  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
-  const boardResponse = responseList[2] as PromiseFulfilledResult<Board>;
-  const postReportListRseponse = responseList[3] as PromiseFulfilledResult<PostReportList>;
-
-  const account: Account = accountResponse.value;
-  const unreadPersonalMessageList = unreadPersonalMessageListResponse.value;
   const board: Board = boardResponse.value;
   const postReportList: PostReportList = postReportListRseponse.value;
 
   return {
     props: {
-      account,
-      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
       postReportList: JSON.parse(JSON.stringify(postReportList)),
       page,
       board: JSON.parse(JSON.stringify(board)),

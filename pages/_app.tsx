@@ -1,12 +1,15 @@
 // react
 import './global.scss';
 import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
-
+import { GetServerSidePropsContext, } from 'next/types';
 // store
 import { RecoilRoot, } from 'recoil';
 
 // theme
 import { cardTheme, } from '@root/themes';
+import { Account, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iricomAPI from '@root/utils/iricomAPI';
 
 const theme = extendTheme({
   fonts: {
@@ -68,6 +71,34 @@ const App = ({ Component, pageProps, }) => {
       </RecoilRoot>
     </ChakraProvider>
   );
+};
+
+App.getInitialProps = async (nextPageContext) => {
+  const context: GetServerSidePropsContext = nextPageContext.ctx as GetServerSidePropsContext;
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyAccount(tokenInfo),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.UNREAD, 0, 1),
+  ]);
+
+  const accountResponse = responseList[0] as PromiseFulfilledResult<Account>;
+  const unreadPersonalMessageListResponse = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
+
+  const account: Account = accountResponse.status === 'fulfilled' && accountResponse.value || null;
+  const unreadPersonalMessageList: PersonalMessageList = unreadPersonalMessageListResponse.status === 'fulfilled' && unreadPersonalMessageListResponse.value || new PersonalMessageList();
+
+  nextPageContext.ctx.req.data = {
+    tokenInfo,
+    account,
+  };
+
+  return {
+    pageProps: {
+      account,
+      unreadPersonalMessageList: JSON.parse(JSON.stringify(unreadPersonalMessageList)),
+    },
+  };
 };
 
 export default App;

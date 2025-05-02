@@ -1,6 +1,6 @@
 import { parseCookies, setCookie, } from 'nookies';
-import { Account, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '../interfaces';
-import { GetServerSideProps, GetServerSidePropsContext, } from 'next/types';
+import { TokenInfo, } from '../interfaces';
+import { GetServerSidePropsContext, } from 'next/types';
 import iricomAPI from './iricomAPI';
 
 export class BrowserStorage {

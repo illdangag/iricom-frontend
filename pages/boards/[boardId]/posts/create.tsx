@@ -9,29 +9,33 @@ import { BoardPageTitle, PostEditor, } from '@root/components';
 import { NotExistBoardAlert, UnregisteredAccountAlert, } from '@root/components/alerts';
 
 // store
-import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, Post, PostState, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, IricomGetServerSideProps, PersonalMessageList, Post, PostState, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account | null
+  unreadPersonalMessageList: PersonalMessageList,
   board: Board,
 }
 
 const PostCreatePage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+  const board: Board = Object.assign(new Board(), props.board);
+
   const router = useRouter();
 
-  const board: Board = Object.assign(new Board(), props.board);
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [isShowNotExistBoardAlert, setShowNotExistBoardAlert,] = useState<boolean>(false);
   const [isShowUnregisteredAccountAlert, setShowUnregisteredAccountAlert,] = useState<boolean>(false);
 
-  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -39,6 +43,7 @@ const PostCreatePage = (props: Props) => {
     }
 
     setAccount(props.account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
 
     if (props.account.auth === AccountAuth.UNREGISTERED_ACCOUNT) {
       setShowUnregisteredAccountAlert(true);
@@ -92,8 +97,8 @@ const PostCreatePage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   const boardId: string = context.query.boardId as string;
 
@@ -106,16 +111,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } else {
-
-    const resultList: [Account, Board] = await Promise.all([
-      iricomAPI.getMyAccount(tokenInfo),
-      iricomAPI.getBoard(tokenInfo, boardId),
-    ]);
-
+    const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
     return {
       props: {
-        account: resultList[0],
-        board: JSON.parse(JSON.stringify(resultList[1])),
+        board: JSON.parse(JSON.stringify(board)),
       },
     };
   }

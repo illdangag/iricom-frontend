@@ -6,11 +6,11 @@ import { MainLayout, PageBody, } from '@root/layouts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { TokenInfo, Account, PersonalMessage, } from '@root/interfaces';
-import { getTokenInfoByCookies, parseEnum, } from '@root/utils';
+import { Account, IricomGetServerSideProps, PersonalMessage, PersonalMessageList, TokenInfo, } from '@root/interfaces';
+import { parseEnum, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import PersonalMessageView from '../../../components/PersonalMessageView';
@@ -22,17 +22,21 @@ enum GET_TYPE {
 
 type Props = {
   account: Account | null,
+  unreadPersonalMessageList: PersonalMessageList,
   personalMessage: PersonalMessage,
 }
 
 const PersonalMessagePage = (props: Props) => {
-  const account: Account | null = props.account;
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const personalMessage: PersonalMessage = props.personalMessage;
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
     setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
   }, []);
 
   return <MainLayout>
@@ -51,8 +55,8 @@ const PersonalMessagePage = (props: Props) => {
   </MainLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   const personalMessageId: string = context.query.messageId as string;
   const getTypeValue: string = context.query.type as string || '';
@@ -67,7 +71,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const getPersonalMessage = getType === GET_TYPE.RECEIVE && iricomAPI.getReceivePersonalMessage || iricomAPI.getSendPersonalMessage;
   const apiRequestList: any[] = [
-    iricomAPI.getMyAccount(tokenInfo),
     getPersonalMessage(tokenInfo, personalMessageId),
   ];
 
@@ -79,15 +82,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const accountResponse: PromiseFulfilledResult<Account> = responseList[0] as PromiseFulfilledResult<Account>;
-  const personalMessageResponse: PromiseFulfilledResult<PersonalMessage> = responseList[1] as PromiseFulfilledResult<PersonalMessage>;
+  const personalMessageResponse: PromiseFulfilledResult<PersonalMessage> = responseList[0] as PromiseFulfilledResult<PersonalMessage>;
 
-  const account: Account = accountResponse.value;
   const personalMessage: PersonalMessage = personalMessageResponse.value;
 
   return {
     props: {
-      account: account,
       personalMessage: personalMessage,
     },
   };
