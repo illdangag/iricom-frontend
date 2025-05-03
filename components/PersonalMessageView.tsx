@@ -1,5 +1,4 @@
 // react
-import {} from 'react';
 import { Box, Button, Divider, HStack, Link, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MdSend, } from 'react-icons/md';
 // etc
@@ -59,7 +58,7 @@ const PersonalMessageViewBody = ({
   personalMessage,
 }: BodyProps) => {
   return <Box>
-    <Text>{personalMessage.message}</Text>
+    <pre><Text>{personalMessage.message}</Text></pre>
   </Box>;
 };
 
