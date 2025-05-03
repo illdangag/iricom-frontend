@@ -100,13 +100,6 @@ const BoardsPage = (props: Props) => {
 
 export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
   const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
-  const account: Account = context.req.data.account;
-
-  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
 
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;

@@ -29,9 +29,11 @@ const Header = ({
   title = '이리콤',
 }: Props) => {
   const router = useRouter();
+
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
+  const [unreadPersonalMessageList, setUnreadPersonalMessageList,] = useRecoilState<PersonalMessageList>(unreadPersonalMessageListAtom);
+
   const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
-  const unreadPersonalMessageList = useRecoilValue<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
     const storageTokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
@@ -51,6 +53,7 @@ const Header = ({
   const onClickSignOut = () => {
     BrowserStorage.clear();
     setAccount(null);
+    setUnreadPersonalMessageList(new PersonalMessageList());
     void router.push('/');
   };
 
