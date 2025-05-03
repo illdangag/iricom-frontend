@@ -9,7 +9,7 @@ import { Account, AccountAuth, PersonalMessageList, TokenInfo, } from '@root/int
 import { MAX_WIDTH, } from '@root/constants/style';
 // store
 import { BrowserStorage, } from '@root/utils';
-import { useRecoilState, useRecoilValue, } from 'recoil';
+import { useRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 type Props = {

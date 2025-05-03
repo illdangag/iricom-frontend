@@ -10,7 +10,7 @@ import { RequireAccountDetailAlert, } from '@root/components/alerts';
 import { useSetRecoilState, } from 'recoil';
 import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 // etc
-import { Account, AccountAuth, Board, IricomGetServerSideProps, PersonalMessageList, PostList, PostType, TokenInfo, } from '@root/interfaces';
+import { Account, Board, IricomGetServerSideProps, PersonalMessageList, PostList, PostType, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
 import { parseInt, } from '@root/utils';
