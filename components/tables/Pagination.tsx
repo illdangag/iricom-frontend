@@ -8,6 +8,7 @@ type Props = {
   pageMaxLength?: number,
   listResponse: ListResponse,
   pageLinkHref?: string,
+  onClickPage?: (page: number) => void,
 };
 
 const Pagination = ({
@@ -15,16 +16,21 @@ const Pagination = ({
   pageMaxLength = 5,
   pageLinkHref = '?page={{page}}',
   listResponse,
+  onClickPage = () => {},
 }: Props) => {
   return (<HStack justifyContent='center' marginTop='0.4rem'>
     <ButtonGroup size='xs' variant='outline' isAttached>
       {listResponse.getPaginationList(pageMaxLength).map((pagination, index) => <Button
         key={index}
         variant={pagination === page ? 'solid' : 'outline'}
+        onClick={() => {
+          onClickPage(pagination);
+        }}
       >
-        <LinkOverlay href={pageLinkHref.replaceAll('{{page}}', '' + pagination)}>
+        {pageLinkHref && <LinkOverlay href={pageLinkHref.replaceAll('{{page}}', '' + pagination)}>
           {pagination}
-        </LinkOverlay>
+        </LinkOverlay>}
+        {!pageLinkHref && pagination}
       </Button>)}
     </ButtonGroup>
   </HStack>);

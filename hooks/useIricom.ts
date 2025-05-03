@@ -1,16 +1,20 @@
 // etc
 import {
-  Account, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState,
+  Account, AccountList, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState,
   PostType, ReportType, TokenInfo, VoteType,
 } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
 import { BrowserStorage, getTokenInfo, } from '../utils';
+import AccountListTable from '@root/components/tables/AccountListTable';
+import { async } from '@firebase/util';
 
 type Iricom = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   updateMyAccountInfo: (nickname: string | null, description: string | null) => Promise<Account>,
+
+  getAccountList: (skip: number, limit: number, keyword: string | null) => Promise<AccountList>,
 
   createBoard: (title: string, description: string, enabled: boolean) => Promise<Board>,
   getBoard: (id: string) => Promise<Board>,
@@ -123,6 +127,15 @@ function useIricom (): Iricom {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.updateMyAccountInfo(tokenInfo, nickname, description);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    getAccountList: async (skip: number, limit: number, keyword: string | null): Promise<AccountList> => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      try {
+        return await iricomAPI.getAccountList(tokenInfo, skip, limit, keyword);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

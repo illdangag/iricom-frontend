@@ -10,23 +10,23 @@ type Props = {
   accountList: AccountList,
   page: number,
   pageLinkHref?: string,
-
   size?: number,
   defaultSelectedAccountIdList?: string[],
   isShowCheckbox?: boolean,
   onMultiSelect?: (accountList: Account[]) => void,
   onClickAccount?: (account: Account) => void,
+  onClickPage?: (page: number) => void,
 };
 
 const AccountListTable = ({
   accountList,
   page,
   pageLinkHref = '?page={{page}}',
-
   defaultSelectedAccountIdList = [],
   isShowCheckbox = false,
   onMultiSelect = () => {},
   onClickAccount = () => {},
+  onClickPage = () => {},
 }: Props) => {
   const [selectedAccountIdList, setSelectedAccountIdList,] = useState<string[]>(defaultSelectedAccountIdList);
   const [selectedAccountList, setSelectedAccountList,] = useState<Account[]>([]);
@@ -52,8 +52,7 @@ const AccountListTable = ({
 
   const getAccountItem = (account: Account) => {
     return <HStack>
-      <Text>{account.nickname}</Text>
-      <Text fontSize='1rem' color='gray.500'>{account.email}</Text>
+      {account.nickname && <Text marginRight='0.2rem'>{account.nickname}</Text>}<Text fontSize='1rem' color='gray.500'>{account.email}</Text>
     </HStack>;
   };
 
@@ -82,7 +81,7 @@ const AccountListTable = ({
   };
 
   return (
-    <VStack alignItems='stretch'>
+    <VStack alignItems='stretch' style={{ width: '100%', }}>
       <VStack alignItems='stretch'>
         {accountList && accountList.accounts.map((account) => getAccountRow(account))}
       </VStack>
@@ -90,6 +89,7 @@ const AccountListTable = ({
         page={page}
         listResponse={accountList}
         pageLinkHref={pageLinkHref}
+        onClickPage={onClickPage}
       />}
     </VStack>
   );

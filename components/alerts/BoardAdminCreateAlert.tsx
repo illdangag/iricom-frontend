@@ -1,9 +1,9 @@
 // react
 import { useEffect, useRef, useState, } from 'react';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Text, } from '@chakra-ui/react';
-import { useIricom, } from '../../hooks';
+import { useIricom, } from '@root/hooks';
 // etc
-import { Account, Board, BoardAdmin, } from '../../interfaces';
+import { Account, Board, BoardAdmin, } from '@root/interfaces';
 
 type Props = {
   isOpen?: boolean;

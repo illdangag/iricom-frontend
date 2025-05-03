@@ -16,7 +16,9 @@ import PersonalMessageListTable from './tables/PersonalMessageListTable';
 import PersonalMessagePageTitle from './titles/PersonalMessagePageTitle';
 import PersonalMessageEditor from './PersonalMessageEditor';
 import PersonalMessageView from './PersonalMessageView';
+import AccountSearch from './AccountSearch';
+import AccountSearchPopup from './AccountSearchPopup';
 
 export { BoardPageTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
   NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, ReportPostListTable, PersonalMessageListTable,
-  PersonalMessagePageTitle, PersonalMessageEditor, PersonalMessageView, };
+  PersonalMessagePageTitle, PersonalMessageEditor, PersonalMessageView, AccountSearch, AccountSearchPopup, };
