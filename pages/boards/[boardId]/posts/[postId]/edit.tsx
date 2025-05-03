@@ -5,36 +5,39 @@ import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
-import { PostEditor, BoardPageTitle, } from '@root/components';
+import { BoardPageTitle, PostEditor, } from '@root/components';
 import { InvalidPostAlert, PostPublishAlert, } from '@root/components/alerts';
 
 // store
-import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, Post, PostState, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, IricomGetServerSideProps, PersonalMessageList, Post, PostState, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account | null,
+  unreadPersonalMessageList: PersonalMessageList,
   board: Board | null,
   post: Post | null,
 }
 
 const BoardsPostsEditPage = (props: Props) => {
-  const router = useRouter();
-
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const board = Object.assign(new Board(), props.board);
   const post = props.post;
+
+  const router = useRouter();
+
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [publishPost, setPublishPost,] = useState<Post | null>(null);
   const [isOpenInvalidPostAlert, setOpenInvalidPostAlert,] = useState<boolean>(false);
   const [isOpenPostPublishAlert, setOpenPostPublishAlert,] = useState<boolean>(false);
-
-  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -42,6 +45,7 @@ const BoardsPostsEditPage = (props: Props) => {
     }
 
     setAccount(props.account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
     setOpenInvalidPostAlert(board === null || post === null);
   }, [router.isReady,]);
 
@@ -96,8 +100,8 @@ const BoardsPostsEditPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   const boardId: string = context.query.boardId as string;
   const postId: string = context.query.postId as string;
@@ -132,7 +136,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } else {
     return {
       props: {
-        account: await iricomAPI.getMyAccount(tokenInfo),
         board: JSON.parse(JSON.stringify(board)),
         post: post,
       },

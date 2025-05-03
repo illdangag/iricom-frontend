@@ -1,5 +1,6 @@
 // react
 import React, { useEffect, } from 'react';
+import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
@@ -9,25 +10,36 @@ import { BoardView, NoContent, PageTitle, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, BoardList, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   boardList: BoardList,
 }
 
 const AdminBoardAdminPage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    setAccount(props.account);
-  }, []);
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];
@@ -67,31 +79,25 @@ const AdminBoardAdminPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };
   }
 
-  const response: any[] = await Promise.all([
-    iricomAPI.getMyAccount(tokenInfo),
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
     iricomAPI.getBoardList(tokenInfo, 0, 20, null),
   ]);
-  const account: Account = response[0] as Account;
-  const boardList: BoardList = response[1] as BoardList;
 
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
+  const boardListResponse = responseList[0] as PromiseFulfilledResult<BoardList>;
+  const boardList: BoardList = boardListResponse.value;
 
   return {
     props: {
-      account,
       boardList: JSON.parse(JSON.stringify(boardList)),
     },
   };

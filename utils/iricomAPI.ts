@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import {
   Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList,
-  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList, PersonalMessage,
+  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList, PersonalMessage, PersonalMessageStatus,
 } from '../interfaces';
 import process from 'process';
 
@@ -57,7 +57,7 @@ type IricomAPIList = {
   deleteComment: (tokenInfo: TokenInfo | null, boardId: string, postId: string, commentId: string) => Promise<Comment>,
 
   // 개인 쪽지
-  getReceivePersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
+  getReceivePersonalMessageList: (tokenInfo: TokenInfo, status: PersonalMessageStatus, skip: number, limit: number) => Promise<PersonalMessageList>,
   getSendPersonalMessageList: (tokenInfo: TokenInfo, skip: number, limit: number) => Promise<PersonalMessageList>,
   sendPersonalMessage: (tokenInfo: TokenInfo, receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
   getReceivePersonalMessage: (tokenInfo: TokenInfo, personalMessageId: string) => Promise<PersonalMessage>,
@@ -691,13 +691,14 @@ const IricomAPI: IricomAPIList = {
     }
   },
 
-  getReceivePersonalMessageList: async (tokenInfo: TokenInfo, skip: number, limit: number): Promise<PersonalMessageList> => {
+  getReceivePersonalMessageList: async (tokenInfo: TokenInfo, status: string, skip: number, limit: number): Promise<PersonalMessageList> => {
     const config: AxiosRequestConfig = {
       url: `${backendProperties.host}/v1/personal/messages/receive`,
       method: 'GET',
       params: {
         skip: skip,
         limit: limit,
+        status: status,
       },
     };
     setToken(config, tokenInfo);

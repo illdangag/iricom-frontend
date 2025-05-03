@@ -11,12 +11,11 @@ import { useIricom, } from '@root/hooks';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
@@ -29,13 +28,20 @@ enum PageState {
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   board: Board,
 }
 
 const AdminBoardEditIdPage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+
   const router = useRouter();
   const toast = useToast();
   const iriconAPI = useIricom();
+
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [board, setBoard,] = useState<Board | null>(null);
@@ -44,10 +50,9 @@ const AdminBoardEditIdPage = (props: Props) => {
   const [enabled, setEnabled,] = useState<boolean>(false);
   const [showAlert, setShowAlert,] = useState<boolean>(false);
 
-  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
-
   useEffect(() => {
-    setAccount(props.account);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
 
     const board: Board = Object.assign(new Board(), props.board);
     setTitle(board.title);
@@ -148,27 +153,27 @@ const AdminBoardEditIdPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };
   }
 
   const boardId: string = context.query.id as string;
-  const board: Board = await iricomAPI.getBoard(tokenInfo, boardId);
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getBoard(tokenInfo, boardId),
+  ]);
+
+  const boardResponse = responseList[0] as PromiseFulfilledResult<Board>;
+  const board: Board = boardResponse.value;
+
   return {
     props: {
-      account,
       board: JSON.parse(JSON.stringify(board)),
     },
   };

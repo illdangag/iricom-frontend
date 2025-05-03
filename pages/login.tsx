@@ -45,9 +45,10 @@ const LoginPage = () => {
     }
   }, [authState,]);
 
-  const onClickSignInGoogle = () => {
+  const onClickSignInGoogle = async () => {
     setPageState(PageState.REQUEST);
-    void requestGoogleAuth();
+    void await requestGoogleAuth();
+
   };
 
   return (

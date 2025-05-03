@@ -1,8 +1,9 @@
 // react
 import { useEffect, useState, } from 'react';
+import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
-import { VStack, Card, CardBody, Divider, LinkBox, LinkOverlay, } from '@chakra-ui/react';
+import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
 
 import { BoardView, NoContent, PageTitle, } from '@root/components';
 import { PageBody, } from '@root/layouts';
@@ -10,28 +11,39 @@ import MainLayout from '@root/layouts/MainLayout';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, Board, BoardList, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, Board, BoardList, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 
 type Props = {
   account: Account | null,
+  unreadPersonalMessageList: PersonalMessageList,
   boardList: Board[],
 };
 
 const AdminBoardEditPage = (props: Props) => {
-  const [boardList, setBoardList,] = useState<Board[] | null>(null);
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
+  const [boardList, setBoardList,] = useState<Board[] | null>(null);
+
+
+  const router = useRouter();
 
   useEffect(() => {
-    setAccount(props.account);
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
     setBoardList(props.boardList);
-  }, []);
+  }, [router.isReady,]);
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];
@@ -73,33 +85,28 @@ const AdminBoardEditPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
-      props: {},
-      redirect: {
-        statusCode: 307,
-        destination: '/login?success=/admin/board/edit',
-      },
+      notFound: true,
     };
-  } else {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-    if (account.auth === AccountAuth.SYSTEM_ADMIN) {
-      const boardList: BoardList = await iricomAPI.getBoardList(tokenInfo, 0, 20, null);
-      return {
-        props: {
-          account,
-          boardList: boardList.boards,
-        },
-      };
-    } else {
-      return {
-        notFound: true,
-      };
-    }
   }
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getBoardList(tokenInfo, 0, 20, null),
+  ]);
+
+  const boardListResponse = responseList[0] as PromiseFulfilledResult<BoardList>;
+  const boardList: BoardList = boardListResponse.value;
+
+  return {
+    props: {
+      boardList: boardList.boards,
+    },
+  };
 };
 
 

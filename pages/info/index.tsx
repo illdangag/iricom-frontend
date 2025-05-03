@@ -4,40 +4,44 @@ import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
-import { PageBody, MainLayout, } from '@root/layouts';
+import { MainLayout, PageBody, } from '@root/layouts';
 import { PageTitle, PostListTable, } from '@root/components';
 // store
-import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 // etc
-import { Account, AccountAuth, PostList, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, IricomGetServerSideProps, PersonalMessageList, PostList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
-import { getTokenInfoByCookies, } from '@root/utils';
 
 const PAGE_LIMIT: number = 10;
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   postList: PostList,
   page: number,
 };
 
 const InfoPage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const postList = Object.assign(new PostList(), props.postList);
   const page: number = props.page;
 
   const router = useRouter();
 
-  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
     if (!router.isReady) {
       return;
     }
 
-    setAccount(props.account);
-  }, []);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   return (
     <MainLayout>
@@ -100,29 +104,34 @@ const InfoPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
-  if (tokenInfo !== null) {
-    const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-    const page: number = context.query.page ? Number.parseInt(context.query.page as string, 10) : 1;
-    const postList: PostList = await iricomAPI.getMyPostList(tokenInfo, PAGE_LIMIT * (page - 1), PAGE_LIMIT);
-
+  if (tokenInfo === null) {
     return {
-      props: {
-        account,
-        postList: JSON.parse(JSON.stringify(postList)),
-        page,
-      },
-    };
-  } else {
-    return {
+      props: {},
       redirect: {
-        destination: '/login?success=/info',
-        permanent: false,
+        statusCode: 307,
+        destination: '/login?success=/info/edit',
       },
     };
   }
+
+  const page: number = context.query.page ? Number.parseInt(context.query.page as string, 10) : 1;
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getMyPostList(tokenInfo, PAGE_LIMIT * (page - 1), PAGE_LIMIT),
+  ]);
+
+  const postListResponse = responseList[0] as PromiseFulfilledResult<PostList>;
+  const postList: PostList = postListResponse.value;
+
+  return {
+    props: {
+      postList: JSON.parse(JSON.stringify(postList)),
+      page,
+    },
+  };
 };
 
 export default InfoPage;

@@ -1,18 +1,18 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Card, CardBody, HStack, VStack, Button, } from '@chakra-ui/react';
+import { Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { PersonalMessageListTable, PersonalMessagePageTitle, } from '@root/components';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, PersonalMessageList, TokenInfo, } from '@root/interfaces';
-import { getTokenInfoByCookies, parseInt, parseEnum, } from '@root/utils';
+import { Account, IricomGetServerSideProps, PersonalMessageList, PersonalMessageStatus, TokenInfo, } from '@root/interfaces';
+import { parseEnum, parseInt, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
 
@@ -25,19 +25,25 @@ enum PAGE_TAB {
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   receiveMessageList: PersonalMessageList,
   sendMessageList: PersonalMessageList,
   tab: PAGE_TAB,
 };
 
 const PersonalMessagePage = (props: Props) => {
-  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const receiveMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.receiveMessageList);
   const sendMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.sendMessageList);
   const tab: PAGE_TAB = props.tab;
 
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
+
   useEffect(() => {
-    setAccount(props.account);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
   }, []);
 
   const getGetParameter = (receivePage: string, sendPage: string, tab: PAGE_TAB): string => {
@@ -98,8 +104,8 @@ const PersonalMessagePage = (props: Props) => {
   </MainLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   if (tokenInfo === null) {
     return {
@@ -124,8 +130,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const sendSkip: number = sendLimit * (sendPage - 1);
 
   const apiRequestList: Promise<any>[] = [
-    iricomAPI.getMyAccount(tokenInfo),
-    iricomAPI.getReceivePersonalMessageList(tokenInfo, receiveSkip, receiveLimit),
+    iricomAPI.getReceivePersonalMessageList(tokenInfo, PersonalMessageStatus.ALL, receiveSkip, receiveLimit),
     iricomAPI.getSendPersonalMessageList(tokenInfo, sendSkip, sendLimit),
   ];
 
@@ -137,18 +142,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const accountResponse: PromiseFulfilledResult<Account> = responseList[0] as PromiseFulfilledResult<Account>;
-  const receiveMessageResponse: PromiseFulfilledResult<PersonalMessageList> = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
-  const sendMessageResponse: PromiseFulfilledResult<PersonalMessageList> = responseList[2] as PromiseFulfilledResult<PersonalMessageList>;
-
-  const account: Account = accountResponse.value;
+  const receiveMessageResponse: PromiseFulfilledResult<PersonalMessageList> = responseList[0] as PromiseFulfilledResult<PersonalMessageList>;
+  const sendMessageResponse: PromiseFulfilledResult<PersonalMessageList> = responseList[1] as PromiseFulfilledResult<PersonalMessageList>;
   const receiveMessageList: PersonalMessageList = receiveMessageResponse.value;
   const sendMessageList: PersonalMessageList = sendMessageResponse.value;
 
   return {
     props: {
       tab: pageTab,
-      account,
       receiveMessageList: JSON.parse(JSON.stringify(receiveMessageList)),
       sendMessageList: JSON.parse(JSON.stringify(sendMessageList)),
     },

@@ -1,11 +1,14 @@
 // react
 import { ChangeEvent, KeyboardEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
+import { GetServerSideProps, } from 'next/types';
 import { Button, Card, CardBody, CardHeader, Container, Flex, Heading, Image, Input, Spacer, Stack, useToast, } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 
 import { EmptyLayout, } from '@root/layouts';
 import { useEmailAuth, } from '@root/hooks';
+import { TokenInfo, } from '@root/interfaces';
+import { getTokenInfoByCookies, } from '@root/utils';
 
 enum PageState {
   READY,
@@ -126,6 +129,23 @@ const LoginPage = () => {
       </Flex>
     </EmptyLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  if (tokenInfo) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 };
 
 export default LoginPage;

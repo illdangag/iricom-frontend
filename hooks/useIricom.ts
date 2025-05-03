@@ -1,6 +1,6 @@
 // etc
 import {
-  Account, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, Post, PostReport, PostState,
+  Account, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState,
   PostType, ReportType, TokenInfo, VoteType,
 } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
@@ -35,6 +35,7 @@ type Iricom = {
   deleteBoardAdmin: (boardId: string, accountId: string) => Promise<BoardAdmin>,
 
   sendPersonalMessage: (receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
+  getReceivePersonalMessageList: (status: PersonalMessageStatus, skip: number, limit: number) => Promise<PersonalMessageList>,
 }
 
 function useIricom (): Iricom {
@@ -243,6 +244,15 @@ function useIricom (): Iricom {
       const tokenInfo: TokenInfo | null = await getTokenInfo();
       try {
         return await iricomAPI.sendPersonalMessage(tokenInfo, receiveAccountId, title, message);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    getReceivePersonalMessageList: async (status: PersonalMessageStatus, skip: number, limit: number): Promise<PersonalMessageList> => {
+      const tokenInfo: TokenInfo | null  = await getTokenInfo();
+      try {
+        return await iricomAPI.getReceivePersonalMessageList(tokenInfo, status, skip, limit);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

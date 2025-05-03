@@ -2,7 +2,7 @@
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, FormControl, FormLabel, Heading, HStack, Input, VStack, useToast, } from '@chakra-ui/react';
+import { Badge, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, FormControl, FormLabel, Heading, HStack, Input, useToast, VStack, } from '@chakra-ui/react';
 
 import { PageBody, } from '@root/layouts';
 import MainLayout from '@root/layouts/MainLayout';
@@ -10,14 +10,12 @@ import { PageTitle, } from '@root/components';
 import { useIricom, } from '@root/hooks';
 
 // store
-import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { useSetRecoilState, } from 'recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, IricomError, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, IricomError, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
-import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
   INVALID,
@@ -28,34 +26,37 @@ enum PageState {
 }
 
 type Props = {
-  account: Account | null,
+  account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
 }
 
 const InfoEditPage = (props: Props) => {
-  const router = useRouter();
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
-  const { redirect, } = router.query;
+  const router = useRouter();
 
   const iricomAPI = useIricom();
   const toast = useToast();
 
+  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
+
   const [pageState, setPageState,] = useState<PageState>(PageState.INVALID);
   const [nickname, setNickname,] = useState<string>('');
   const [description, setDescription,] = useState<string>('');
-
-  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
 
   useEffect(() => {
     if (!router.isReady) {
       return;
     }
 
-    setAccount(props.account);
-    setNickname(props.account.nickname);
-    setDescription(props.account.description);
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+    setNickname(account.nickname);
+    setDescription(account.description);
     setPageState(PageState.VALID);
   }, [router.isReady,]);
-
 
   const onChangeNickname = (event: ChangeEvent<HTMLInputElement>) => {
     setNickname(event.target.value);
@@ -76,8 +77,8 @@ const InfoEditPage = (props: Props) => {
         duration: 3000,
       });
 
-      if (typeof redirect === 'string') {
-        void router.replace(decodeURIComponent(redirect));
+      if (typeof router.query.redirect === 'string') {
+        void router.replace(decodeURIComponent(router.query.redirect));
       } else {
         void router.push('/info');
       }
@@ -134,12 +135,8 @@ const InfoEditPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
-
-  const props: Props = {
-    account: null,
-  };
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   if (tokenInfo === null) {
     return {
@@ -149,14 +146,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         destination: '/login?success=/info/edit',
       },
     };
-  } else {
-    props.account = await iricomAPI.getMyAccount(tokenInfo);
   }
 
   return {
-    props: {
-      ...props,
-    },
+    props: {},
   };
 };
 

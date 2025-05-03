@@ -1,27 +1,27 @@
 // react
-import React, { ChangeEvent, useEffect, useState, KeyboardEvent, } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { Button, Card, CardBody, Heading, HStack, ListItem, Text, UnorderedList, VStack, InputGroup, InputLeftElement, Input, InputRightElement, } from '@chakra-ui/react';
+import { Button, Card, CardBody, Heading, HStack, Input, InputGroup, InputLeftElement, InputRightElement, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
-
 import { MainLayout, PageBody, } from '@root/layouts';
 import { AccountListTable, PageTitle, } from '@root/components';
 import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '@root/components/alerts';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountList, AccountAuth, BoardAdmin, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, AccountList, BoardAdmin, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
-import { getTokenInfoByCookies, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
+
 const PAGE_LIMIT: number = 5;
 
 type Props = {
   account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
   boardId: string,
   boardAdmin: BoardAdmin,
   accountList: AccountList,
@@ -30,13 +30,16 @@ type Props = {
 }
 
 const AdminBoardAdminEditPage = (props: Props) => {
-  const router = useRouter();
-
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const boardId: string = props.boardId;
   const accountPage: number = props.accountPage;
   const accountList: AccountList = Object.assign(new AccountList(), props.accountList);
 
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [boardAdmin, setBoardAdmin,] = useState<BoardAdmin | null>(props.boardAdmin);
   const [selectedAccount, setSelectedAccount,] = useState<Account | null>(null);
@@ -45,8 +48,13 @@ const AdminBoardAdminEditPage = (props: Props) => {
   const [accountKeyword, setAccountKeyword,] = useState<string>('');
 
   useEffect(() => {
-    setAccount(props.account);
-  }, []);
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const onCloseAddAdminAlert = () => {
     setOpenBoardAdminCreateAlert(false);
@@ -191,10 +199,11 @@ const AdminBoardAdminEditPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };
@@ -202,27 +211,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const accountPageQuery: string | undefined = context.query.account_page as string;
   const accountKeywordQuery: string | undefined = context.query.account_keyword as string;
-
   const accountPage: number = accountPageQuery ? Number.parseInt(accountPageQuery, 10) : 1;
-  const accountKeyword: string = accountKeywordQuery ? accountKeywordQuery : '';
+  const accountKeyword: string = accountKeywordQuery || '';
   const accountSkip: number = PAGE_LIMIT * (accountPage - 1);
   const accountLimit: number = PAGE_LIMIT;
-
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  const auth: AccountAuth = account.auth;
-  if (auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
-
   const boardId: string = context.query.boardId as string;
-  const boardAdmin: BoardAdmin = await iricomAPI.getBoardAdminInfo(tokenInfo, boardId);
-  const accountList: AccountList = await iricomAPI.getAccountList(tokenInfo, accountSkip, accountLimit, accountKeyword);
+
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
+    iricomAPI.getBoardAdminInfo(tokenInfo, boardId),
+    iricomAPI.getAccountList(tokenInfo, accountSkip, accountLimit, accountKeyword),
+  ]);
+
+  const boardAdminInfoResponse = responseList[0] as PromiseFulfilledResult<BoardAdmin>;
+  const accountListResponse = responseList[1] as PromiseFulfilledResult<AccountList>;
+
+  const boardAdmin: BoardAdmin = boardAdminInfoResponse.value;
+  const accountList: AccountList = accountListResponse.value;
 
   return {
     props: {
-      account,
       boardId,
       boardAdmin: JSON.parse(JSON.stringify(boardAdmin)),
       accountList: JSON.parse(JSON.stringify(accountList)),

@@ -10,14 +10,12 @@ import useIricom from '@root/hooks/useIricom';
 
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 
 // etc
-import { Account, AccountAuth, TokenInfo, } from '@root/interfaces';
+import { Account, AccountAuth, IricomGetServerSideProps, PersonalMessageList, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import { PageTitle, } from '@root/components';
-import { getTokenInfoByCookies, } from '@root/utils';
-import iricomAPI from '@root/utils/iricomAPI';
 
 enum PageState {
   READY,
@@ -28,11 +26,16 @@ enum PageState {
 }
 
 type Props = {
-  account: Account | null,
+  account: Account,
+  unreadPersonalMessageList: PersonalMessageList,
 }
 
 const AdminBoardCreatePage = (props: Props) => {
+  const account: Account = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
+
   const router = useRouter();
+
   const toast = useToast();
   const iricomAPI = useIricom();
 
@@ -42,10 +45,16 @@ const AdminBoardCreatePage = (props: Props) => {
   const [enabled, setEnabled,] = useState<boolean>(false);
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    setAccount(props.account);
-  }, []);
+    if (!router.isReady) {
+      return;
+    }
+
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -129,26 +138,17 @@ const AdminBoardCreatePage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
+  const account: Account = context.req.data.account;
 
-  if (tokenInfo === null) {
+  if (tokenInfo === null || account.auth !== AccountAuth.SYSTEM_ADMIN) {
     return {
       notFound: true,
     };
   }
-
-  const account: Account = await iricomAPI.getMyAccount(tokenInfo);
-  if (account.auth !== AccountAuth.SYSTEM_ADMIN) {
-    return {
-      notFound: true,
-    };
-  }
-
   return {
-    props: {
-      account,
-    },
+    props: {},
   };
 };
 

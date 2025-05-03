@@ -1,24 +1,26 @@
 // react
 import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
-import { NoContent, PostListTable, BoardPageTitle, } from '@root/components';
+import { BoardPageTitle, NoContent, PostListTable, } from '@root/components';
 import { RequireAccountDetailAlert, } from '@root/components/alerts';
 // store
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { myAccountAtom, unreadPersonalMessageListAtom, } from '@root/recoil';
 // etc
-import { Account, Board, PostList, PostType, TokenInfo, } from '@root/interfaces';
+import { Account, Board, IricomGetServerSideProps, PersonalMessageList, PostList, PostType, TokenInfo, } from '@root/interfaces';
 import { BORDER_RADIUS, } from '@root/constants/style';
 import iricomAPI from '@root/utils/iricomAPI';
-import { getTokenInfoByCookies, parseInt, } from '@root/utils';
+import { parseInt, } from '@root/utils';
 
 const PAGE_LIMIT: number = 10;
 const NOTIFICATION_PAGE_LIMIT: number = 5;
 
 type Props = {
   account: Account | null,
+  unreadPersonalMessageList: PersonalMessageList,
   board: Board,
   postList: PostList,
   notificationList: PostList,
@@ -26,18 +28,27 @@ type Props = {
 };
 
 const BoardsPage = (props: Props) => {
+  const account: Account | null = props.account;
+  const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const boardId: string = props.boardId;
   const board = Object.assign(new Board(), props.board as Board);
   const postList = Object.assign(new PostList(), props.postList as PostList);
   const notificationList = Object.assign(new PostList(), props.notificationList as PostList);
 
-  const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
+  const router = useRouter();
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
+
+  const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    setAccount(props.account);
-  }, []);
+    if (!router.isReady && !account) {
+      return;
+    }
+    setAccount(account);
+    setUnreadPersonalMessageList(unreadPersonalMessageList);
+  }, [router.isReady,]);
 
   const onCloseRegisteredAccountDetailAlert = () => {
     setShowRegisteredAccountAlert(false);
@@ -75,9 +86,7 @@ const BoardsPage = (props: Props) => {
               />
             </CardBody>
           </Card>}
-          {postList && postList.total === 0 && <>
-            <NoContent message='게시물이 존재하지 않습니다.'/>
-          </>}
+          {postList && postList.total === 0 && <NoContent message='게시물이 존재하지 않습니다.'/>}
         </VStack>
       </PageBody>
       <RequireAccountDetailAlert
@@ -89,31 +98,31 @@ const BoardsPage = (props: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
-
-  const account: Account | null = tokenInfo !== null ? await iricomAPI.getMyAccount(tokenInfo) : null;
+export const getServerSideProps: GetServerSideProps = async (context: IricomGetServerSideProps) => {
+  const tokenInfo: TokenInfo | null = context.req.data.tokenInfo;
 
   const boardId: string = context.query.boardId as string;
   const pageQuery: string | undefined = context.query.page as string;
-
   const page: number = parseInt(pageQuery, 1);
   const limit: number = PAGE_LIMIT;
   const skip: number = limit * (page - 1);
 
-  const resultList = await Promise.all([
+  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
     iricomAPI.getBoard(tokenInfo, boardId),
     iricomAPI.getPostList(tokenInfo, boardId, skip, limit, PostType.POST),
     iricomAPI.getPostList(tokenInfo, boardId, 0, NOTIFICATION_PAGE_LIMIT, PostType.NOTIFICATION),
   ]);
 
-  const board: Board = resultList[0];
-  const postList: PostList = resultList[1];
-  const notificationList: PostList = resultList[2];
+  const boardResponse = responseList[0] as PromiseFulfilledResult<Board>;
+  const postListResponse = responseList[1] as PromiseFulfilledResult<PostList>;
+  const notificationListResponse = responseList[2] as PromiseFulfilledResult<PostList>;
+
+  const board: Board = boardResponse.value;
+  const postList: PostList = postListResponse.value;
+  const notificationList: PostList = notificationListResponse.value;
 
   return {
     props: {
-      account,
       boardId,
       board: JSON.parse(JSON.stringify(board)),
       postList: JSON.parse(JSON.stringify(postList)),
