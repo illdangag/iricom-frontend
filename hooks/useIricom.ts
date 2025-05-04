@@ -1,14 +1,9 @@
 // etc
-import {
-  Account, AccountList, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState,
-  PostType, ReportType, TokenInfo, VoteType,
-} from '../interfaces';
+import { Account, AccountList, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
 import { BrowserStorage, getTokenInfo, } from '../utils';
-import AccountListTable from '@root/components/tables/AccountListTable';
-import { async } from '@firebase/util';
 
 type Iricom = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
