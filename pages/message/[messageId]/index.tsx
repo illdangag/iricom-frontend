@@ -36,7 +36,12 @@ const PersonalMessagePage = (props: Props) => {
 
   useEffect(() => {
     setAccount(account);
-    setUnreadPersonalMessageList(unreadPersonalMessageList);
+    if (unreadPersonalMessageList.total === 1 && unreadPersonalMessageList.personalMessages[0].id === personalMessage.id) {
+      // 읽지 않은 메시지가 하나이면서 그 하나의 메시지를 읽는 경우
+      setUnreadPersonalMessageList(new PersonalMessageList());
+    } else {
+      setUnreadPersonalMessageList(unreadPersonalMessageList);
+    }
   }, []);
 
   return <MainLayout>
