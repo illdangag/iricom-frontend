@@ -1,6 +1,7 @@
 // react
 import { TableContainer, VStack, Box, Table, Thead, Tr, Th, Tbody, Td, Badge, Link, } from '@chakra-ui/react';
 import Pagination from './Pagination';
+import AccountNameTag from '../AccountNameTag';
 
 // etc
 import { PersonalMessageList, } from '@root/interfaces';
@@ -46,8 +47,8 @@ const PersonalMessageListTable = ({
                   {message.title}{isShowNewBadge && !message.receivedConfirm && <Badge fontSize='0.5rem' variant='outline' colorScheme='red' marginLeft='0.2rem'>NEW</Badge>}
                 </Link>
               </Td>
-              {isShowSendAccount && <Td>{message.sendAccount.nickname}</Td>}
-              {isShowReceiveAccount && <Td>{message.receiveAccount.nickname}</Td>}
+              {isShowSendAccount && <Td><AccountNameTag account={message.sendAccount}/></Td>}
+              {isShowReceiveAccount && <Td><AccountNameTag account={message.receiveAccount}/></Td>}
               {isShowReceivedConfirm && <Td>{message.receivedConfirm ? '읽음' : '읽지 않음'}</Td>}
             </Tr>;
           })}

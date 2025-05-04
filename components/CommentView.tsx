@@ -1,9 +1,8 @@
 // react
-import { useState, MouseEvent, } from 'react';
-import {
-  Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Link, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack,
-} from '@chakra-ui/react';
+import { MouseEvent, useState, } from 'react';
+import { Badge, Box, Button, ButtonGroup, Card, CardBody, Divider, HStack, IconButton, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdDeleteOutline, MdEdit, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
+import { AccountNameTag, } from '@root/components/index';
 import { useIricom, } from '../hooks';
 // store
 import { useRecoilValue, useSetRecoilState, } from 'recoil';
@@ -124,16 +123,7 @@ const CommentView = ({
       <VStack alignItems='stretch'>
         <HStack>
           <VStack alignItems='stretch'>
-            <Box>
-              <Menu size='sm'>
-                <MenuButton as={Text} fontSize='.8rem'>{comment.account.nickname}</MenuButton>
-                <MenuList fontSize='0.8rem'>
-                  <Link href={`/message/create?to=${comment.account.id}`} _hover={{ textDecoration: 'none', }}>
-                    <MenuItem>쪽지 보내기</MenuItem>
-                  </Link>
-                </MenuList>
-              </Menu>
-            </Box>
+            <AccountNameTag account={comment.account} isShowSendPersonalMessage={true}/>
             <Text fontSize='.6rem'>{getFormattedDateTime(comment.createDate)}</Text>
           </VStack>
           <Spacer/>

@@ -18,7 +18,8 @@ import PersonalMessageEditor from './PersonalMessageEditor';
 import PersonalMessageView from './PersonalMessageView';
 import AccountSearch from './AccountSearch';
 import AccountSearchPopup from './AccountSearchPopup';
+import AccountNameTag from './AccountNameTag';
 
 export { BoardPageTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
   NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, ReportPostListTable, PersonalMessageListTable,
-  PersonalMessagePageTitle, PersonalMessageEditor, PersonalMessageView, AccountSearch, AccountSearchPopup, };
+  PersonalMessagePageTitle, PersonalMessageEditor, PersonalMessageView, AccountSearch, AccountSearchPopup, AccountNameTag, };

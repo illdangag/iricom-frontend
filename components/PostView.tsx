@@ -1,9 +1,11 @@
 // react
 import { useState, } from 'react';
-import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Flex, Heading, HStack, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, useToast, VStack, Link, Divider, } from '@chakra-ui/react';
+import dynamic from 'next/dynamic';
+import { Alert, AlertDescription, AlertIcon, Box, Button, ButtonGroup, Divider, Flex, Heading, HStack, Spacer, Text, useToast, VStack, } from '@chakra-ui/react';
 import { MdBlock, MdOutlineReport, MdShare, MdThumbDownOffAlt, MdThumbUpOffAlt, } from 'react-icons/md';
-import { useIricom, } from '../hooks';
+import { useIricom, } from '@root/hooks';
 import { PostBlockAlert, PostReportAlert, PostUnblockAlert, } from './alerts';
+import AccountNameTag from './AccountNameTag';
 
 // store
 import { useSetRecoilState, } from 'recoil';
@@ -14,7 +16,6 @@ import { IricomError, NotExistTokenError, Post, PostState, TokenInfo, VoteType, 
 import { BORDER_RADIUS, } from '../constants/style';
 import { getFormattedDateTime, getTokenInfo, } from '../utils';
 import '@uiw/react-markdown-preview/markdown.css';
-import dynamic from 'next/dynamic';
 
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
   ssr: false,
@@ -252,16 +253,7 @@ const PostViewHeader = ({
       {!post.blocked && <Heading size='lg' fontWeight='medium'>{post.title}</Heading>}
     </Flex>
     <Flex marginTop='1rem'>
-      <Box>
-        <Menu size='sm'>
-          <MenuButton as={Text} fontSize='0.8rem' cursor='pointer'>{post.account.nickname}</MenuButton>
-          <MenuList fontSize='0.8rem'>
-            <Link href={`/message/create?to=${post.account.id}`} _hover={{ textDecoration: 'none', }}>
-              <MenuItem>쪽지 보내기</MenuItem>
-            </Link>
-          </MenuList>
-        </Menu>
-      </Box>
+      <AccountNameTag account={post.account} isShowSendPersonalMessage={true}/>
       <Spacer/>
       <VStack alignItems='flex-end' spacing='0.2rem'>
         <Text fontSize='0.8rem'>{getFormattedDateTime(post.createDate)}</Text>
