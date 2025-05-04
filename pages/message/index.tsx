@@ -1,7 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Button, Card, CardBody, HStack, VStack, } from '@chakra-ui/react';
+import { Button, Card, CardBody, HStack, Link, Spacer, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
 import { PersonalMessageListTable, PersonalMessagePageTitle, } from '@root/components';
@@ -82,6 +82,10 @@ const PersonalMessagePage = (props: Props) => {
               >
                 보낸 쪽지
               </Button>
+              <Spacer/>
+              <Link href='/message/create'>
+                <Button size='xs' variant='outline'>쪽지 보내기</Button>
+              </Link>
             </HStack>
             {tab === PAGE_TAB.RECEIVE && <PersonalMessageListTable
               personalMessageList={receiveMessageList}

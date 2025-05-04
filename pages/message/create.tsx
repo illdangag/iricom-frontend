@@ -2,8 +2,8 @@
 import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
-import { Card, CardBody, List, ListItem, Text, VStack, } from '@chakra-ui/react';
-import { PersonalMessageEditor, PersonalMessagePageTitle, } from '@root/components';
+import { Box, Button, Card, CardBody, HStack, Text, VStack, } from '@chakra-ui/react';
+import { PersonalMessageEditor, PersonalMessagePageTitle, AccountSearchPopup, } from '@root/components';
 import { MainLayout, PageBody, } from '@root/layouts';
 
 // store
@@ -19,7 +19,7 @@ import { useIricom, } from '@root/hooks';
 type Props = {
   account: Account,
   unreadPersonalMessageList: PersonalMessageList,
-  toAccount: Account,
+  toAccount: Account | null,
 };
 
 enum PageState {
@@ -30,7 +30,6 @@ enum PageState {
 const PersonalMessageCreatePage = (props: Props) => {
   const account: Account | null = props.account;
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
-  const toAccount: Account = props.toAccount;
 
   const router = useRouter();
   const iricomAPI = useIricom();
@@ -38,7 +37,9 @@ const PersonalMessageCreatePage = (props: Props) => {
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
-  const [ pageState, setPageState, ] = useState<PageState>(PageState.IDLE);
+  const [toAccount, setToAccount,] = useState<Account | null>(props.toAccount);
+  const [pageState, setPageState,] = useState<PageState>(PageState.IDLE);
+  const [isOpenAccountSearchPopup, setOpenAccountSearchPopup,] = useState<boolean>(false);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -55,6 +56,19 @@ const PersonalMessageCreatePage = (props: Props) => {
     window.location.href = '/message';
   };
 
+  const onClickOpenAccountSearchPopup = () => {
+    setOpenAccountSearchPopup(true);
+  };
+
+  const onCloseAccountSearchPopup = () => {
+    setOpenAccountSearchPopup(false);
+  };
+
+  const onConfirmAccountSearchPopup = (accounts: Account[]) => {
+    setToAccount(accounts[0]);
+    setOpenAccountSearchPopup(false);
+  };
+
   return <MainLayout>
     <PageBody>
       <PersonalMessagePageTitle/>
@@ -64,11 +78,12 @@ const PersonalMessageCreatePage = (props: Props) => {
           borderRadius={{ base: '0', md: BORDER_RADIUS, }}
         >
           <CardBody>
-            <List>
-              <ListItem>
-                <Text as='b'>{toAccount.nickname}</Text> 에게 쪽지보내기
-              </ListItem>
-            </List>
+            <HStack>
+              {toAccount && <Box>
+                <Text as='b' display='inline-block'>{toAccount.nickname || toAccount.email}</Text> <Text display='inline-block'>에게 쪽지보내기</Text>
+              </Box>}
+              <Button size='xs' variant='outline' onClick={onClickOpenAccountSearchPopup}>멤버 검색</Button>
+            </HStack>
           </CardBody>
         </Card>
         <Card
@@ -77,12 +92,17 @@ const PersonalMessageCreatePage = (props: Props) => {
         >
           <CardBody>
             <PersonalMessageEditor
-              disabled={pageState === PageState.REQUEST}
+              disabled={!toAccount || pageState === PageState.REQUEST}
               onChange={onChangePersonalMessage}
             />
           </CardBody>
         </Card>
       </VStack>
+      <AccountSearchPopup
+        isOpen={isOpenAccountSearchPopup}
+        onClose={onCloseAccountSearchPopup}
+        onConfirm={onConfirmAccountSearchPopup}
+      />
     </PageBody>
   </MainLayout>;
 };
@@ -99,30 +119,28 @@ export const getServerSideProps: GetServerSideProps = async (context: IricomGetS
   const toQuery: string | undefined = context.query.to as string;
   const to: string = toQuery || '';
 
-  if (!to) {
+  if (to) {
+    try {
+      const toAccount: Account = await iricomAPI.getAccount(tokenInfo, to);
+      return {
+        props: {
+          toAccount: toAccount,
+        },
+      };
+    } catch (error) {
+      return {
+        props: {
+          toAccount: null,
+        },
+      };
+    }
+  } else {
     return {
-      notFound: true,
+      props: {
+        toAccount: null,
+      },
     };
   }
-
-  const responseList: PromiseSettledResult<any>[] = await Promise.allSettled([
-    iricomAPI.getAccount(tokenInfo, to),
-  ]);
-
-  if (responseList[0].status === 'rejected') {
-    return {
-      notFound: true,
-    };
-  }
-
-  const toAccountResponse = responseList[0] as PromiseFulfilledResult<Account>;
-  const toAccount = toAccountResponse.value;
-
-  return {
-    props: {
-      toAccount: toAccount,
-    },
-  };
 };
 
 export default PersonalMessageCreatePage;

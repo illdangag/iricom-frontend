@@ -157,7 +157,7 @@ export type Account = {
 }
 
 export class AccountList extends ListResponse {
-  public accounts: Account[];
+  public accounts: Account[] = [];
 }
 
 export class Board {
@@ -169,11 +169,11 @@ export class Board {
 }
 
 export class BoardList extends ListResponse {
-  public boards: Board[];
+  public boards: Board[] = [];
 }
 
 export class BoardAdmin extends Board {
-  public accounts: Account[];
+  public accounts: Account[] = [];
 }
 
 export enum PostType {
