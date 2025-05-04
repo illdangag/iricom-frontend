@@ -46,7 +46,7 @@ const PersonalMessageEditor = ({
         <FormLabel>제목</FormLabel>
         <Input value={title} onChange={onChangeTitle} disabled={disabled || loading}/>
       </FormControl>
-      <FormControl>
+      <FormControl isRequired>
         <FormLabel>내용</FormLabel>
         <Box>
           <Textarea value={message} onChange={onChangeMessage} disabled={disabled || loading}/>
@@ -56,7 +56,7 @@ const PersonalMessageEditor = ({
     <HStack justifyContent='flex-end' marginTop='.8rem'>
       <ButtonGroup size='sm'>
         <Button
-          isDisabled={title.length === 0 || disabled}
+          isDisabled={title.length === 0 || message.length === 0 || disabled}
           isLoading={loading}
           onClick={onClickConfirm}
         >
