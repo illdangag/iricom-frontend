@@ -4,7 +4,7 @@ import { GetServerSideProps, } from 'next/types';
 import { Button, Card, CardBody, Heading, HStack, Input, InputGroup, InputLeftElement, InputRightElement, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
 import { MainLayout, PageBody, } from '@root/layouts';
-import { AccountListTable, PageTitle, } from '@root/components';
+import { AccountListTable, AccountNameTag, PageTitle, } from '@root/components';
 import { BoardAdminCreateAlert, BoardAdminDeleteAlert, } from '@root/components/alerts';
 
 // store
@@ -122,7 +122,7 @@ const AdminBoardAdminEditPage = (props: Props) => {
               <UnorderedList spacing='.5rem' paddingTop='.5rem' paddingLeft='.5rem'>
                 {boardAdmin && boardAdmin.accounts.map((account) => <ListItem key={account.id}>
                   <HStack>
-                    <Text>{account.nickname}</Text>
+                    <AccountNameTag account={account} isShowSendPersonalMessage={true}/>
                     <Button
                       size='xs'
                       variant='outline'

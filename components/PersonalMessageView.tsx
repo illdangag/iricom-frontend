@@ -1,6 +1,7 @@
 // react
-import { Box, Button, Divider, HStack, Link, Menu, MenuButton, MenuItem, MenuList, Spacer, Text, VStack, } from '@chakra-ui/react';
+import { Box, Button, Divider, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MdSend, } from 'react-icons/md';
+import { AccountNameTag, } from '@root/components/index';
 // etc
 import { PersonalMessage, } from '@root/interfaces';
 import { getFormattedDateTime, } from '@root/utils';
@@ -32,16 +33,7 @@ const PersonalMessageViewHeader = ({
   return <VStack align='stretch'>
     <Text fontSize='lg' fontWeight='medium'>{personalMessage.title}</Text>
     <HStack>
-      <Box>
-        <Menu size='sm'>
-          <MenuButton as={Text} fontSize='0.8rem' cursor='pointer'>{personalMessage.sendAccount.nickname}</MenuButton>
-          <MenuList fontSize='0.8rem'>
-            <Link href={`/message/create?to=${personalMessage.sendAccount.id}`} _hover={{ textDecoration: 'none', }}>
-              <MenuItem>쪽지 보내기</MenuItem>
-            </Link>
-          </MenuList>
-        </Menu>
-      </Box>
+      <AccountNameTag account={personalMessage.sendAccount} isShowSendPersonalMessage={true}/>
       <Spacer/>
       <VStack alignItems='flex-end' spacing='0.2rem'>
         <Text fontSize='0.8rem'>{getFormattedDateTime(personalMessage.createDate)}</Text>
