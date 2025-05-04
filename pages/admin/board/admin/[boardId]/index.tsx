@@ -1,6 +1,5 @@
 // react
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Button, Card, CardBody, Heading, HStack, Input, InputGroup, InputLeftElement, InputRightElement, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
@@ -36,8 +35,6 @@ const AdminBoardAdminEditPage = (props: Props) => {
   const accountPage: number = props.accountPage;
   const accountList: AccountList = Object.assign(new AccountList(), props.accountList);
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
@@ -48,13 +45,9 @@ const AdminBoardAdminEditPage = (props: Props) => {
   const [accountKeyword, setAccountKeyword,] = useState<string>('');
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   const onCloseAddAdminAlert = () => {
     setOpenBoardAdminCreateAlert(false);
@@ -101,8 +94,7 @@ const AdminBoardAdminEditPage = (props: Props) => {
   };
 
   const setUrlGetParameterAccountKeyword = (accountKeyword: string) => {
-    const url: string = `/admin/board/admin/${boardId}?account_page=${accountPage}&account_keyword=${accountKeyword}`;
-    void router.push(url);
+    window.location.href = `/admin/board/admin/${boardId}?account_page=${accountPage}&account_keyword=${accountKeyword}`;
   };
 
   return (

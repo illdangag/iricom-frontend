@@ -1,6 +1,5 @@
 // react
 import { useRef, } from 'react';
-import { useRouter, } from 'next/router';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Text, } from '@chakra-ui/react';
 
 type Props = {
@@ -15,10 +14,9 @@ const RequireAccountDetailAlert = ({
   onClose = () => {},
 }: Props) => {
   const closeRef = useRef();
-  const router = useRouter();
 
   const onClickRegister = () => {
-    void router.push('/info/edit');
+    window.location.href = '/info/edit';
   };
 
   return (<AlertDialog

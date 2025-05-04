@@ -1,6 +1,5 @@
 // react
 import { useEffect, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -30,19 +29,13 @@ const AdminReportsBoardsBoardIdPage = (props: Props) => {
   const page: number = props.page;
   const board: Board = Object.assign(new Board(), props.board);
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   return <MainLayout>
     <PageBody>

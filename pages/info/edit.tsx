@@ -47,16 +47,12 @@ const InfoEditPage = (props: Props) => {
   const [description, setDescription,] = useState<string>('');
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
     setNickname(account.nickname);
     setDescription(account.description);
     setPageState(PageState.VALID);
-  }, [router.isReady,]);
+  }, []);
 
   const onChangeNickname = (event: ChangeEvent<HTMLInputElement>) => {
     setNickname(event.target.value);
@@ -78,9 +74,9 @@ const InfoEditPage = (props: Props) => {
       });
 
       if (typeof router.query.redirect === 'string') {
-        void router.replace(decodeURIComponent(router.query.redirect));
+        window.location.href = decodeURIComponent(router.query.redirect);
       } else {
-        void router.push('/info');
+        window.location.href = '/info';
       }
     } catch (error) {
       const iricomError: IricomError = error as IricomError;

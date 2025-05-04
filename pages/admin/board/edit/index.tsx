@@ -1,6 +1,5 @@
 // react
 import { useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
@@ -32,18 +31,11 @@ const AdminBoardEditPage = (props: Props) => {
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
   const [boardList, setBoardList,] = useState<Board[] | null>(null);
 
-
-  const router = useRouter();
-
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
     setBoardList(props.boardList);
-  }, [router.isReady,]);
+  }, []);
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];

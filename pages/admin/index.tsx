@@ -2,7 +2,6 @@
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import NextLink from 'next/link';
-import { useRouter, } from 'next/router';
 import { Card, CardBody, Divider, Heading, LinkBox, LinkOverlay, Text, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -27,19 +26,13 @@ const AdminPage = (props: Props) => {
   const account: Account = props.account;
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   return <MainLayout>
     <PageBody>

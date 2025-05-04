@@ -31,7 +31,7 @@ const UnregisteredAccountAlert = ({
     <AlertDialogContent>
       <AlertDialogHeader>저런!</AlertDialogHeader>
       <AlertDialogBody>
-        <Text>등록되지 않은 계정입니다.</Text>
+        <Text>닉네임이 등록되지 않은 계정입니다.</Text>
         <Text>계정 수정 페이지에서 닉네임을 등록 하시겠습니까?</Text>
       </AlertDialogBody>
       <AlertDialogFooter>

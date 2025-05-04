@@ -1,6 +1,5 @@
 // react
 import { useEffect, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Box, Card, CardBody, FormControl, FormLabel, Tag, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -26,19 +25,13 @@ const AdminReportsBoardsBoardIdReportsPage = (props: Props) => {
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const postReport: PostReport = props.postReport;
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   const getTypeElement = (type: ReportType) => {
     switch (type) {

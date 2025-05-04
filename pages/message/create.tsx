@@ -1,9 +1,8 @@
 // react
 import { useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Box, Button, Card, CardBody, HStack, Text, VStack, } from '@chakra-ui/react';
-import { PersonalMessageEditor, PersonalMessagePageTitle, AccountSearchPopup, } from '@root/components';
+import { AccountSearchPopup, PersonalMessageEditor, PersonalMessagePageTitle, } from '@root/components';
 import { MainLayout, PageBody, } from '@root/layouts';
 
 // store
@@ -31,7 +30,6 @@ const PersonalMessageCreatePage = (props: Props) => {
   const account: Account | null = props.account;
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
-  const router = useRouter();
   const iricomAPI = useIricom();
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
@@ -42,13 +40,9 @@ const PersonalMessageCreatePage = (props: Props) => {
   const [isOpenAccountSearchPopup, setOpenAccountSearchPopup,] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   const onChangePersonalMessage = async (personalMessage: PersonalMessage) => {
     setPageState(PageState.REQUEST);

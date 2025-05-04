@@ -1,6 +1,5 @@
 // react
 import { useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, } from '@chakra-ui/react';
 
@@ -28,42 +27,34 @@ const PostCreatePage = (props: Props) => {
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const board: Board = Object.assign(new Board(), props.board);
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [isShowNotExistBoardAlert, setShowNotExistBoardAlert,] = useState<boolean>(false);
   const [isShowUnregisteredAccountAlert, setShowUnregisteredAccountAlert,] = useState<boolean>(false);
 
-
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(props.account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
 
     if (props.account.auth === AccountAuth.UNREGISTERED_ACCOUNT) {
       setShowUnregisteredAccountAlert(true);
     }
-  }, [router.isReady,]);
+  }, []);
 
   const onCloseNotExistBoardAlert = () => {
     setShowNotExistBoardAlert(false);
   };
 
   const onCloseUnregisteredAccountAlert = () => {
-    setShowUnregisteredAccountAlert(false);
-    void router.back();
+    window.history.back();
   };
 
   const onRequest = (postState: PostState, post: Post) => {
     if (postState === PostState.TEMPORARY) {
-      void router.replace(`/boards/${post.boardId}/posts/${post.id}/edit`);
+      window.location.replace(`/boards/${post.boardId}/posts/${post.id}/edit`);
     } else { // POST.PUBLISH
-      void router.push('/');
+      window.location.href = '/';
     }
   };
 
