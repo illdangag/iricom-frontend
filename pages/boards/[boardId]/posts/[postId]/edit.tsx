@@ -1,6 +1,5 @@
 // react
 import { useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, } from '@chakra-ui/react';
 
@@ -30,8 +29,6 @@ const BoardsPostsEditPage = (props: Props) => {
   const board = Object.assign(new Board(), props.board);
   const post = props.post;
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
@@ -40,14 +37,10 @@ const BoardsPostsEditPage = (props: Props) => {
   const [isOpenPostPublishAlert, setOpenPostPublishAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(props.account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
     setOpenInvalidPostAlert(board === null || post === null);
-  }, [router.isReady,]);
+  }, []);
 
   const onCloseInvalidPostAlert = () => {
     setOpenInvalidPostAlert(false);

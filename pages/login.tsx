@@ -24,8 +24,6 @@ const LoginPage = () => {
   const [authState, requestGoogleAuth,] = useGoogleAuth();
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
 
-  const { success, } = router.query;
-
   useEffect(() => {
     if (authState === 'success') {
       setPageState(PageState.SUCCESS);
@@ -35,10 +33,11 @@ const LoginPage = () => {
         duration: 3000,
       });
 
+      const { success, } = router.query;
       if (typeof success === 'string') {
-        void router.replace(decodeURIComponent(success));
+        window.location.replace(decodeURIComponent(success));
       } else {
-        void router.replace('/');
+        window.location.replace('/');
       }
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);
@@ -48,7 +47,6 @@ const LoginPage = () => {
   const onClickSignInGoogle = async () => {
     setPageState(PageState.REQUEST);
     void await requestGoogleAuth();
-
   };
 
   return (

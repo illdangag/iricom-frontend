@@ -1,9 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { useRouter, } from 'next/router';
-import NextLink from 'next/link';
-import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Spacer, Text, VStack, } from '@chakra-ui/react';
+import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
 import { PageTitle, PostListTable, } from '@root/components';
 // store
@@ -29,19 +27,13 @@ const InfoPage = (props: Props) => {
   const postList = Object.assign(new PostList(), props.postList);
   const page: number = props.page;
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   return (
     <MainLayout>
@@ -61,9 +53,9 @@ const InfoPage = (props: Props) => {
                 {account && account.auth === AccountAuth.SYSTEM_ADMIN && <Badge>시스템 관리자</Badge>}
                 {account && account.auth === AccountAuth.BOARD_ADMIN && <Badge>게시판 관리자</Badge>}
                 <Spacer/>
-                <NextLink href='/info/edit'>
+                <Link href='/info/edit'>
                   <Button size='xs'>수정</Button>
-                </NextLink>
+                </Link>
               </HStack>
             </CardHeader>
             <CardBody alignItems='stretch' paddingTop='0'>

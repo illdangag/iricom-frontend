@@ -23,8 +23,6 @@ const LoginPage = () => {
   const toast = useToast();
   const [authState, requestEmailAuth,] = useEmailAuth();
 
-  const { success, } = router.query;
-
   const [email, setEmail,] = useState<string>('');
   const [password, setPassword,] = useState<string>('');
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
@@ -46,10 +44,11 @@ const LoginPage = () => {
         duration: 3000,
       });
 
+      const success = router.query.success;
       if (typeof success === 'string') {
-        void router.replace(decodeURIComponent(success));
+        window.location.replace(decodeURIComponent(success));
       } else {
-        void router.replace('/');
+        window.location.replace('/');
       }
 
     } else if (authState === 'fail') {

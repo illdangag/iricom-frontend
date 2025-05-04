@@ -1,6 +1,5 @@
 // react
 import { useRef, } from 'react';
-import { useRouter, } from 'next/router';
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Text, } from '@chakra-ui/react';
 
 type Props = {
@@ -17,12 +16,11 @@ const RequireLoginAlert = ({
   onClose = () => {},
 }: Props) => {
   const closeRef = useRef();
-  const router = useRouter();
 
   const onClickLogin = () => {
     onClose();
     const successQueryParam: string = successURL ? '?success=' + encodeURIComponent(successURL) : '';
-    void router.push('/login' + successQueryParam);
+    window.location.href = '/login' + successQueryParam;
   };
 
   return (<AlertDialog

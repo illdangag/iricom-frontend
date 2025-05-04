@@ -1,6 +1,5 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
-import { useRouter, } from 'next/router';
 import { GetServerSideProps, } from 'next/types';
 import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, useToast, VStack, } from '@chakra-ui/react';
 
@@ -34,8 +33,6 @@ const AdminBoardCreatePage = (props: Props) => {
   const account: Account = props.account;
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
-  const router = useRouter();
-
   const toast = useToast();
   const iricomAPI = useIricom();
 
@@ -48,13 +45,9 @@ const AdminBoardCreatePage = (props: Props) => {
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -84,7 +77,7 @@ const AdminBoardCreatePage = (props: Props) => {
           status: 'success',
           duration: 3000,
         });
-        void router.push('/admin');
+        window.location.href = '/admin';
       })
       .catch(() => {
         setPageState(PageState.FAIL);

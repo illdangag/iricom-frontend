@@ -1,6 +1,5 @@
 // react
 import React, { useEffect, } from 'react';
-import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import { GetServerSideProps, } from 'next/types';
 import { Card, CardBody, Divider, LinkBox, LinkOverlay, VStack, } from '@chakra-ui/react';
@@ -27,19 +26,13 @@ const AdminBoardAdminPage = (props: Props) => {
   const account: Account = props.account;
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   const getBoardListElement = (boardList: Board[]) => {
     const elementList: JSX.Element[] = [];

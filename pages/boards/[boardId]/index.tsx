@@ -1,7 +1,6 @@
 // react
 import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { useRouter, } from 'next/router';
 import { Badge, Card, CardBody, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
 import { BoardPageTitle, NoContent, PostListTable, } from '@root/components';
@@ -35,20 +34,15 @@ const BoardsPage = (props: Props) => {
   const postList = Object.assign(new PostList(), props.postList as PostList);
   const notificationList = Object.assign(new PostList(), props.notificationList as PostList);
 
-  const router = useRouter();
-
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
   const [showRegisteredAccountAlert, setShowRegisteredAccountAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!router.isReady && !account) {
-      return;
-    }
     setAccount(account);
     setUnreadPersonalMessageList(unreadPersonalMessageList);
-  }, [router.isReady,]);
+  }, []);
 
   const onCloseRegisteredAccountDetailAlert = () => {
     setShowRegisteredAccountAlert(false);
