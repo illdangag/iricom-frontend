@@ -1,6 +1,7 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, useToast, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -35,6 +36,7 @@ const AdminBoardEditIdPage = (props: Props) => {
   const account: Account = props.account;
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
 
+  const router = useRouter();
   const toast = useToast();
   const iriconAPI = useIricom();
 
@@ -102,7 +104,7 @@ const AdminBoardEditIdPage = (props: Props) => {
           status: 'success',
           duration: 3000,
         });
-        window.location.href = '/admin';
+        void router.push('/admin/board/edit');
       })
       .catch(_error => {
         setPageState(PageState.FAIL);
