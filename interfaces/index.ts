@@ -276,6 +276,13 @@ export class PersonalMessageList extends ListResponse {
   public personalMessages: PersonalMessage[];
 }
 
+export type IricomFile = {
+  id: string,
+  size: number,
+  name: string,
+  contentType: string,
+}
+
 export type IricomGetServerSideProps = GetServerSidePropsContext & {
   req: IncomingMessage & {
     cookies: NextApiRequestCookies,

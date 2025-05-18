@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 import {
   Account, AccountList, BackendProperties, Board, BoardAdmin, BoardList, Comment, CommentList, FirebaseProperties, Post, PostList,
-  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList, PersonalMessage, PersonalMessageStatus,
+  PostReport, PostState, PostType, PostReportList, ReportType, TokenInfo, VoteType, IricomServerInfo, PersonalMessageList, PersonalMessage, PersonalMessageStatus, IricomFile,
 } from '../interfaces';
 import process from 'process';
 
@@ -62,6 +62,9 @@ type IricomAPIList = {
   sendPersonalMessage: (tokenInfo: TokenInfo, receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
   getReceivePersonalMessage: (tokenInfo: TokenInfo, personalMessageId: string) => Promise<PersonalMessage>,
   getSendPersonalMessage: (tokenInfo: TokenInfo, personalMessageId: string) => Promise<PersonalMessage>,
+
+  // 파일 업로드, 다운로드
+  uploadFile: (tokenInfo: TokenInfo, file: File) => Promise<IricomFile>,
 }
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -778,6 +781,30 @@ const IricomAPI: IricomAPIList = {
 
     try {
       const response: AxiosResponse<PersonalMessage> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  uploadFile: async (tokenInfo: TokenInfo, file: File): Promise<IricomFile> => {
+    const formData: FormData = new FormData();
+    formData.set('file', file);
+    formData.set('type', file.type);
+
+    const config: AxiosRequestConfig = {
+      url: `${backendProperties.host}/v1/file`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: formData,
+    };
+
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<IricomFile> = await axios.request(config);
       return response.data;
     } catch (error) {
       throw error;

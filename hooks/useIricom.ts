@@ -1,5 +1,5 @@
 // etc
-import { Account, AccountList, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
+import { Account, AccountList, Board, BoardAdmin, Comment, CommentList, IricomError, IricomErrorResponse, IricomFile, NotExistTokenError, PersonalMessage, PersonalMessageList, PersonalMessageStatus, Post, PostReport, PostState, PostType, ReportType, TokenInfo, VoteType, } from '../interfaces';
 import axios, { AxiosError, } from 'axios';
 import iricomAPI from '../utils/iricomAPI';
 // store
@@ -35,6 +35,8 @@ type Iricom = {
 
   sendPersonalMessage: (receiveAccountId: string, title: string, message: string) => Promise<PersonalMessage>,
   getReceivePersonalMessageList: (status: PersonalMessageStatus, skip: number, limit: number) => Promise<PersonalMessageList>,
+
+  uploadFile: (file: File) => Promise<IricomFile>,
 }
 
 function useIricom (): Iricom {
@@ -261,6 +263,15 @@ function useIricom (): Iricom {
       const tokenInfo: TokenInfo | null  = await getTokenInfo();
       try {
         return await iricomAPI.getReceivePersonalMessageList(tokenInfo, status, skip, limit);
+      } catch (error) {
+        throw defaultErrorHandler(error);
+      }
+    },
+
+    uploadFile: async (file: File): Promise<IricomFile> => {
+      const tokenInfo: TokenInfo | null  = await getTokenInfo();
+      try {
+        return await iricomAPI.uploadFile(tokenInfo, file);
       } catch (error) {
         throw defaultErrorHandler(error);
       }

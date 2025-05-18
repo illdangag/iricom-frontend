@@ -19,7 +19,9 @@ import PersonalMessageView from './PersonalMessageView';
 import AccountSearch from './AccountSearch';
 import AccountSearchPopup from './AccountSearchPopup';
 import AccountNameTag from './AccountNameTag';
+import ImageInput from './ImageInput';
 
 export { BoardPageTitle, BoardView, BoardPostPreview, CommentEditor, CommentView, PostEditor, PostListTable, PostView,
   NoContent, AccountListTable, Pagination, PageTitle, BoardListTable, ReportPostListTable, PersonalMessageListTable,
-  PersonalMessagePageTitle, PersonalMessageEditor, PersonalMessageView, AccountSearch, AccountSearchPopup, AccountNameTag, };
+  PersonalMessagePageTitle, PersonalMessageEditor, PersonalMessageView, AccountSearch, AccountSearchPopup, AccountNameTag,
+  ImageInput, };

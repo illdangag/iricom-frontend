@@ -1,7 +1,8 @@
 // react
-import { ChangeEvent, useEffect, useState, } from 'react';
+import { ChangeEvent, useEffect, useState, useRef, } from 'react';
 import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, VStack, } from '@chakra-ui/react';
-import { useIricom, } from '../hooks';
+import { useIricom, } from '@root/hooks';
+import { ImageInput, } from '@root/components';
 
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -11,7 +12,7 @@ const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
 });
 
 // etc
-import { AccountAuth, Post, PostState, PostType, } from '../interfaces';
+import { AccountAuth, IricomFile, Post, PostState, PostType, } from '../interfaces';
 
 type Props = {
   defaultValue?: Post,
@@ -35,6 +36,7 @@ const PostEditor = ({
   onRequest = () => {},
 }: Props) => {
   const iricomAPI = useIricom();
+  const imageInputRef = useRef(null);
 
   const [editorState, setEditorState,] = useState<EditorState>(EditorState.INVALID);
   const [title, setTitle,] = useState<string>(defaultValue ? defaultValue.title : '');
@@ -43,6 +45,8 @@ const PostEditor = ({
   const [postType, setPostType,] = useState<PostType>(DEFAULT_POST_TYPE);
   const DEFAULT_DISABLED_COMMENT: boolean = defaultValue ? !defaultValue.allowComment : false;
   const [disabledComment, setDisabledComment,] = useState<boolean>(DEFAULT_DISABLED_COMMENT);
+
+  const [isUploadImageButtonLoading, setUploadImageButtonLoading,] = useState<boolean>(false);
 
   useEffect(() => {
     if (title.length > 0) {
@@ -97,6 +101,19 @@ const PostEditor = ({
     return await iricomAPI.publishPost(post.boardId, post.id);
   };
 
+  const onChangeImageInput = async (event: ChangeEvent<HTMLInputElement>) => {
+    setUploadImageButtonLoading(true);
+    try {
+      const file: File = event.target.files[0];
+      const imageFile: IricomFile = await iricomAPI.uploadFile(file);
+      const appendedContent: string = content + `\n![${imageFile.name}](${window.location.origin}/file/${imageFile.name})\n`;
+      setContent(appendedContent);
+    } finally {
+      imageInputRef.current.value = null;
+      setUploadImageButtonLoading(false);
+    }
+  };
+
   return (
     <Box>
       <VStack alignItems='stretch' spacing='1rem'>
@@ -116,6 +133,15 @@ const PostEditor = ({
           </Box>
         </FormControl>
       </VStack>
+      <HStack marginTop='0.8rem'>
+        <ImageInput
+          size='xs'
+          variant='outline'
+          inputRef={imageInputRef}
+          onChange={onChangeImageInput}
+          isLoading={isUploadImageButtonLoading}
+        />
+      </HStack>
       {(accountAuth === AccountAuth.SYSTEM_ADMIN || accountAuth === AccountAuth.BOARD_ADMIN) && <>
         <Divider marginTop='.8rem'/>
         <VStack alignItems='stretch' spacing='1rem' marginTop='.8rem'>
