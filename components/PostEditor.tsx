@@ -1,7 +1,8 @@
 // react
 import { ChangeEvent, useEffect, useState, useRef, } from 'react';
 import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, VStack, } from '@chakra-ui/react';
-import { useIricom, } from '../hooks';
+import { useIricom, } from '@root/hooks';
+import { ImageInput, } from '@root/components';
 
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -35,6 +36,7 @@ const PostEditor = ({
   onRequest = () => {},
 }: Props) => {
   const iricomAPI = useIricom();
+  const imageInputRef = useRef(null);
 
   const [editorState, setEditorState,] = useState<EditorState>(EditorState.INVALID);
   const [title, setTitle,] = useState<string>(defaultValue ? defaultValue.title : '');
@@ -43,6 +45,8 @@ const PostEditor = ({
   const [postType, setPostType,] = useState<PostType>(DEFAULT_POST_TYPE);
   const DEFAULT_DISABLED_COMMENT: boolean = defaultValue ? !defaultValue.allowComment : false;
   const [disabledComment, setDisabledComment,] = useState<boolean>(DEFAULT_DISABLED_COMMENT);
+
+  const [isUploadImageButtonLoading, setUploadImageButtonLoading,] = useState<boolean>(false);
 
   useEffect(() => {
     if (title.length > 0) {
@@ -98,11 +102,16 @@ const PostEditor = ({
   };
 
   const onChangeImageInput = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file: File = event.target.files[0];
-
-    const imageFile: IricomFile = await iricomAPI.uploadFile(file);
-    const appendedContent: string = content + `\n![${imageFile.name}](${window.location.origin}/file/${imageFile.name})`;
-    setContent(appendedContent);
+    setUploadImageButtonLoading(true);
+    try {
+      const file: File = event.target.files[0];
+      const imageFile: IricomFile = await iricomAPI.uploadFile(file);
+      const appendedContent: string = content + `\n![${imageFile.name}](${window.location.origin}/file/${imageFile.name})\n`;
+      setContent(appendedContent);
+    } finally {
+      imageInputRef.current.value = null;
+      setUploadImageButtonLoading(false);
+    }
   };
 
   return (
@@ -125,7 +134,13 @@ const PostEditor = ({
         </FormControl>
       </VStack>
       <HStack marginTop='0.8rem'>
-        <ImageInput onChange={onChangeImageInput}/>
+        <ImageInput
+          size='xs'
+          variant='outline'
+          inputRef={imageInputRef}
+          onChange={onChangeImageInput}
+          isLoading={isUploadImageButtonLoading}
+        />
       </HStack>
       {(accountAuth === AccountAuth.SYSTEM_ADMIN || accountAuth === AccountAuth.BOARD_ADMIN) && <>
         <Divider marginTop='.8rem'/>
@@ -167,36 +182,3 @@ const PostEditor = ({
 };
 
 export default PostEditor;
-
-type ImageInputProp = {
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void,
-  maxImageSize?: number,
-};
-
-const ImageInput = ({
-  onChange = () => {},
-  maxImageSize = 1024 * 1024 * 1, // 1MB
-}: ImageInputProp) => {
-  const inputRef = useRef(null);
-
-  const onClickAttachedImageButton = () => {
-    inputRef.current.click();
-  };
-
-  const onChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value && event.target.files.length > 0) {
-      const file: File = event.target.files[0];
-      if (file.size > maxImageSize) {
-        alert('파일 사이즈 초과');
-        inputRef.current.value = null;
-        return;
-      }
-      onChange(event);
-    }
-  };
-
-  return <Box display='inline-block'>
-    <Button size='xs' variant='outline' onClick={onClickAttachedImageButton}>이미지 업로드</Button>
-    <input ref={inputRef} type='file' accept='image/*' onChange={onChangeInput}/>
-  </Box>;
-};

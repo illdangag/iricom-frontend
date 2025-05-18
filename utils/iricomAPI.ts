@@ -65,7 +65,6 @@ type IricomAPIList = {
 
   // 파일 업로드, 다운로드
   uploadFile: (tokenInfo: TokenInfo, file: File) => Promise<IricomFile>,
-  downloadFile: (tokenize: TokenInfo, fileId: String) => Promise<void>,
 }
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -810,9 +809,6 @@ const IricomAPI: IricomAPIList = {
     } catch (error) {
       throw error;
     }
-  },
-  downloadFile: async (tokenize: TokenInfo, fileId: String): Promise<void> => {
-
   },
 };
 
