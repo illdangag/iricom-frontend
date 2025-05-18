@@ -74,9 +74,9 @@ const InfoEditPage = (props: Props) => {
       });
 
       if (typeof router.query.redirect === 'string') {
-        window.location.href = decodeURIComponent(router.query.redirect);
+        void router.push(decodeURIComponent(router.query.redirect));
       } else {
-        window.location.href = '/info';
+        void router.push('/info');
       }
     } catch (error) {
       const iricomError: IricomError = error as IricomError;

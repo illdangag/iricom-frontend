@@ -1,6 +1,7 @@
 // react
 import { ChangeEvent, useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardFooter, Checkbox, FormControl, FormHelperText, FormLabel, Input, Textarea, useToast, VStack, } from '@chakra-ui/react';
 
 import { PageBody, } from '@root/layouts';
@@ -35,6 +36,7 @@ const AdminBoardCreatePage = (props: Props) => {
 
   const toast = useToast();
   const iricomAPI = useIricom();
+  const router = useRouter();
 
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
   const [title, setTitle,] = useState<string>('');
@@ -77,7 +79,7 @@ const AdminBoardCreatePage = (props: Props) => {
           status: 'success',
           duration: 3000,
         });
-        window.location.href = '/admin';
+        void router.push('/admin');
       })
       .catch(() => {
         setPageState(PageState.FAIL);

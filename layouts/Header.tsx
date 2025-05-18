@@ -1,6 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
+import { useRouter, } from 'next/router';
 import { Avatar, Box, Button, Card, CardBody, Flex, Heading, HStack, Icon, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
 import { MdOutlineNotifications, } from 'react-icons/md';
 // etc
@@ -30,6 +31,8 @@ const Header = ({
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [unreadPersonalMessageList, setUnreadPersonalMessageList,] = useRecoilState<PersonalMessageList>(unreadPersonalMessageListAtom);
 
+  const router = useRouter();
+
   const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
 
   useEffect(() => {
@@ -51,7 +54,7 @@ const Header = ({
     BrowserStorage.clear();
     setAccount(null);
     setUnreadPersonalMessageList(new PersonalMessageList());
-    window.location.href = '/';
+    void router.push('/');
   };
 
   const loginButton = <MenuButton as={Button} variant='outline' size='sm' borderColor='gray.300'>

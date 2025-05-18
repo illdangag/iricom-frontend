@@ -1,6 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, HStack, Link, Spacer, VStack, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -38,6 +39,8 @@ const PersonalMessagePage = (props: Props) => {
   const sendMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.sendMessageList);
   const tab: PAGE_TAB = props.tab;
 
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
@@ -51,11 +54,11 @@ const PersonalMessagePage = (props: Props) => {
   };
 
   const onClickReceiveButton = () => {
-    window.location.href = getGetParameter('' + receiveMessageList.currentPage, '' + sendMessageList.currentPage, PAGE_TAB.RECEIVE);
+    void router.push(getGetParameter('' + receiveMessageList.currentPage, '' + sendMessageList.currentPage, PAGE_TAB.RECEIVE));
   };
 
   const onClickSendButton = () => {
-    window.location.href = getGetParameter('' + receiveMessageList.currentPage, '' + sendMessageList.currentPage, PAGE_TAB.SEND);
+    void router.push(getGetParameter('' + receiveMessageList.currentPage, '' + sendMessageList.currentPage, PAGE_TAB.SEND));
   };
 
   return <MainLayout>

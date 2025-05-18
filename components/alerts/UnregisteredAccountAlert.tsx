@@ -1,6 +1,7 @@
+// react
 import { useRef, } from 'react';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay,
-  Button, ButtonGroup, Text, } from '@chakra-ui/react';
+import { useRouter, } from 'next/router';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Text, } from '@chakra-ui/react';
 
 type Props = {
   isOpen?: boolean;
@@ -14,10 +15,11 @@ const UnregisteredAccountAlert = ({
   onClose = () => {},
 }: Props) => {
   const cancelRef = useRef();
+  const router = useRouter();
 
   const onClickAccountEdit = () => {
     const redirectURLQueryParam: string = redirectURL ? '?redirect=' + encodeURIComponent(redirectURL) : '';
-    window.location.href = '/info/edit' + redirectURLQueryParam;
+    void router.push('/info/edit' + redirectURLQueryParam);
   };
 
   return <AlertDialog
