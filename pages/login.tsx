@@ -35,9 +35,9 @@ const LoginPage = () => {
 
       const { success, } = router.query;
       if (typeof success === 'string') {
-        window.location.replace(decodeURIComponent(success));
+        void router.replace(decodeURIComponent(success));
       } else {
-        window.location.replace('/');
+        void router.replace('/');
       }
     } else if (authState === 'fail') {
       setPageState(PageState.FAIL);

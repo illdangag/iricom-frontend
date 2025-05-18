@@ -1,6 +1,7 @@
 // react
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, Heading, HStack, Input, InputGroup, InputLeftElement, InputRightElement, ListItem, Text, UnorderedList, VStack, } from '@chakra-ui/react';
 import { MdSearch, } from 'react-icons/md';
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -34,6 +35,8 @@ const AdminBoardAdminEditPage = (props: Props) => {
   const boardId: string = props.boardId;
   const accountPage: number = props.accountPage;
   const accountList: AccountList = Object.assign(new AccountList(), props.accountList);
+
+  const router = useRouter();
 
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
@@ -94,7 +97,7 @@ const AdminBoardAdminEditPage = (props: Props) => {
   };
 
   const setUrlGetParameterAccountKeyword = (accountKeyword: string) => {
-    window.location.href = `/admin/board/admin/${boardId}?account_page=${accountPage}&account_keyword=${accountKeyword}`;
+    void router.push(`/admin/board/admin/${boardId}?account_page=${accountPage}&account_keyword=${accountKeyword}`);
   };
 
   return (

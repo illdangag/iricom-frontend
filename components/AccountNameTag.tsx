@@ -1,4 +1,5 @@
 // react
+import NextLink from 'next/link';
 import { Box, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
 // etc
 import { Account, } from '@root/interfaces';
@@ -17,7 +18,7 @@ const AccountNameTag = ({
     <Menu size='sm'>
       <MenuButton as={Text} fontSize='0.8rem' cursor={getCursorType}>{account.nickname || account.email}</MenuButton>
       {isShowSendPersonalMessage && <MenuList fontSize='0.8rem'>
-        {isShowSendPersonalMessage && <Link href={`/message/create?to=${account.id}`} _hover={{ textDecoration: 'none', }}>
+        {isShowSendPersonalMessage && <Link as={NextLink} href={`/message/create?to=${account.id}`} _hover={{ textDecoration: 'none', }}>
           <MenuItem>쪽지 보내기</MenuItem>
         </Link>}
       </MenuList>}

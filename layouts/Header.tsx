@@ -1,6 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
+import { useRouter, } from 'next/router';
 import { Avatar, Box, Button, Card, CardBody, Flex, Heading, HStack, Icon, Link, Menu, MenuButton, MenuItem, MenuList, Text, } from '@chakra-ui/react';
 import { MdOutlineNotifications, } from 'react-icons/md';
 // etc
@@ -30,6 +31,8 @@ const Header = ({
   const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
   const [unreadPersonalMessageList, setUnreadPersonalMessageList,] = useRecoilState<PersonalMessageList>(unreadPersonalMessageListAtom);
 
+  const router = useRouter();
+
   const [state, setState,] = useState<HeaderState>(HeaderState.NONE);
 
   useEffect(() => {
@@ -51,7 +54,7 @@ const Header = ({
     BrowserStorage.clear();
     setAccount(null);
     setUnreadPersonalMessageList(new PersonalMessageList());
-    window.location.href = '/';
+    void router.push('/');
   };
 
   const loginButton = <MenuButton as={Button} variant='outline' size='sm' borderColor='gray.300'>
@@ -66,17 +69,17 @@ const Header = ({
   const systemAdminMenu = <Menu isLazy>
     {loginButton}
     <MenuList>
-      <Link href='/admin'>
+      <Link as={NextLink} href='/admin'>
         <MenuItem fontSize='1rem'>
           관리자 페이지
         </MenuItem>
       </Link>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
       </Link>
-      <Link href='/message'>
+      <Link as={NextLink} href='/message'>
         <MenuItem>
           쪽지함
         </MenuItem>
@@ -90,17 +93,17 @@ const Header = ({
   const boardAdminMenu = <Menu isLazy>
     {loginButton}
     <MenuList>
-      <Link href='/admin'>
+      <Link as={NextLink} href='/admin'>
         <MenuItem fontSize='1rem'>
           관리자 페이지
         </MenuItem>
       </Link>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
       </Link>
-      <Link href='/message'>
+      <Link as={NextLink} href='/message'>
         <MenuItem>
           쪽지함
         </MenuItem>
@@ -114,12 +117,12 @@ const Header = ({
   const accountMenu = <Menu>
     {loginButton}
     <MenuList>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
       </Link>
-      <Link href='/message'>
+      <Link as={NextLink} href='/message'>
         <MenuItem>
           쪽지함
         </MenuItem>
@@ -133,7 +136,7 @@ const Header = ({
   const unregisteredAccountMenu = <Menu>
     {loginButton}
     <MenuList>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
@@ -146,7 +149,7 @@ const Header = ({
 
   const getRightElement = (): JSX.Element => {
     if (state === HeaderState.NOT_LOGIN) {
-      return <Link href='/login'>
+      return <Link as={NextLink} href='/login'>
         <Button size='sm' variant='outline'>로그인</Button>
       </Link>;
     } else if (state === HeaderState.SYSTEM_ADMIN) {

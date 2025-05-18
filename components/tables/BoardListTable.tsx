@@ -1,4 +1,5 @@
 // react
+import NextLink from 'next/link';
 import { VStack, Box, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Badge, Link, Icon, } from '@chakra-ui/react';
 import Pagination from './Pagination';
 
@@ -41,7 +42,7 @@ const BoardListTable = ({
           >
             <Td>{board.id}</Td>
             <Td>
-              <Link href={boardLinkHref.replaceAll('{{boardId}}', '' + board.id)}>
+              <Link as={NextLink} href={boardLinkHref.replaceAll('{{boardId}}', '' + board.id)}>
                 {board.title}<Icon as={MdOpenInNew} marginLeft='0.2rem'/>
               </Link>
             </Td>

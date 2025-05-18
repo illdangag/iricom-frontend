@@ -1,6 +1,7 @@
 // react
 import { useEffect, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import NextLink from 'next/link';
 import { Alert, Badge, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, HStack, Input, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, PageBody, } from '@root/layouts';
 import { PageTitle, PostListTable, } from '@root/components';
@@ -53,7 +54,7 @@ const InfoPage = (props: Props) => {
                 {account && account.auth === AccountAuth.SYSTEM_ADMIN && <Badge>시스템 관리자</Badge>}
                 {account && account.auth === AccountAuth.BOARD_ADMIN && <Badge>게시판 관리자</Badge>}
                 <Spacer/>
-                <Link href='/info/edit'>
+                <Link as={NextLink} href='/info/edit'>
                   <Button size='xs'>수정</Button>
                 </Link>
               </HStack>

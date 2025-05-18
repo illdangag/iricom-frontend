@@ -1,4 +1,5 @@
 // react
+import NextLink from 'next/link';
 import { Box, Button, Divider, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MdSend, } from 'react-icons/md';
 import { AccountNameTag, } from '@root/components/index';
@@ -63,7 +64,7 @@ const PersonalMessageViewFooter = ({
 }: FooterProps) => {
   return <HStack marginTop='0.8rem'>
     <Spacer/>
-    <Link href={`/message/create?to=${personalMessage.sendAccount.id}`}>
+    <Link as={NextLink} href={`/message/create?to=${personalMessage.sendAccount.id}`}>
       <Button variant='outline' size='xs' leftIcon={<MdSend/>}>답장</Button>
     </Link>
   </HStack>;

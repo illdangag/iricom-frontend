@@ -1,6 +1,7 @@
 // react
 import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Card, CardBody, } from '@chakra-ui/react';
 
 import { MainLayout, PageBody, } from '@root/layouts';
@@ -27,6 +28,8 @@ const PostCreatePage = (props: Props) => {
   const unreadPersonalMessageList: PersonalMessageList = Object.assign(new PersonalMessageList(), props.unreadPersonalMessageList);
   const board: Board = Object.assign(new Board(), props.board);
 
+  const router = useRouter();
+
   const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
   const setUnreadPersonalMessageList = useSetRecoilState<PersonalMessageList | null>(unreadPersonalMessageListAtom);
 
@@ -47,14 +50,14 @@ const PostCreatePage = (props: Props) => {
   };
 
   const onCloseUnregisteredAccountAlert = () => {
-    window.history.back();
+    void router.back();
   };
 
   const onRequest = (postState: PostState, post: Post) => {
     if (postState === PostState.TEMPORARY) {
-      window.location.replace(`/boards/${post.boardId}/posts/${post.id}/edit`);
+      void router.replace(`/boards/${post.boardId}/posts/${post.id}/edit`);
     } else { // POST.PUBLISH
-      window.location.href = '/';
+      void router.push(`/boards/${post.boardId}`);
     }
   };
 
