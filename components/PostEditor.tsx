@@ -1,5 +1,5 @@
 // react
-import { ChangeEvent, useEffect, useState, } from 'react';
+import { ChangeEvent, useEffect, useState, useRef, } from 'react';
 import { Box, Button, ButtonGroup, Checkbox, Divider, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Text, VStack, } from '@chakra-ui/react';
 import { useIricom, } from '../hooks';
 
@@ -11,7 +11,7 @@ const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
 });
 
 // etc
-import { AccountAuth, Post, PostState, PostType, } from '../interfaces';
+import { AccountAuth, IricomFile, Post, PostState, PostType, } from '../interfaces';
 
 type Props = {
   defaultValue?: Post,
@@ -97,6 +97,14 @@ const PostEditor = ({
     return await iricomAPI.publishPost(post.boardId, post.id);
   };
 
+  const onChangeImageInput = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file: File = event.target.files[0];
+
+    const imageFile: IricomFile = await iricomAPI.uploadFile(file);
+    const appendedContent: string = content + `\n![${imageFile.name}](${window.location.origin}/file/${imageFile.name})`;
+    setContent(appendedContent);
+  };
+
   return (
     <Box>
       <VStack alignItems='stretch' spacing='1rem'>
@@ -116,6 +124,9 @@ const PostEditor = ({
           </Box>
         </FormControl>
       </VStack>
+      <HStack marginTop='0.8rem'>
+        <ImageInput onChange={onChangeImageInput}/>
+      </HStack>
       {(accountAuth === AccountAuth.SYSTEM_ADMIN || accountAuth === AccountAuth.BOARD_ADMIN) && <>
         <Divider marginTop='.8rem'/>
         <VStack alignItems='stretch' spacing='1rem' marginTop='.8rem'>
@@ -156,3 +167,36 @@ const PostEditor = ({
 };
 
 export default PostEditor;
+
+type ImageInputProp = {
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void,
+  maxImageSize?: number,
+};
+
+const ImageInput = ({
+  onChange = () => {},
+  maxImageSize = 1024 * 1024 * 1, // 1MB
+}: ImageInputProp) => {
+  const inputRef = useRef(null);
+
+  const onClickAttachedImageButton = () => {
+    inputRef.current.click();
+  };
+
+  const onChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value && event.target.files.length > 0) {
+      const file: File = event.target.files[0];
+      if (file.size > maxImageSize) {
+        alert('파일 사이즈 초과');
+        inputRef.current.value = null;
+        return;
+      }
+      onChange(event);
+    }
+  };
+
+  return <Box display='inline-block'>
+    <Button size='xs' variant='outline' onClick={onClickAttachedImageButton}>이미지 업로드</Button>
+    <input ref={inputRef} type='file' accept='image/*' onChange={onChangeInput}/>
+  </Box>;
+};

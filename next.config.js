@@ -23,5 +23,13 @@ module.exports = (phase) => {
     eslint: {
       ignoreDuringBuilds: true,
     },
+    rewrites() {
+      return [
+        {
+          source: '/file/:fileId',
+          destination: env.backend.host + '/v1/file/:fileId/',
+        }
+      ];
+    },
   });
 };
