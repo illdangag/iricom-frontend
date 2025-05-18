@@ -69,17 +69,17 @@ const Header = ({
   const systemAdminMenu = <Menu isLazy>
     {loginButton}
     <MenuList>
-      <Link href='/admin'>
+      <Link as={NextLink} href='/admin'>
         <MenuItem fontSize='1rem'>
           관리자 페이지
         </MenuItem>
       </Link>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
       </Link>
-      <Link href='/message'>
+      <Link as={NextLink} href='/message'>
         <MenuItem>
           쪽지함
         </MenuItem>
@@ -93,17 +93,17 @@ const Header = ({
   const boardAdminMenu = <Menu isLazy>
     {loginButton}
     <MenuList>
-      <Link href='/admin'>
+      <Link as={NextLink} href='/admin'>
         <MenuItem fontSize='1rem'>
           관리자 페이지
         </MenuItem>
       </Link>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
       </Link>
-      <Link href='/message'>
+      <Link as={NextLink} href='/message'>
         <MenuItem>
           쪽지함
         </MenuItem>
@@ -117,12 +117,12 @@ const Header = ({
   const accountMenu = <Menu>
     {loginButton}
     <MenuList>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
       </Link>
-      <Link href='/message'>
+      <Link as={NextLink} href='/message'>
         <MenuItem>
           쪽지함
         </MenuItem>
@@ -136,7 +136,7 @@ const Header = ({
   const unregisteredAccountMenu = <Menu>
     {loginButton}
     <MenuList>
-      <Link href='/info'>
+      <Link as={NextLink} href='/info'>
         <MenuItem>
           내 정보
         </MenuItem>
@@ -149,7 +149,7 @@ const Header = ({
 
   const getRightElement = (): JSX.Element => {
     if (state === HeaderState.NOT_LOGIN) {
-      return <Link href='/login'>
+      return <Link as={NextLink} href='/login'>
         <Button size='sm' variant='outline'>로그인</Button>
       </Link>;
     } else if (state === HeaderState.SYSTEM_ADMIN) {

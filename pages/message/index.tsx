@@ -16,6 +16,7 @@ import { Account, IricomGetServerSideProps, PersonalMessageList, PersonalMessage
 import { parseEnum, parseInt, } from '@root/utils';
 import iricomAPI from '@root/utils/iricomAPI';
 import { BORDER_RADIUS, } from '@root/constants/style';
+import NextLink from 'next/link';
 
 const PAGE_LIMIT: number = 10;
 
@@ -86,7 +87,7 @@ const PersonalMessagePage = (props: Props) => {
                 보낸 쪽지
               </Button>
               <Spacer/>
-              <Link href='/message/create'>
+              <Link as={NextLink} href='/message/create'>
                 <Button size='xs' variant='outline'>쪽지 보내기</Button>
               </Link>
             </HStack>

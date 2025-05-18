@@ -1,7 +1,7 @@
 // react
 import { useRef, } from 'react';
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Text,
-  Button, Link, } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Text, Button, Link, } from '@chakra-ui/react';
 // etc
 import { Post, } from '../../interfaces';
 
@@ -34,9 +34,9 @@ const PostPublishAlert = ({
           <Text>게시물로 이동하시겠습니까?</Text>
         </AlertDialogBody>
         <AlertDialogFooter>
-          <Button as={Link} href={`/boards/${post.boardId}/posts/${post.id}`}>
-            게시물로 이동
-          </Button>
+          <Link as={NextLink} href={`/boards/${post.boardId}/posts/${post.id}`}>
+            <Button>게시물로 이동</Button>
+          </Link>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
