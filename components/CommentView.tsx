@@ -137,7 +137,7 @@ const CommentView = ({
             />}
           </ButtonGroup>}
         </HStack>
-        <Text fontSize='.8rem' wordBreak='break-word'>{comment.content}</Text>
+        <pre><Text fontSize='.8rem' wordBreak='break-word'>{comment.content}</Text></pre>
         {comment.deleted && <Box padding='0' margin='0'>
           <Badge colorScheme='red' fontSize='0.8rem'>삭제된 댓글입니다</Badge>
         </Box>}
